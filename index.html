@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capgemini Invent · Agentic AI Platform Benchmark</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --bg-primary: #0D162D;
+  --bg-secondary: #131B35;
+  --bg-card: #1A2342;
+  --bg-card-hover: #1F2A4E;
+  --bg-input: #0F1729;
+  --border-color: #2A3558;
+  --border-light: #3A4568;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0AEC0;
+  --text-muted: #6B7A99;
+  --blue-dark: #005FB8;
+  --blue-light: #28B4ED;
+  --turquoise: #00CCCD;
+  --orange: #FFAB00;
+  --red: #FF8A71;
+  --green: #4ADE80;
+  --purple: #A78BFA;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.4);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --transition: all 0.3s ease;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width:8px; }
+::-webkit-scrollbar-track { background:var(--bg-primary); }
+::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:4px; }
+::-webkit-scrollbar-thumb:hover { background:var(--blue-dark); }
+
+/* HEADER */
+.header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 32px;
+  background:var(--bg-secondary);
+  border-bottom:1px solid var(--border-color);
+  position:sticky; top:0; z-index:100;
+}
+.header-left { display:flex; align-items:center; gap:16px; }
+.header-logo-img { height:36px; object-fit:contain; }
+.header-divider { width:1px; height:32px; background:var(--border-color); }
+.header-title-block {}
+.header-title {
+  font-size:15px; font-weight:700; color:var(--text-primary); letter-spacing:0.3px;
+}
+.header-subtitle {
+  font-size:10px; color:var(--turquoise); letter-spacing:1.5px; text-transform:uppercase;
+}
+.header-right { display:flex; align-items:center; gap:10px; }
+.lang-select {
+  background:var(--bg-input); color:var(--text-secondary);
+  border:1px solid var(--border-color); border-radius:var(--radius-xs);
+  padding:6px 10px; font-size:12px; font-family:var(--font); cursor:pointer; outline:none;
+}
+.header-btn {
+  padding:7px 14px; background:var(--bg-card); border:1px solid var(--border-color);
+  border-radius:var(--radius-xs); color:var(--text-secondary); font-size:12px;
+  font-family:var(--font); cursor:pointer; transition:var(--transition);
+  display:flex; align-items:center; gap:6px;
+}
+.header-btn:hover { background:var(--bg-card-hover); color:var(--text-primary); border-color:var(--blue-dark); }
+.header-btn.primary {
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue-light));
+  border-color:transparent; color:white;
+}
+.header-btn.primary:hover { box-shadow:0 2px 12px rgba(0,95,184,0.3); }
+.user-badge {
+  font-size:11px; color:var(--text-muted); padding:6px 10px;
+  background:var(--bg-input); border-radius:var(--radius-xs);
+}
+
+/* MAIN */
+.main-content { padding:24px 32px; max-width:1600px; margin:0 auto; }
+.section-title { font-size:18px; font-weight:700; margin-bottom:4px; }
+.section-subtitle { font-size:13px; color:var(--text-secondary); margin-bottom:20px; }
+
+/* BUILD BANNER */
+.build-banner {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--bg-card); border:1px solid var(--border-color);
+  border-radius:var(--radius); padding:14px 24px; margin-bottom:24px;
+}
+.build-banner-left { display:flex; align-items:center; gap:16px; }
+.build-banner-title { font-size:14px; font-weight:600; }
+.build-banner-desc { font-size:12px; color:var(--text-secondary); }
+.build-multipliers { display:flex; gap:10px; }
+.multiplier-badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+.multiplier-badge.native { background:rgba(74,222,128,0.15); color:var(--green); }
+.multiplier-badge.lowcode { background:rgba(255,171,0,0.15); color:var(--orange); }
+.multiplier-badge.framework { background:rgba(255,138,113,0.15); color:var(--red); }
+
+/* TOGGLE */
+.toggle-switch { position:relative; width:48px; height:26px; cursor:pointer; display:inline-block; }
+.toggle-switch input { display:none; }
+.toggle-slider {
+  position:absolute; inset:0; background:var(--border-color);
+  border-radius:13px; transition:var(--transition);
+}
+.toggle-slider::before {
+  content:''; position:absolute; width:20px; height:20px;
+  background:white; border-radius:50%; top:3px; left:3px; transition:var(--transition);
+}
+.toggle-switch input:checked + .toggle-slider { background:var(--turquoise); }
+.toggle-switch input:checked + .toggle-slider::before { transform:translateX(22px); }
+
+/* PRESETS */
+.presets-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
+.preset-chip {
+  padding:6px 14px; background:var(--bg-card); border:1px solid var(--border-color);
+  border-radius:20px; font-size:11px; color:var(--text-secondary); cursor:pointer;
+  transition:var(--transition); font-family:var(--font); white-space:nowrap;
+}
+.preset-chip:hover { border-color:var(--blue-light); color:var(--text-primary); }
+.preset-chip.active {
+  background:linear-gradient(135deg,var(--blue-dark),var(--blue-light));
+  border-color:transparent; color:white;
+}
+
+/* GRIDS */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-bottom:24px; }
+.grid-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
+
+/* CARDS */
+.card {
+  background:var(--bg-card); border:1px solid var(--border-color);
+  border-radius:var(--radius); padding:24px; transition:var(--transition);
+}
+.card:hover { border-color:var(--border-light); }
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.card-title { font-size:14px; font-weight:600; }
+
+/* VENDOR CARDS */
+.vendor-card {
+  background:var(--bg-card); border:1px solid var(--border-color);
+  border-radius:var(--radius); padding:20px; transition:var(--transition);
+  position:relative; overflow:hidden;
+}
+.vendor-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.vendor-card.microsoft::before { background:linear-gradient(90deg,#005FB8,#28B4ED); }
+.vendor-card.aws::before { background:linear-gradient(90deg,#FF9900,#FFAB00); }
+.vendor-card.uipath::before { background:linear-gradient(90deg,#FA4616,#FF8A71); }
+.vendor-card.n8n::before { background:linear-gradient(90deg,#EA4B71,#A78BFA); }
+.vendor-card.otera::before { background:linear-gradient(90deg,#00CCCD,#4ADE80); }
+.vendor-name { font-size:16px; font-weight:700; margin-bottom:2px; }
+.vendor-product { font-size:11px; color:var(--text-muted); margin-bottom:12px; }
+.vendor-score { font-size:36px; font-weight:800; margin-bottom:2px; }
+.vendor-score-label { font-size:11px; color:var(--text-muted); margin-bottom:14px; }
+.vendor-rank {
+  position:absolute; top:14px; right:14px; width:28px; height:28px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; background:var(--bg-input); border:1px solid var(--border-color);
+}
+.vendor-rank.r1 { background:rgba(255,171,0,0.2); color:var(--orange); border-color:var(--orange); }
+.vendor-rank.r2 { background:rgba(167,139,250,0.2); color:var(--purple); border-color:var(--purple); }
+.vendor-rank.r3 { background:rgba(0,204,205,0.2); color:var(--turquoise); border-color:var(--turquoise); }
+
+/* IMPACT BADGES */
+.impact-badges { display:flex; gap:6px; margin-top:12px; }
+.impact-badge {
+  flex:1; text-align:center; padding:6px 2px;
+  background:var(--bg-input); border-radius:var(--radius-xs);
+}
+.impact-badge-value { font-size:14px; font-weight:700; }
+.impact-badge-label { font-size:8px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+
+/* WEIGHT TABLE */
+.weight-table { width:100%; border-collapse:collapse; }
+.weight-table th {
+  text-align:left; font-size:11px; font-weight:600; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.5px; padding:8px 10px;
+  border-bottom:1px solid var(--border-color);
+}
+.weight-table td {
+  padding:8px 10px; font-size:13px;
+  border-bottom:1px solid rgba(42,53,88,0.5); vertical-align:middle;
+}
+.weight-table tr:hover td { background:rgba(42,53,88,0.3); }
+.layer-header td {
+  font-weight:700; color:var(--blue-light); font-size:12px;
+  text-transform:uppercase; letter-spacing:0.5px;
+  padding-top:14px !important; border-bottom:1px solid var(--blue-dark) !important;
+}
+.moscow-select {
+  background:var(--bg-input); color:var(--text-primary);
+  border:1px solid var(--border-color); border-radius:var(--radius-xs);
+  padding:4px 8px; font-size:12px; font-family:var(--font); cursor:pointer; outline:none; width:120px;
+}
+
+/* SCORE MATRIX */
+.score-matrix { width:100%; border-collapse:collapse; }
+.score-matrix th {
+  text-align:center; font-size:10px; font-weight:600; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.5px; padding:8px 4px;
+  border-bottom:1px solid var(--border-color);
+}
+.score-matrix th:first-child { text-align:left; }
+.score-matrix td {
+  padding:6px 4px; text-align:center;
+  border-bottom:1px solid rgba(42,53,88,0.5); font-size:12px;
+}
+.score-matrix td:first-child { text-align:left; font-size:12px; }
+.score-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:32px; height:26px; border-radius:var(--radius-xs);
+  font-size:11px; font-weight:700; cursor:pointer; transition:var(--transition); padding:0 4px;
+}
+.score-badge:hover { transform:scale(1.15); box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+.score-badge.s0 { background:rgba(255,138,113,0.2); color:var(--red); }
+.score-badge.s1 { background:rgba(255,171,0,0.2); color:var(--orange); }
+.score-badge.s2 { background:rgba(40,180,237,0.2); color:var(--blue-light); }
+.score-badge.s3 { background:rgba(74,222,128,0.2); color:var(--green); }
+.effective-score { font-size:9px; color:var(--text-muted); display:block; margin-top:1px; }
+
+/* MODAL */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6);
+  z-index:1000; align-items:center; justify-content:center; padding:20px;
+}
+.modal-overlay.active { display:flex; }
+.modal-content {
+  background:var(--bg-card); border:1px solid var(--border-color);
+  border-radius:var(--radius); padding:32px; max-width:560px; width:100%;
+  box-shadow:var(--shadow-lg); max-height:80vh; overflow-y:auto;
+}
+.modal-close {
+  float:right; background:none; border:none; color:var(--text-muted);
+  font-size:20px; cursor:pointer; padding:4px 8px;
+}
+.modal-close:hover { color:var(--text-primary); }
+.modal-title { font-size:18px; font-weight:700; margin-bottom:8px; }
+.modal-vendor {
+  font-size:12px; color:var(--blue-light); text-transform:uppercase;
+  letter-spacing:1px; margin-bottom:16px;
+}
+.modal-score-row { display:flex; gap:12px; margin-bottom:16px; }
+.modal-score-item {
+  flex:1; padding:12px; background:var(--bg-input);
+  border-radius:var(--radius-sm); text-align:center;
+}
+.modal-score-item .value { font-size:22px; font-weight:700; }
+.modal-score-item .label { font-size:10px; color:var(--text-muted); text-transform:uppercase; }
+.modal-evidence {
+  font-size:13px; color:var(--text-secondary); line-height:1.7;
+  padding:16px; background:var(--bg-input); border-radius:var(--radius-sm);
+  border-left:3px solid var(--blue-light);
+}
+
+/* RADAR */
+.radar-container { position:relative; height:380px; }
+
+/* TCO */
+.tco-controls { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+.tco-control-group { flex:1; min-width:160px; }
+.tco-control-group label {
+  display:block; font-size:11px; font-weight:600; color:var(--text-muted);
+  text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
+}
+.tco-control-group select {
+  width:100%; padding:8px 12px; background:var(--bg-input); color:var(--text-primary);
+  border:1px solid var(--border-color); border-radius:var(--radius-xs);
+  font-size:12px; font-family:var(--font); cursor:pointer; outline:none;
+}
+.tco-chart-container { height:280px; position:relative; }
+
+/* VERDICT */
+.verdict-card {
+  background:linear-gradient(135deg,rgba(0,95,184,0.1),rgba(0,204,205,0.05));
+  border:1px solid var(--blue-dark);
+}
+.verdict-winner { font-size:24px; font-weight:800; margin-bottom:8px; }
+.verdict-text { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.verdict-must-haves { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.verdict-must-tag {
+  padding:4px 10px; background:rgba(255,171,0,0.15); color:var(--orange);
+  border-radius:20px; font-size:11px; font-weight:600;
+}
+
+/* CHALLENGES */
+.challenge-item {
+  padding:14px 16px; background:var(--bg-input); border-radius:var(--radius-sm);
+  margin-bottom:10px; border-left:3px solid var(--orange);
+  font-size:12px; color:var(--text-secondary); line-height:1.6;
+}
+.challenge-item strong { color:var(--text-primary); }
+.challenge-item:nth-child(2) { border-left-color:var(--red); }
+.challenge-item:nth-child(3) { border-left-color:var(--turquoise); }
+.challenge-item:nth-child(4) { border-left-color:var(--purple); }
+.challenge-item:nth-child(5) { border-left-color:var(--blue-light); }
+
+/* RESPONSIVE */
+@media(max-width:1200px) { .grid-5 { grid-template-columns:repeat(3,1fr); } }
+@media(max-width:900px) {
+  .grid-2,.grid-3 { grid-template-columns:1fr; }
+  .grid-5 { grid-template-columns:repeat(2,1fr); }
+  .header { flex-direction:column; gap:12px; padding:12px 16px; }
+  .main-content { padding:16px; }
+  .build-banner { flex-direction:column; gap:12px; text-align:center; }
+}
+@media(max-width:600px) { .grid-5 { grid-template-columns:1fr; } }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.fade-in { animation:fadeIn 0.4s ease forwards; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     DASHBOARD (no login)
+     ============================================================ -->
+<header class="header">
+  <div class="header-left">
+    <img src="https://righttoplay.de/globalassets/national-offices/germany/bilder/capgemini_invent_logo_rgb.png"
+         alt="Capgemini Invent"
+         class="header-logo-img"
+         onerror="this.onerror=null;this.outerHTML='<div><div style=font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#28B4ED>CAPGEMINI INVENT</div><div style=font-size:10px;color:#00CCCD;letter-spacing:1.5px;text-transform:uppercase>AI Strategy &amp; Advisory</div></div>';">
+    <div class="header-divider"></div>
+    <div class="header-title-block">
+      <div class="header-title" data-i18n="headerTitle">Agentic AI Platform Benchmark</div>
+      <div class="header-subtitle">Decision Framework · Q3 2025</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+      <option value="en">EN</option><option value="de">DE</option>
+      <option value="fr">FR</option><option value="es">ES</option><option value="it">IT</option>
+    </select>
+    <button class="header-btn primary" onclick="exportSlide()">📊 Export Slide</button>
+    <button class="header-btn" onclick="exportPDF()">📄 PDF</button>
+  </div>
+</header>
+
+<div class="main-content" id="mainContent">
+  <!-- Build-Awareness Banner -->
+  <div class="build-banner">
+    <div class="build-banner-left">
+      <label class="toggle-switch">
+        <input type="checkbox" id="buildToggle" checked onchange="recalculate()">
+        <span class="toggle-slider"></span>
+      </label>
+      <div>
+        <div class="build-banner-title" data-i18n="buildTitle">Build-Awareness · Apply implementation effort multiplier</div>
+        <div class="build-banner-desc" data-i18n="buildDesc">Toggle to see raw maturity vs. effort-adjusted scores</div>
+      </div>
+    </div>
+    <div class="build-multipliers">
+      <span class="multiplier-badge native">Native 1.0×</span>
+      <span class="multiplier-badge lowcode">Low-Code 0.65–0.7×</span>
+      <span class="multiplier-badge framework">Framework 0.4–0.45×</span>
+    </div>
+  </div>
+
+  <!-- Use-Case Presets -->
+  <div class="presets-bar" id="presetsBar"></div>
+
+  <!-- Vendor Score Cards -->
+  <div class="grid-5" id="vendorCards"></div>
+
+  <!-- Criteria Weighting + Score Matrix -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" data-i18n="criteriaWeighting">📋 Criteria Weighting (MoSCoW)</div>
+        <button class="header-btn" onclick="resetWeights()" style="font-size:11px;">↺ Reset</button>
+      </div>
+      <div style="max-height:500px;overflow-y:auto;">
+        <table class="weight-table" id="weightTable"></table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" data-i18n="scoreMatrix">📊 Score Matrix</div>
+        <span style="font-size:11px;color:var(--text-muted);">Click badge → evidence</span>
+      </div>
+      <div style="max-height:500px;overflow-y:auto;">
+        <table class="score-matrix" id="scoreMatrix"></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Radar Chart + TCO -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" data-i18n="archComparison">🕸️ Architecture Layer Comparison</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:11px;color:var(--text-muted);">Potential</span>
+          <label class="toggle-switch" style="width:40px;height:22px;">
+            <input type="checkbox" id="potentialToggle" onchange="updateRadar()">
+            <span class="toggle-slider" style="border-radius:11px;"></span>
+          </label>
+        </div>
+      </div>
+      <div class="radar-container"><canvas id="radarChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title" data-i18n="tcoTitle">💰 3-Year TCO Estimation</div>
+        <span style="font-size:11px;color:var(--text-muted);">TEUR · excl. internal FTE</span>
+      </div>
+      <div class="tco-controls">
+        <div class="tco-control-group">
+          <label>License Tier</label>
+          <select id="tcoLicense" onchange="updateTCO()">
+            <option value="low">Low (POC / SME)</option>
+            <option value="medium" selected>Medium (Enterprise)</option>
+            <option value="high">High (Global Scale)</option>
+          </select>
+        </div>
+        <div class="tco-control-group">
+          <label>Team Size</label>
+          <select id="tcoTeam" onchange="updateTCO()">
+            <option value="small">Small (1–5 FTE)</option>
+            <option value="medium" selected>Medium (5–15 FTE)</option>
+            <option value="large">Large (15+ FTE)</option>
+          </select>
+        </div>
+        <div class="tco-control-group">
+          <label>Build Mode</label>
+          <select id="tcoBuild" onchange="updateTCO()">
+            <option value="buy">Buy-heavy</option>
+            <option value="hybrid" selected>Hybrid</option>
+            <option value="build">Build-heavy</option>
+          </select>
+        </div>
+      </div>
+      <div class="tco-chart-container"><canvas id="tcoChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Verdict + Challenges -->
+  <div class="grid-2">
+    <div class="card verdict-card">
+      <div class="card-header">
+        <div class="card-title">🏆 Consultant's Verdict</div>
+      </div>
+      <div class="verdict-winner" id="verdictWinner">–</div>
+      <div class="verdict-text" id="verdictText">Adjust MoSCoW weights above to generate a dynamic recommendation.</div>
+      <div class="verdict-must-haves" id="verdictMustHaves"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚠️ Critical Consulting Challenges</div>
+      </div>
+      <div id="challengesContent">
+        <div class="challenge-item"><strong>Microsoft:</strong> Agent Governance Toolkit (Apr 2026) delivers the strongest cryptographic audit infrastructure — but it's newly open-sourced. Validate production readiness before mission-critical deployment.</div>
+        <div class="challenge-item"><strong>AWS:</strong> 0.4× multiplier is the lowest here — strong infrastructure, but expect 9–15 months to first production agent with full Lambda/SDK build requirements factored in.</div>
+        <div class="challenge-item"><strong>Otera:</strong> 90%+ STP claim is production-validated in insurance/banking. Do not assume it transfers to other verticals without a PoC on your document corpus.</div>
+        <div class="challenge-item"><strong>n8n:</strong> Deliberately not an enterprise HITL tool — the low score reflects missing native features, not poor engineering. For the right use case it's the best value in this set.</div>
+        <div class="challenge-item"><strong>UiPath:</strong> License costs at global scale can erode TCO advantage. Negotiate volume pricing early and benchmark against a hybrid UiPath + n8n architecture for non-regulated processes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Evidence Modal -->
+<div class="modal-overlay" id="evidenceModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-vendor" id="modalVendor"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-score-row" id="modalScores"></div>
+    <div class="modal-evidence" id="modalEvidence"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA MODEL
+// ============================================================
+const VENDORS = {
+  microsoft: { name:'Microsoft', product:'Azure AI Foundry', color:'#28B4ED', colorRGB:'40,180,237', implMode:'lowcode', multiplier:0.70 },
+  aws:       { name:'AWS', product:'Bedrock Agents', color:'#FFAB00', colorRGB:'255,171,0', implMode:'framework', multiplier:0.40 },
+  uipath:    { name:'UiPath', product:'Agentic Automation', color:'#FF8A71', colorRGB:'255,138,113', implMode:'lowcode', multiplier:0.65 },
+  n8n:       { name:'n8n', product:'LangChain / AI Nodes', color:'#A78BFA', colorRGB:'167,139,250', implMode:'lowcode', multiplier:0.70 },
+  otera:     { name:'Otera', product:'Agentic Document AI', color:'#00CCCD', colorRGB:'0,204,205', implMode:'native', multiplier:1.00 }
+};
+const VO = ['microsoft','aws','uipath','n8n','otera'];
+
+const LAYERS = [
+  { id:'reasoning', name:'Reasoning & Orchestration', emoji:'🧠', sub:'The Brain', subs:[
+    { id:'dynamic_planning', name:'Dynamic Planning',
+      scores:{microsoft:3,aws:3,uipath:2,n8n:2,otera:2},
+      evidence:{
+        microsoft:'Azure AI Foundry + Semantic Kernel: full dynamic planning via Planner (Handlebars/Stepwise). Native multi-step orchestration with auto-retry. Low-Code via Studio → 0.7× multiplier.',
+        aws:'Bedrock Agents use ReAct-style reasoning with custom Lambda orchestration. Extremely powerful but requires significant Python/SDK work → 0.4× multiplier.',
+        uipath:'Autopilot uses pre-built planning templates. Good for structured workflows, limited for open-ended reasoning → 0.65×.',
+        n8n:'LangChain AI Agent node supports ReAct, Plan-and-Execute via LangGraph. Node config, no raw code → 0.7×.',
+        otera:'Purpose-built planning for document processing pipelines. Excellent within domain, limited general-purpose → 1.0× native.'
+      }},
+    { id:'task_decomposition', name:'Task Decomposition',
+      scores:{microsoft:3,aws:2,uipath:2,n8n:2,otera:2},
+      evidence:{
+        microsoft:'Semantic Kernel auto-decomposes complex goals into sub-tasks with dependency tracking. Mature and well-documented.',
+        aws:'Requires manual decomposition logic in Lambda or Step Functions. Powerful but high-effort.',
+        uipath:'Workflow decomposition native to Studio. Agentic layer adds AI-driven task splitting for document workflows.',
+        n8n:'Sub-workflow nodes enable decomposition. LangGraph adds AI-driven splitting. Good but requires manual wiring.',
+        otera:'Automatic decomposition of document processing into extraction → validation → enrichment. Domain-specific excellence.'
+      }},
+    { id:'multi_agent', name:'Multi-Agent Coordination',
+      scores:{microsoft:3,aws:2,uipath:2,n8n:1,otera:1},
+      evidence:{
+        microsoft:'AutoGen framework (now integrated) provides native multi-agent conversations, role assignment, and coordination protocols.',
+        aws:'Multi-agent possible via Step Functions + multiple Bedrock Agents. Requires custom orchestration code.',
+        uipath:'Orchestrator supports multi-robot coordination. Agentic multi-agent is emerging but not yet mature.',
+        n8n:'No native multi-agent framework. Can be simulated with multiple workflow triggers but lacks coordination primitives.',
+        otera:'Single-agent architecture optimized for document pipelines. Multi-agent not a design goal.'
+      }},
+    { id:'self_correction', name:'Self-Correction Logic',
+      scores:{microsoft:2,aws:2,uipath:2,n8n:1,otera:3},
+      evidence:{
+        microsoft:'Retry policies and feedback loops in Semantic Kernel. Prompt Shields add guardrail-based correction.',
+        aws:'Custom retry logic in Lambda. Bedrock Guardrails can trigger re-prompting. Requires manual implementation.',
+        uipath:'Exception handling and retry mechanisms mature in RPA layer. AI self-correction is emerging.',
+        n8n:'Error handling nodes exist but no AI-driven self-correction. Manual retry configuration only.',
+        otera:'Production-validated self-correction with confidence scoring, automatic re-extraction, and human-in-the-loop escalation. Best-in-class for document AI.'
+      }}
+  ]},
+  { id:'context', name:'Context & Knowledge', emoji:'📚', sub:'The Memory', subs:[
+    { id:'rag', name:'RAG Architecture',
+      scores:{microsoft:3,aws:3,uipath:1,n8n:2,otera:3},
+      evidence:{
+        microsoft:'Azure AI Search + Semantic Kernel RAG is best-in-class. Hybrid search, re-ranking, chunking strategies built-in.',
+        aws:'Bedrock Knowledge Bases with OpenSearch/Kendra. Excellent but requires SDK configuration.',
+        uipath:'Limited native RAG. Relies on third-party integrations (Pinecone). Not a core competency.',
+        n8n:'Vector store nodes (Pinecone, Qdrant, Supabase) with embedding nodes. Functional but manual pipeline setup.',
+        otera:'Purpose-built RAG for document understanding. Layout-aware parsing + semantic retrieval. Domain-leading.'
+      }},
+    { id:'multimodal', name:'Data Parsing (Multimodal)',
+      scores:{microsoft:3,aws:2,uipath:2,n8n:1,otera:3},
+      evidence:{
+        microsoft:'Azure Document Intelligence + GPT-4o multimodal. PDFs, images, tables, handwriting. Very mature.',
+        aws:'Textract + Bedrock multimodal models. Strong OCR but multimodal reasoning requires custom integration.',
+        uipath:'Document Understanding module handles structured/semi-structured docs. Good for forms, limited for unstructured.',
+        n8n:'Basic file parsing nodes. No native multimodal AI. Relies on external API calls to vision models.',
+        otera:'Core competency. Layout-aware parsing, table extraction, handwriting recognition. Production-validated across insurance/banking.'
+      }},
+    { id:'memory', name:'Long-term Memory',
+      scores:{microsoft:2,aws:2,uipath:2,n8n:1,otera:2},
+      evidence:{
+        microsoft:'Semantic Kernel memory with Cosmos DB persistence. Session and long-term memory patterns documented.',
+        aws:'DynamoDB-based session state. Long-term memory requires custom implementation.',
+        uipath:'Data Service and Orchestrator queues provide state persistence. Not designed for conversational memory.',
+        n8n:'Workflow-level variables only. No native long-term memory. Can use external DBs but manual setup.',
+        otera:'Document processing state management with audit trails. Good within domain, not general-purpose.'
+      }},
+    { id:'state_mgmt', name:'State Management',
+      scores:{microsoft:3,aws:2,uipath:3,n8n:2,otera:2},
+      evidence:{
+        microsoft:'Durable Functions + Semantic Kernel provide robust state management with checkpointing and replay.',
+        aws:'Step Functions offer excellent state machines. Bedrock agent state requires custom DynamoDB integration.',
+        uipath:'Orchestrator provides enterprise-grade state management, queuing, and transaction tracking. Very mature.',
+        n8n:'Execution-level state. Persistent state requires external database nodes. Functional but not enterprise-grade.',
+        otera:'Pipeline state tracking with status dashboards. Good for document workflows, limited for general orchestration.'
+      }}
+  ]},
+  { id:'governance', name:'Governance & Security', emoji:'🛡️', sub:'The Guardrails', subs:[
+    { id:'audit', name:'Audit Trails',
+      scores:{microsoft:3,aws:2,uipath:3,n8n:1,otera:3},
+      evidence:{
+        microsoft:'Agent Governance Toolkit (Apr 2026) delivers cryptographic audit infrastructure. Newly open-sourced — strongest in class.',
+        aws:'CloudTrail + CloudWatch logging. Comprehensive but requires custom aggregation for agent-specific audit trails.',
+        uipath:'Orchestrator provides detailed execution logs, audit trails, and compliance reporting. Enterprise-proven.',
+        n8n:'Execution logs available but no enterprise audit trail features. No compliance certifications for audit.',
+        otera:'Full document processing audit trail with decision rationale logging. Compliance-ready for regulated industries.'
+      }},
+    { id:'encryption', name:'Encryption',
+      scores:{microsoft:3,aws:3,uipath:2,n8n:1,otera:2},
+      evidence:{
+        microsoft:'Azure Key Vault, CMK, TLS 1.3, at-rest encryption. Enterprise-grade across all services.',
+        aws:'KMS, CloudHSM, S3 encryption, VPC endpoints. Best-in-class infrastructure-level encryption.',
+        uipath:'Credential vault with AES-256. Relies on underlying cloud provider for infrastructure encryption.',
+        n8n:'Basic credential encryption. Self-hosted version allows custom encryption. No enterprise key management.',
+        otera:'Data encryption at rest and in transit. Meets banking/insurance requirements. Not hyperscaler-level.'
+      }},
+    { id:'iam', name:'IAM (Identity & Access)',
+      scores:{microsoft:3,aws:3,uipath:2,n8n:1,otera:2},
+      evidence:{
+        microsoft:'Entra ID with RBAC, Conditional Access, PIM. Most comprehensive IAM in the market.',
+        aws:'IAM with fine-grained policies, STS, Organizations. Extremely granular but complex to configure.',
+        uipath:'Role-based access in Orchestrator. SAML/OIDC integration. Less granular than hyperscalers.',
+        n8n:'Basic user management. Enterprise SSO in paid tier. No fine-grained RBAC for agent operations.',
+        otera:'Role-based access with team management. Adequate for mid-market, less mature than enterprise IAM.'
+      }},
+    { id:'compliance', name:'Regulatory Compliance',
+      scores:{microsoft:3,aws:3,uipath:2,n8n:0,otera:2},
+      evidence:{
+        microsoft:'SOC 1/2/3, ISO 27001, GDPR, HIPAA, FedRAMP. Most certifications of any cloud provider.',
+        aws:'Equivalent certification portfolio. GovCloud for highest compliance requirements.',
+        uipath:'SOC 2, ISO 27001, GDPR. Good but fewer certifications than hyperscalers.',
+        n8n:'Self-hosted option enables compliance by architecture. No platform-level certifications. Gap for regulated industries.',
+        otera:'GDPR-compliant, banking/insurance validated. Growing certification portfolio. Adequate for EU regulated sectors.'
+      }},
+    { id:'hallucination', name:'Hallucination Filter',
+      scores:{microsoft:3,aws:2,uipath:1,n8n:1,otera:3},
+      evidence:{
+        microsoft:'Prompt Shields, Content Safety API, groundedness detection. Most comprehensive hallucination prevention.',
+        aws:'Bedrock Guardrails with topic denial, content filters. Good but requires manual configuration.',
+        uipath:'Basic output validation. Relies on underlying LLM provider for hallucination prevention.',
+        n8n:'No native hallucination detection. Must implement custom validation nodes or external APIs.',
+        otera:'Confidence scoring with automatic flagging of low-confidence extractions. Production-validated in regulated environments.'
+      }}
+  ]},
+  { id:'integration', name:'Integration & Execution', emoji:'🔌', sub:'The Hands', subs:[
+    { id:'api', name:'API Connectivity',
+      scores:{microsoft:3,aws:3,uipath:2,n8n:3,otera:1},
+      evidence:{
+        microsoft:'Logic Apps + 1000+ connectors. Azure API Management. Comprehensive REST/GraphQL/gRPC.',
+        aws:'API Gateway, EventBridge, AppSync. Massive AWS ecosystem. Requires SDK knowledge.',
+        uipath:'Integration Service with 300+ connectors. Focused on RPA-adjacent systems.',
+        n8n:'400+ native integrations. Community nodes extend further. Best integration breadth for the price.',
+        otera:'REST API for document ingestion/retrieval. Limited general-purpose API connectivity.'
+      }},
+    { id:'tool_calling', name:'Tool-Calling Capabilities',
+      scores:{microsoft:3,aws:2,uipath:2,n8n:2,otera:2},
+      evidence:{
+        microsoft:'Semantic Kernel native function calling with auto-invoke. Plugin architecture for tool registration. Very mature.',
+        aws:'Bedrock Agent action groups with Lambda. Powerful but requires custom Lambda per tool.',
+        uipath:'Activities as tools. Large activity library but AI-driven tool selection is emerging.',
+        n8n:'Tool nodes with LangChain agent. Can call any n8n node as a tool. Flexible but requires config.',
+        otera:'Built-in tools for document processing (OCR, extraction, validation). Limited general-purpose tool calling.'
+      }},
+    { id:'runtime', name:'Runtime Stability',
+      scores:{microsoft:3,aws:3,uipath:3,n8n:2,otera:2},
+      evidence:{
+        microsoft:'Azure SLAs (99.9%+). Durable Functions for long-running agents. Enterprise-grade.',
+        aws:'Industry-leading infrastructure reliability. Lambda cold starts are main concern for agent latency.',
+        uipath:'Orchestrator provides enterprise runtime management. Proven at scale in Fortune 500.',
+        n8n:'Self-hosted stability depends on infrastructure. Cloud version improving but not enterprise SLA.',
+        otera:'Cloud-native with good uptime. Smaller scale than hyperscalers. Adequate for mid-market.'
+      }},
+    { id:'legacy', name:'Legacy System Support',
+      scores:{microsoft:2,aws:2,uipath:3,n8n:2,otera:1},
+      evidence:{
+        microsoft:'Good legacy support via Logic Apps, BizTalk successor. Mainframe connectivity available but complex.',
+        aws:'Mainframe modernization tools. Good but requires significant integration effort.',
+        uipath:'Best-in-class legacy support. Screen scraping, Citrix automation, mainframe connectors. Core strength.',
+        n8n:'HTTP/SSH/database nodes cover many legacy systems. No native screen scraping or mainframe.',
+        otera:'Focused on modern document APIs. Limited legacy system connectivity.'
+      }}
+  ]}
+];
+
+// Flatten helper
+function allSubs() {
+  const r=[];
+  LAYERS.forEach(l=>l.subs.forEach(s=>r.push({...s,layerId:l.id,layerName:l.name,layerEmoji:l.emoji})));
+  return r;
+}
+
+// Weights state (default all = 2 "Should-have")
+let weights = {};
+allSubs().forEach(s=>weights[s.id]=2);
+
+// ============================================================
+// USE-CASE PRESETS
+// ============================================================
+const PRESETS = {
+  'Custom': null,
+  'Customer Service': { dynamic_planning:3,task_decomposition:2,multi_agent:3,self_correction:3,rag:3,multimodal:1,memory:3,state_mgmt:2,audit:2,encryption:1,iam:1,compliance:1,hallucination:3,api:3,tool_calling:3,runtime:3,legacy:1 },
+  'Finance & Accounting': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:2,multimodal:3,memory:2,state_mgmt:3,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:2,tool_calling:2,runtime:3,legacy:3 },
+  'Document Processing': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:3,multimodal:3,memory:1,state_mgmt:2,audit:3,encryption:2,iam:2,compliance:2,hallucination:3,api:2,tool_calling:2,runtime:3,legacy:2 },
+  'Legal & Contracts': { dynamic_planning:2,task_decomposition:3,multi_agent:2,self_correction:3,rag:3,multimodal:3,memory:3,state_mgmt:2,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:1,tool_calling:2,runtime:3,legacy:1 },
+  'HR Operations': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:2,rag:2,multimodal:2,memory:2,state_mgmt:2,audit:3,encryption:2,iam:3,compliance:3,hallucination:2,api:2,tool_calling:2,runtime:2,legacy:2 },
+  'Supply Chain': { dynamic_planning:3,task_decomposition:3,multi_agent:2,self_correction:2,rag:2,multimodal:1,memory:2,state_mgmt:3,audit:2,encryption:2,iam:2,compliance:2,hallucination:1,api:3,tool_calling:3,runtime:3,legacy:3 },
+  'Insurance Claims': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:3,multimodal:3,memory:2,state_mgmt:3,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:2,tool_calling:2,runtime:3,legacy:2 },
+  'Healthcare Admin': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:2,multimodal:3,memory:2,state_mgmt:2,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:2,tool_calling:1,runtime:3,legacy:2 },
+  'Regulatory & Compliance': { dynamic_planning:1,task_decomposition:2,multi_agent:1,self_correction:3,rag:3,multimodal:2,memory:3,state_mgmt:2,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:1,tool_calling:1,runtime:3,legacy:1 },
+  'Sales Operations': { dynamic_planning:3,task_decomposition:2,multi_agent:2,self_correction:2,rag:2,multimodal:1,memory:3,state_mgmt:2,audit:1,encryption:1,iam:1,compliance:1,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:1 },
+  'Marketing & Content': { dynamic_planning:3,task_decomposition:2,multi_agent:2,self_correction:2,rag:2,multimodal:2,memory:2,state_mgmt:1,audit:1,encryption:1,iam:1,compliance:1,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:0 },
+  'Data Analysis': { dynamic_planning:3,task_decomposition:3,multi_agent:2,self_correction:2,rag:3,multimodal:2,memory:2,state_mgmt:2,audit:2,encryption:2,iam:2,compliance:2,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:1 },
+  'Software Dev': { dynamic_planning:3,task_decomposition:3,multi_agent:3,self_correction:3,rag:2,multimodal:1,memory:2,state_mgmt:2,audit:1,encryption:1,iam:1,compliance:0,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:1 },
+  'IT Operations': { dynamic_planning:2,task_decomposition:2,multi_agent:2,self_correction:3,rag:2,multimodal:1,memory:2,state_mgmt:3,audit:3,encryption:2,iam:3,compliance:2,hallucination:1,api:3,tool_calling:3,runtime:3,legacy:3 },
+  'Research & Analysis': { dynamic_planning:3,task_decomposition:3,multi_agent:2,self_correction:2,rag:3,multimodal:2,memory:3,state_mgmt:1,audit:1,encryption:1,iam:1,compliance:1,hallucination:3,api:2,tool_calling:2,runtime:2,legacy:0 }
+};
+
+let activePreset = 'Custom';
+
+// ============================================================
+// TCO DATA (TEUR over 3 years)
+// ============================================================
+const TCO_DATA = {
+  microsoft: { license:{low:45,medium:180,high:540}, impl:{small:80,medium:200,high:420}, buildFactor:1.3 },
+  aws:       { license:{low:30,medium:150,high:480}, impl:{small:120,medium:320,high:600}, buildFactor:1.8 },
+  uipath:    { license:{low:60,medium:240,high:720}, impl:{small:60,medium:160,high:350}, buildFactor:1.1 },
+  n8n:       { license:{low:5,medium:25,high:80},    impl:{small:40,medium:100,high:220}, buildFactor:1.4 },
+  otera:     { license:{low:35,medium:120,high:360}, impl:{small:30,medium:80,high:180},  buildFactor:1.0 }
+};
+
+// ============================================================
+// CALCULATION ENGINE
+// ============================================================
+function getMultiplier(vendorId) {
+  const on = document.getElementById('buildToggle').checked;
+  return on ? VENDORS[vendorId].multiplier : 1.0;
+}
+
+function calcVendorScore(vendorId) {
+  let num=0, den=0;
+  allSubs().forEach(s => {
+    const w = weights[s.id] || 0;
+    const raw = s.scores[vendorId];
+    const eff = raw * getMultiplier(vendorId);
+    num += eff * w;
+    den += 3 * w;
+  });
+  return den > 0 ? (100 * num / den) : 0;
+}
+
+function calcLayerScore(vendorId, layerId) {
+  const layer = LAYERS.find(l=>l.id===layerId);
+  if(!layer) return 0;
+  let sum=0, count=0;
+  layer.subs.forEach(s => {
+    sum += s.scores[vendorId] * getMultiplier(vendorId);
+    count++;
+  });
+  return count > 0 ? (sum/count) : 0;
+}
+
+function calcLayerScoreRaw(vendorId, layerId) {
+  const layer = LAYERS.find(l=>l.id===layerId);
+  if(!layer) return 0;
+  let sum=0, count=0;
+  layer.subs.forEach(s => { sum += s.scores[vendorId]; count++; });
+  return count > 0 ? (sum/count) : 0;
+}
+
+// Impact KPIs
+function calcReliability(vid) {
+  return ((calcLayerScore(vid,'governance') + calcLayerScore(vid,'reasoning') + calcLayerScore(vid,'context')) / 9 * 100);
+}
+function calcScalability(vid) {
+  const iamSub = LAYERS.find(l=>l.id==='governance').subs.find(s=>s.id==='iam');
+  const iamScore = iamSub.scores[vid] * getMultiplier(vid);
+  return ((calcLayerScore(vid,'integration') + calcLayerScore(vid,'reasoning') + iamScore/3) / 3 / 3 * 100);
+}
+function calcTTV(vid) {
+  return (VENDORS[vid].multiplier * 100);
+}
+
+// ============================================================
+// RENDERING
+// ============================================================
+function renderPresets() {
+  const bar = document.getElementById('presetsBar');
+  bar.innerHTML = '';
+  Object.keys(PRESETS).forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'preset-chip' + (activePreset===name?' active':'');
+    chip.textContent = name;
+    chip.onclick = () => applyPreset(name);
+    bar.appendChild(chip);
+  });
+}
+
+function applyPreset(name) {
+  activePreset = name;
+  if(PRESETS[name]) {
+    Object.keys(PRESETS[name]).forEach(k => weights[k] = PRESETS[name][k]);
+  }
+  renderPresets();
+  renderWeightTable();
+  recalculate();
+}
+
+function renderWeightTable() {
+  const table = document.getElementById('weightTable');
+  const moscowLabels = ['Irrelevant (0)','Could-have (1)','Should-have (2)','Must-have (3)'];
+  let html = '<thead><tr><th>Subcategory</th><th>MoSCoW Weight</th></tr></thead><tbody>';
+  LAYERS.forEach(layer => {
+    html += `<tr class="layer-header"><td colspan="2">${layer.emoji} ${layer.name} <span style="color:var(--text-muted);font-weight:400;font-size:11px;">· ${layer.sub}</span></td></tr>`;
+    layer.subs.forEach(sub => {
+      html += `<tr><td>${sub.name}</td><td>
+        <select class="moscow-select" onchange="setWeight('${sub.id}',parseInt(this.value))">`;
+      for(let i=0;i<=3;i++) {
+        html += `<option value="${i}" ${weights[sub.id]===i?'selected':''}>${moscowLabels[i]}</option>`;
+      }
+      html += `</select></td></tr>`;
+    });
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+function setWeight(subId, val) {
+  weights[subId] = val;
+  activePreset = 'Custom';
+  renderPresets();
+  recalculate();
+}
+
+function resetWeights() {
+  allSubs().forEach(s=>weights[s.id]=2);
+  activePreset = 'Custom';
+  renderPresets();
+  renderWeightTable();
+  recalculate();
+}
+
+function renderScoreMatrix() {
+  const table = document.getElementById('scoreMatrix');
+  const buildOn = document.getElementById('buildToggle').checked;
+  let html = '<thead><tr><th>Criteria</th>';
+  VO.forEach(vid => {
+    html += `<th>${VENDORS[vid].name}<br><span style="font-size:9px;color:var(--text-muted);">${buildOn?VENDORS[vid].multiplier+'×':'raw'}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+  LAYERS.forEach(layer => {
+    html += `<tr class="layer-header"><td colspan="${VO.length+1}">${layer.emoji} ${layer.name}</td></tr>`;
+    layer.subs.forEach(sub => {
+      html += `<tr><td>${sub.name}</td>`;
+      VO.forEach(vid => {
+        const raw = sub.scores[vid];
+        const eff = (raw * getMultiplier(vid)).toFixed(1);
+        html += `<td>
+          <span class="score-badge s${raw}" onclick="showEvidence('${vid}','${sub.id}')" title="Click for evidence">${raw}</span>
+          ${buildOn && VENDORS[vid].multiplier<1 ? `<span class="effective-score">→${eff}</span>` : ''}
+        </td>`;
+      });
+      html += '</tr>';
+    });
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+function renderVendorCards() {
+  const container = document.getElementById('vendorCards');
+  // Calculate scores and rank
+  const scored = VO.map(vid => ({ vid, score: calcVendorScore(vid) }));
+  scored.sort((a,b) => b.score - a.score);
+  const rankMap = {};
+  scored.forEach((s,i) => rankMap[s.vid] = i+1);
+
+  container.innerHTML = '';
+  VO.forEach(vid => {
+    const v = VENDORS[vid];
+    const score = calcVendorScore(vid);
+    const rank = rankMap[vid];
+    const rel = calcReliability(vid);
+    const sca = calcScalability(vid);
+    const ttv = calcTTV(vid);
+
+    const rankClass = rank<=3 ? ` r${rank}` : '';
+    const scoreColor = score>=70?'var(--green)':score>=50?'var(--orange)':'var(--red)';
+
+    let html = `<div class="vendor-card ${vid} fade-in">
+      <div class="vendor-rank${rankClass}">#${rank}</div>
+      <div class="vendor-name" style="color:${v.color}">${v.name}</div>
+      <div class="vendor-product">${v.product} · ${v.implMode} ${v.multiplier}×</div>
+      <div class="vendor-score" style="color:${scoreColor}">${score.toFixed(0)}%</div>
+      <div class="vendor-score-label">Weighted Score</div>
+      <div class="impact-badges">
+        <div class="impact-badge">
+          ${miniGaugeSVG(rel, 'var(--green)')}
+          <div class="impact-badge-label">Reliability</div>
+        </div>
+        <div class="impact-badge">
+          ${miniGaugeSVG(sca, 'var(--blue-light)')}
+          <div class="impact-badge-label">Scalability</div>
+        </div>
+        <div class="impact-badge">
+          ${miniGaugeSVG(ttv, 'var(--turquoise)')}
+          <div class="impact-badge-label">TTV</div>
+        </div>
+      </div>
+    </div>`;
+    container.innerHTML += html;
+  });
+}
+
+function miniGaugeSVG(pct, color) {
+  const r=16, circ=2*Math.PI*r, offset=circ*(1-Math.min(pct,100)/100);
+  return `<div class="gauge-mini">
+    <svg width="40" height="40" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--border-color)" stroke-width="3"/>
+      <circle cx="20" cy="20" r="${r}" fill="none" stroke="${color}" stroke-width="3"
+        stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+    </svg>
+    <div class="gauge-mini-value" style="color:${color}">${Math.round(pct)}</div>
+  </div>`;
+}
+
+// ============================================================
+// RADAR CHART
+// ============================================================
+let radarChart = null;
+function updateRadar() {
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  const showPotential = document.getElementById('potentialToggle').checked;
+  const labels = LAYERS.map(l => l.emoji + ' ' + l.name);
+
+  const datasets = [];
+  VO.forEach(vid => {
+    const v = VENDORS[vid];
+    const data = LAYERS.map(l => calcLayerScore(vid, l.id));
+    datasets.push({
+      label: v.name,
+      data,
+      borderColor: v.color,
+      backgroundColor: `rgba(${v.colorRGB},0.08)`,
+      borderWidth: 2,
+      pointRadius: 4,
+      pointBackgroundColor: v.color,
+      fill: true
+    });
+    if(showPotential) {
+      const rawData = LAYERS.map(l => calcLayerScoreRaw(vid, l.id));
+      datasets.push({
+        label: v.name + ' (potential)',
+        data: rawData,
+        borderColor: v.color,
+        backgroundColor: 'transparent',
+        borderWidth: 1,
+        borderDash: [5,5],
+        pointRadius: 2,
+        pointBackgroundColor: v.color,
+        fill: false
+      });
+    }
+  });
+
+  if(radarChart) radarChart.destroy();
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          min: 0, max: 3,
+          ticks: { stepSize:1, color:'#6B7A99', backdropColor:'transparent', font:{size:10} },
+          grid: { color:'rgba(42,53
