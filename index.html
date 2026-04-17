@@ -741,7 +741,7 @@ input:checked + .toggle-slider:before { transform: translateX(20px); background:
 }
 .v2-slider-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
 .v2-slider-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-.v2-slider-name { font-size: 13px; font-weight: 500; color: #fff; }
+.v2-slider-name { font-size: 13.5px; font-weight: 700; color: #fff; letter-spacing: 0.01em; }
 .v2-moscow-badge {
   font-size: 10px; font-weight: 600; padding: 2px 10px;
   border-radius: 999px; min-width: 90px; text-align: center;
@@ -837,20 +837,37 @@ input[type=range]::-webkit-slider-thumb {
 .cat-info-btn:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.25); }
 .v2-cat-card { position: relative; }
 .cat-info-tooltip {
-  position: absolute; bottom: calc(100% + 10px); top: auto; left: 0; right: 0; z-index: 9999;
-  background: #1e293b; border: 1px solid rgba(255,255,255,0.14);
+  position: fixed; width: 320px; z-index: 99999;
+  background: #1a2740; border: 1px solid rgba(255,255,255,0.14);
   border-radius: 10px; padding: 16px 18px;
   font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.7;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
   pointer-events: none; opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.18s ease;
 }
-.cat-info-tooltip::before {
-  content: ''; position: absolute; top: 100%; left: 28px;
-  border: 7px solid transparent; border-top-color: #1e293b;
+.cat-info-tooltip.visible { opacity: 1; }
+
+
+/* Build-Awareness ? button + tooltip */
+.ba-info-btn {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; margin-left: 8px; flex-shrink: 0;
+  transition: all 0.15s; font-family: Ubuntu,sans-serif; vertical-align: middle;
 }
-.cat-info-tooltip.visible { opacity: 1; transform: translateY(0) !important; pointer-events: none; }
+.ba-info-btn:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.25); }
+.ba-info-tooltip {
+  position: fixed; width: 340px; z-index: 99999;
+  background: #1a2740; border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px; padding: 16px 18px;
+  font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.7;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.ba-info-tooltip.visible { opacity: 1; }
 
 /* Build-Awareness standalone box in View 3 */
 .v3-ba-box {
@@ -870,9 +887,7 @@ input[type=range]::-webkit-slider-thumb {
   background: var(--accent-teal); transition: background 0.2s;
 }
 .v3-ba-title-dot.on { background: #00E5CC; box-shadow: 0 0 6px rgba(0,229,204,0.5); }
-.v3-ba-desc {
-  font-size: 12.5px; color: var(--text-tertiary); line-height: 1.65; max-width: none;
-}
+.v3-ba-desc { display: none; }
 .v3-ba-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .v3-ba-status {
   font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
@@ -1265,6 +1280,23 @@ const VENDORS = {
       crossAppOrchestration: { maturity: 2, multiplier: 0.7 },
       runtimeResilience:     { maturity: 2, multiplier: 0.4 }
     }
+  },
+  camunda: {
+    name: 'Camunda', platform: 'Camunda 8 Agentic Orchestration', color: '#FF5A19',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.7 },
+      multiAgentCollab:      { maturity: 3, multiplier: 0.7 },
+      selfCorrection:        { maturity: 3, multiplier: 0.7 },
+      semanticRAG:           { maturity: 2, multiplier: 0.7 },
+      multimodalExtraction:  { maturity: 2, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 3, multiplier: 0.7 },
+      decisionTraceability:  { maturity: 3, multiplier: 1.0 },
+      guardrailEnforcement:  { maturity: 3, multiplier: 1.0 },
+      iam:                   { maturity: 2, multiplier: 1.0 },
+      apiFabric:             { maturity: 3, multiplier: 1.0 },
+      crossAppOrchestration: { maturity: 3, multiplier: 1.0 },
+      runtimeResilience:     { maturity: 3, multiplier: 1.0 }
+    }
   }
 };
 
@@ -1363,7 +1395,7 @@ const T = {
     layerBrain: 'Brain', layerMemory: 'Memory', layerGuard: 'Guard', layerHands: 'Hands',
     kpiReliability: 'Reliability', kpiScalability: 'Scalability', kpiTTV: 'Time-to-Value',
     moscow3: 'Must-have', moscow2: 'Should-have', moscow1: 'Could-have', moscow0: 'Irrelevant',
-    tickLabels: ['0 – Irrelevant', '1 – Could-have', '2 – Should-have', '3 – Must-have'],
+    tickLabels: ['Irrelevant', 'Could-have', 'Should-have', 'Must-have'],
     subNames: {
       dynamicTaskPlanning: 'Dynamic Task Planning',
       multiAgentCollab: 'Multi-Agent Collaboration',
@@ -1459,7 +1491,7 @@ const T = {
     layerBrain: 'Gehirn', layerMemory: 'Gedächtnis', layerGuard: 'Schutz', layerHands: 'Ausführung',
     kpiReliability: 'Zuverlässigkeit', kpiScalability: 'Skalierbarkeit', kpiTTV: 'Time-to-Value',
     moscow3: 'Muss haben', moscow2: 'Sollte haben', moscow1: 'Könnte haben', moscow0: 'Irrelevant',
-    tickLabels: ['0 – Irrelevant', '1 – Könnte haben', '2 – Sollte haben', '3 – Muss haben'],
+    tickLabels: ['Irrelevant', 'Könnte haben', 'Sollte haben', 'Muss haben'],
     subNames: {
       dynamicTaskPlanning: 'Dynamische Aufgabenplanung',
       multiAgentCollab: 'Multi-Agenten-Kollaboration',
@@ -1551,7 +1583,7 @@ const T = {
     layerBrain: 'Cerveau', layerMemory: 'Mémoire', layerGuard: 'Garde', layerHands: 'Mains',
     kpiReliability: 'Fiabilité', kpiScalability: 'Évolutivité', kpiTTV: 'Délai de valeur',
     moscow3: 'Indispensable', moscow2: 'Souhaitable', moscow1: 'Optionnel', moscow0: 'Irrelevant',
-    tickLabels: ['0 – Irrelevant', '1 – Optionnel', '2 – Souhaitable', '3 – Indispensable'],
+    tickLabels: ['Irrelevant', 'Optionnel', 'Souhaitable', 'Indispensable'],
     subNames: {
       dynamicTaskPlanning: 'Planification dynamique des tâches',
       multiAgentCollab: 'Collaboration multi-agents',
@@ -1643,7 +1675,7 @@ const T = {
     layerBrain: 'Cerebro', layerMemory: 'Memoria', layerGuard: 'Guardia', layerHands: 'Ejecución',
     kpiReliability: 'Fiabilidad', kpiScalability: 'Escalabilidad', kpiTTV: 'Tiempo hasta valor',
     moscow3: 'Imprescindible', moscow2: 'Deseable', moscow1: 'Opcional', moscow0: 'Irrelevante',
-    tickLabels: ['0 – Irrelevante', '1 – Opcional', '2 – Deseable', '3 – Imprescindible'],
+    tickLabels: ['Irrelevante', 'Opcional', 'Deseable', 'Imprescindible'],
     subNames: {
       dynamicTaskPlanning: 'Planificación dinámica de tareas',
       multiAgentCollab: 'Colaboración multi-agente',
@@ -1735,7 +1767,7 @@ const T = {
     layerBrain: 'Cervello', layerMemory: 'Memoria', layerGuard: 'Guardia', layerHands: 'Esecuzione',
     kpiReliability: 'Affidabilità', kpiScalability: 'Scalabilità', kpiTTV: 'Tempo al valore',
     moscow3: 'Indispensabile', moscow2: 'Desiderabile', moscow1: 'Opzionale', moscow0: 'Irrilevante',
-    tickLabels: ['0 – Irrilevante', '1 – Opzionale', '2 – Desiderabile', '3 – Indispensabile'],
+    tickLabels: ['Irrilevante', 'Opzionale', 'Desiderabile', 'Indispensabile'],
     subNames: {
       dynamicTaskPlanning: 'Pianificazione dinamica dei task',
       multiAgentCollab: 'Collaborazione multi-agente',
@@ -2036,9 +2068,10 @@ function renderV3BaBox() {
       '<div class="v3-ba-title">'+
         '<span class="v3-ba-title-dot '+(isOn?'on':'')+'"></span>'+
         'Build-Awareness Mode'+
+        '<button class="ba-info-btn" id="ba-info-btn" tabindex="-1">?</button>'+
       '</div>'+
-      '<div class="v3-ba-desc">'+(BA_DESCS[currentLang]||BA_DESCS['EN'])+'</div>'+
     '</div>'+
+    '<div id="ba-info-tooltip" class="ba-info-tooltip"></div>'+
     '<div class="v3-ba-right">'+
       '<span class="v3-ba-status '+(isOn?'on':'off')+'">'+(isOn?'ON':'OFF')+'</span>'+
       '<label class="toggle-switch">'+
@@ -2047,6 +2080,27 @@ function renderV3BaBox() {
       '</label>'+
     '</div>';
   setTimeout(() => {
+    // Wire ? button tooltip
+    const baBtn = document.getElementById('ba-info-btn');
+    const baTip = document.getElementById('ba-info-tooltip');
+    if(baBtn && baTip) {
+      baTip.innerHTML = BA_DESCS[currentLang] || BA_DESCS['EN'];
+      baBtn.onmouseenter = () => {
+        const r = baBtn.getBoundingClientRect();
+        const ttW = 340;
+        let left = r.right - ttW;
+        if(left < 8) left = 8;
+        baTip.style.left = left + 'px';
+        baTip.style.top  = (r.top - 8) + 'px';
+        baTip.style.transform = 'translateY(-100%)';
+        if(r.top < 120) {
+          baTip.style.top = (r.bottom + 8) + 'px';
+          baTip.style.transform = 'translateY(0)';
+        }
+        baTip.classList.add('visible');
+      };
+      baBtn.onmouseleave = () => baTip.classList.remove('visible');
+    }
     const tog = document.getElementById('v3-build-toggle');
     if(tog) tog.onchange = () => {
       buildAwareness = tog.checked;
@@ -2105,17 +2159,24 @@ function populateCatTooltips() {
     if(el) el.textContent = d[k] || '';
     const btn = document.querySelector('[data-catkey="'+k+'"]');
     if(btn && el) {
-      btn.onmouseenter = () => el.classList.add('visible');
-      btn.onmouseleave = () => el.classList.remove('visible');
-      // Also trigger on header hover
-      const card = btn.closest('.v2-cat-card');
-      if(card) {
-        const hdr = card.querySelector('.v2-cat-header');
-        if(hdr) {
-          hdr.onmouseenter = () => el.classList.add('visible');
-          hdr.onmouseleave = () => el.classList.remove('visible');
+      btn.onmouseenter = () => {
+        const r = btn.getBoundingClientRect();
+        const ttW = 320;
+        // Position above the button, aligned right
+        let left = r.right - ttW;
+        if(left < 8) left = 8;
+        const top = r.top - 8; // will be shifted up by transform
+        el.style.left = left + 'px';
+        el.style.top  = top + 'px';
+        el.style.transform = 'translateY(-100%)';
+        // Allow it to appear below if not enough space above
+        if(r.top < 180) {
+          el.style.top = (r.bottom + 8) + 'px';
+          el.style.transform = 'translateY(0)';
         }
-      }
+        el.classList.add('visible');
+      };
+      btn.onmouseleave = () => el.classList.remove('visible');
     }
   });
 }
