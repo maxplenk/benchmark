@@ -415,69 +415,184 @@ body.login-active #header { border-bottom: none; }
 /* ── VENDOR CARDS GRID (Ranking) ── */
 .r3-vendor-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 16px;
 }
+
+/* ── PREMIUM CARD ────────────────────────────── */
 .r3-vcard {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; padding: 24px;
+  background: rgba(255,255,255,0.028);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 18px;
+  padding: 0;
   position: relative; overflow: hidden;
-  transition: border-color 0.2s, background 0.2s;
-}
-.r3-vcard::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: var(--vcard-color, #28B4ED);
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1),
+              box-shadow 0.25s, border-color 0.2s;
 }
 .r3-vcard:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.38), 0 0 0 1px rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.15);
 }
-.r3-vcard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-.r3-vcard-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
-.r3-vcard-platform { font-size: 11px; color: var(--text-tertiary); }
-.r3-vcard-rank {
-  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700;
+.r3-vcard.rank-first {
+  border-color: rgba(255,171,0,0.25);
+  box-shadow: 0 0 28px rgba(255,171,0,0.08);
 }
-.r3-rank-1 { background: rgba(255,171,0,0.15); color: #FFAB00; border: 1px solid rgba(255,171,0,0.3); }
-.r3-rank-2 { background: rgba(200,210,230,0.1); color: #C8D2E6; border: 1px solid rgba(200,210,230,0.2); }
-.r3-rank-3 { background: rgba(255,138,113,0.1); color: #FF8A71; border: 1px solid rgba(255,138,113,0.25); }
-.r3-rank-n { background: rgba(107,122,153,0.08); color: var(--text-tertiary); border: 1px solid rgba(107,122,153,0.15); }
 
+/* Color accent bar */
+.r3-vcard::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px;
+  background: var(--vcard-color, #28B4ED);
+  border-radius: 18px 18px 0 0;
+}
+/* Subtle glow behind the score */
+.r3-vcard::after {
+  content: ''; position: absolute; top: 40px; left: 50%;
+  transform: translateX(-50%);
+  width: 140px; height: 140px; border-radius: 50%;
+  background: radial-gradient(circle, var(--vcard-color,#28B4ED) 0%, transparent 70%);
+  opacity: 0.07; pointer-events: none;
+}
+
+/* ── CARD HEADER ─────────────────────────── */
+.r3-vcard-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 20px 20px 0;
+  position: relative; z-index: 1;
+}
+.r3-vcard-name {
+  font-size: 15px; font-weight: 700; color: #fff;
+  margin-bottom: 3px; cursor: help;
+  letter-spacing: -0.2px;
+}
+.r3-vcard-platform { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.02em; }
+
+/* ── RANK BADGE — medal style ────────────── */
+.r3-vcard-rank {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; letter-spacing: -0.3px;
+  position: relative;
+}
+.r3-rank-1 {
+  background: linear-gradient(135deg, #FFC94D, #FF9500);
+  color: #3D1F00;
+  box-shadow: 0 3px 12px rgba(255,149,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+  border: none;
+}
+.r3-rank-2 {
+  background: linear-gradient(135deg, #E2E8F0, #94A3B8);
+  color: #1E2A3A;
+  box-shadow: 0 3px 10px rgba(148,163,184,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+  border: none;
+}
+.r3-rank-3 {
+  background: linear-gradient(135deg, #FF9470, #CD5C3A);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(205,92,58,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: none;
+}
+.r3-rank-n {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4);
+}
+
+/* ── SCORE BLOCK ─────────────────────────── */
+.r3-vcard-score-block {
+  padding: 12px 20px 0;
+  position: relative; z-index: 1; display: flex; align-items: baseline; gap: 6px;
+}
 .r3-vcard-score {
-  font-size: 42px; font-weight: 800; line-height: 1; letter-spacing: -1px;
-  margin-bottom: 2px;
+  font-size: 48px; font-weight: 800; line-height: 1;
+  letter-spacing: -2px; background: var(--vcard-color, #28B4ED);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
+.r3-vcard-score-unit { font-size: 20px; font-weight: 600; opacity: 0.6; color: var(--vcard-color,#28B4ED); -webkit-text-fill-color: unset; }
 .r3-vcard-score-label {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 14px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  padding: 0 20px 10px; position: relative; z-index: 1;
 }
+
+/* Score progress bar — thicker, gradient */
 .r3-vcard-bar {
-  height: 2px; background: rgba(255,255,255,0.07); border-radius: 1px;
-  margin-bottom: 20px; overflow: hidden;
+  height: 5px; background: rgba(255,255,255,0.06);
+  border-radius: 999px; margin: 0 20px 18px;
+  overflow: hidden; position: relative; z-index: 1;
 }
 .r3-vcard-bar-fill {
-  height: 100%; border-radius: 1px; width: 0;
-  transition: width 1.1s cubic-bezier(0.4,0,0.2,1);
+  height: 100%; border-radius: 999px; width: 0;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  background: linear-gradient(90deg, var(--vcard-color,#28B4ED), rgba(255,255,255,0.7));
 }
-.r3-vcard-divider {
-  height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 16px;
+
+/* ── LAYER SECTION — Bento inner box ────── */
+.r3-vcard-layers-box {
+  margin: 0 12px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px 14px;
+  position: relative; z-index: 1;
 }
 .r3-vcard-layers {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px;
 }
-.r3-layer-row { }
-.r3-layer-label { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 3px; }
-.r3-layer-bar-track { height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
-.r3-layer-bar-fill { height: 100%; border-radius: 2px; width: 0; transition: width 1.1s ease; }
-.r3-layer-val { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.r3-layer-row {}
+.r3-layer-header { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+.r3-layer-icon {
+  width: 14px; height: 14px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; opacity: 0.9;
+}
+.r3-layer-icon svg { width: 100%; height: 100%; }
+.r3-layer-label {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.09em;
+  text-transform: uppercase; color: rgba(255,255,255,0.45);
+}
+.r3-layer-bar-track {
+  height: 4px; background: rgba(255,255,255,0.07);
+  border-radius: 999px; overflow: hidden;
+}
+.r3-layer-bar-fill {
+  height: 100%; border-radius: 999px; width: 0;
+  transition: width 1.2s ease;
+}
+.r3-layer-val {
+  font-size: 10px; font-weight: 700;
+  color: rgba(255,255,255,0.6); margin-top: 2px; text-align: right;
+}
 
-.r3-vcard-kpis { display: flex; justify-content: space-between; padding-top: 4px; }
-.r3-kpi { text-align: center; flex: 1; }
-.r3-kpi-val { font-size: 14px; font-weight: 700; }
-.r3-kpi-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 2px; }
+/* ── KPI SECTION ─────────────────────────── */
+.r3-vcard-kpis {
+  display: flex; justify-content: space-around;
+  padding: 10px 12px 16px;
+  position: relative; z-index: 1;
+}
+.r3-kpi { text-align: center; flex: 1; position: relative; cursor: help; padding: 6px 4px; border-radius: 8px; transition: background 0.15s; }
+.r3-kpi:hover { background: rgba(255,255,255,0.04); }
+.r3-kpi-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  display: inline-block; margin-bottom: 4px;
+  box-shadow: 0 0 6px currentColor;
+}
+.r3-kpi-val { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; line-height: 1; }
+.r3-kpi-lbl { font-size: 8.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-top: 3px; }
+.r3-kpi-tooltip {
+  position: fixed; width: 260px; z-index: 99999;
+  background: #0f1c30; border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 9px; padding: 12px 14px;
+  font-size: 11.5px; color: rgba(255,255,255,0.72); line-height: 1.65;
+  box-shadow: 0 14px 36px rgba(0,0,0,0.65);
+  pointer-events: none; opacity: 0; transition: opacity 0.16s ease;
+}
+.r3-kpi-tooltip.visible { opacity: 1; }
+.r3-kpi-tooltip-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--secondary); margin-bottom: 6px;
+}
 
 /* ── ANALYTICS ROW: RADAR + VERDICT ── */
 .r3-analytics {
@@ -871,31 +986,224 @@ input[type=range]::-webkit-slider-thumb {
 
 /* Build-Awareness standalone box in View 3 */
 .v3-ba-box {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; margin-bottom: 20px; flex-wrap: wrap;
-  padding: 11px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.v3-toggle-card {
+  position: relative;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: 10px; padding: 13px 16px;
   background: rgba(255,255,255,0.02);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 10px;
+  transition: border-color 0.2s;
 }
-.v3-ba-left { display: flex; align-items: center; gap: 0; flex: 1; min-width: 0; }
-.v3-ba-title {
-  font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.8);
-  display: flex; align-items: center; gap: 8px; margin-bottom: 0;
+.v3-toggle-card:hover { border-color: rgba(255,255,255,0.15); }
+.v3-toggle-card-header { display: flex; align-items: center; gap: 8px; }
+.v3-toggle-card-label {
+  flex: 1; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.75);
 }
-.v3-ba-title-dot {
+.v3-toggle-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.v3-toggle-dot {
   width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
   background: var(--text-tertiary); transition: background 0.2s;
 }
-.v3-ba-title-dot.on { background: #00E5CC; box-shadow: 0 0 5px rgba(0,229,204,0.5); }
-.v3-ba-desc { display: none; }
-.v3-ba-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.v3-ba-status {
+.v3-toggle-dot.on.ba { background: #00E5CC; box-shadow: 0 0 5px rgba(0,229,204,0.5); }
+.v3-toggle-dot.on.gc { background: #F87171; box-shadow: 0 0 5px rgba(248,113,113,0.5); }
+.v3-toggle-status {
   font-size: 10px; font-weight: 700; letter-spacing: 0.09em;
   text-transform: uppercase; padding: 2px 9px; border-radius: 999px;
 }
-.v3-ba-status.on  { color: #00E5CC; background: rgba(0,229,204,0.1); border: 1px solid rgba(0,229,204,0.25); }
-.v3-ba-status.off { color: var(--text-tertiary); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+.v3-toggle-status.on     { color: #00E5CC; background: rgba(0,229,204,0.1); border: 1px solid rgba(0,229,204,0.25); }
+.v3-toggle-status.on.gc  { color: #F87171; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); }
+.v3-toggle-status.off    { color: var(--text-tertiary); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); }
+.v3-toggle-qbtn {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.35); font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-family: Ubuntu,sans-serif; transition: all 0.15s;
+}
+.v3-toggle-qbtn:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.28); }
+/* Hide old selectors */
+.v3-ba-left,.v3-ba-right,.v3-ba-title,.v3-ba-title-dot,
+.v3-ba-desc,.v3-ba-status,.v3-gc-divider,.v3-gc-toggle-wrap,
+.v3-gc-label,.v3-gc-dot,.v3-toggle-label { display: none !important; }
+
+
+/* Vendor spotlight tooltip */
+.vendor-spotlight-tip {
+  position: fixed; width: 320px; z-index: 99999;
+  background: #0d1a2e; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 0; overflow: hidden;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.65);
+  pointer-events: none; opacity: 0; transition: opacity 0.18s ease;
+}
+.vendor-spotlight-tip.visible { opacity: 1; }
+.vst-header {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.vst-name { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.vst-platform { font-size: 10px; color: rgba(255,255,255,0.4); }
+.vst-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 7px; }
+.vst-row { font-size: 11px; line-height: 1.55; }
+.vst-row-label {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 2px;
+}
+.vst-row-label.str { color: #34D399; }
+.vst-row-label.weak { color: #F87171; }
+.vst-row-label.pos { color: #28B4ED; }
+.vst-row-label.risk { color: #FFAB00; }
+.vst-row-text { color: rgba(255,255,255,0.65); }
+.vst-accent { height: 2px; }
+
+/* Governance Cap indicator */
+.gov-cap-wrap { position: relative; display: inline-block; margin-top: 5px; }
+.gov-cap-tooltip {
+  position: fixed; width: 300px; z-index: 99999;
+  background: #1a1020; border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 10px; padding: 14px 16px;
+  font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.65;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.7);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.gov-cap-tooltip.visible { opacity: 1; }
+.gov-cap-tooltip-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #F87171; margin-bottom: 7px;
+  display: flex; align-items: center; gap: 6px;
+}
+.gov-cap-tooltip-title::before { content: "⚠"; }
+
+
+/* Vendor spotlight tooltip */
+.vendor-spotlight-tip {
+  position: fixed; width: 320px; z-index: 99999;
+  background: #0d1a2e; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 0; overflow: hidden;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.65);
+  pointer-events: none; opacity: 0; transition: opacity 0.18s ease;
+}
+.vendor-spotlight-tip.visible { opacity: 1; }
+.vst-header {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.vst-name { font-size: 12px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.vst-platform { font-size: 10px; color: rgba(255,255,255,0.4); }
+.vst-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 7px; }
+.vst-row { font-size: 11px; line-height: 1.55; }
+.vst-row-label {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 2px;
+}
+.vst-row-label.str { color: #34D399; }
+.vst-row-label.weak { color: #F87171; }
+.vst-row-label.pos { color: #28B4ED; }
+.vst-row-label.risk { color: #FFAB00; }
+.vst-row-text { color: rgba(255,255,255,0.65); }
+.vst-accent { height: 2px; }
+
+/* Governance Cap indicator */
+.gov-cap-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+  background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.3);
+  color: #F87171; white-space: nowrap; margin-top: 5px;
+}
+.gov-cap-badge::before { content: ""; }
+
+/* Formula popover */
+.formula-btn {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.45); font-size: 11px; font-weight: 700;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; margin-left: 10px;
+  font-family: Ubuntu,sans-serif; vertical-align: middle;
+  transition: all 0.15s;
+}
+.formula-btn:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.28); }
+.formula-popover {
+  position: fixed; width: 380px; z-index: 99999;
+  background: #0f1c30; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 0;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.18s ease;
+  overflow: hidden;
+}
+.formula-popover.visible { opacity: 1; }
+.formula-pop-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; gap: 8px;
+}
+.formula-pop-header-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.5);
+}
+.formula-pop-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--secondary); flex-shrink: 0;
+}
+.formula-pop-body { padding: 14px 18px; display: flex; flex-direction: column; gap: 14px; }
+.formula-block {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px; padding: 11px 14px;
+}
+.formula-block-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; margin-bottom: 7px;
+}
+.formula-block-label.off { color: rgba(255,255,255,0.35); }
+.formula-block-label.on  { color: #00E5CC; }
+.formula-eq {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px; color: rgba(255,255,255,0.8); line-height: 1.6;
+}
+.formula-eq sup { font-size: 8px; vertical-align: super; }
+.formula-sep {
+  height: 1px; background: rgba(255,255,255,0.06); margin: 0 -18px;
+}
+.formula-legend { display: flex; flex-direction: column; gap: 5px; }
+.formula-legend-row {
+  display: flex; align-items: flex-start; gap: 10px; font-size: 11px;
+}
+.formula-legend-key {
+  font-family: 'JetBrains Mono','Courier New',monospace;
+  font-size: 10px; color: var(--secondary); white-space: nowrap;
+  min-width: 70px; padding-top: 1px;
+}
+.formula-legend-val { color: rgba(255,255,255,0.55); line-height: 1.5; }
+.formula-example {
+  background: rgba(0,229,204,0.05); border: 1px solid rgba(0,229,204,0.15);
+  border-radius: 7px; padding: 9px 13px;
+}
+.formula-example-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #00E5CC; margin-bottom: 6px;
+}
+.formula-example-rows { display: flex; flex-direction: column; gap: 3px; }
+.formula-example-row {
+  display: flex; justify-content: space-between; font-size: 11px;
+  color: rgba(255,255,255,0.6); font-family: 'JetBrains Mono','Courier New',monospace;
+}
+.formula-example-row span:last-child { color: rgba(255,255,255,0.85); }
+
+.v3-gc-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); margin: 0 6px; flex-shrink: 0; }
+.v3-gc-toggle-wrap { display: flex; align-items: center; gap: 8px; }
+.v3-gc-label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); white-space: nowrap; }
+.v3-gc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-tertiary); flex-shrink: 0; transition: background 0.2s; }
+.v3-gc-dot.on { background: #F87171; box-shadow: 0 0 5px rgba(248,113,113,0.5); }
 
 /* PDF */
 #pdfContent { display: none; }
@@ -1113,10 +1421,16 @@ input[type=range]::-webkit-slider-thumb {
     <!-- PAGE HEADER -->
     <div class="r3-page-header">
       <div>
-        <div class="r3-page-title" data-i18n="resultsTitle">Strategic Analysis Results</div>
+        <div style="display:flex;align-items:center;gap:0">
+          <div class="r3-page-title" data-i18n="resultsTitle">Strategic Analysis Results</div>
+          <button class="formula-btn" id="formula-info-btn" tabindex="-1">?</button>
+        </div>
         <div id="results-subtitle" class="r3-page-meta"></div>
       </div>
     </div>
+
+    <!-- FORMULA POPOVER -->
+    <div class="formula-popover" id="formula-popover"></div>
 
     <!-- RANKING CARDS -->
     <div class="r3-section">Platform Ranking</div>
@@ -1161,16 +1475,16 @@ const VENDORS = {
   microsoft: {
     name: 'Microsoft', platform: 'Azure AI Foundry Agents', color: '#00A4EF',
     scores: {
-      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.4 },
+      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.4 },  // AutoGen GA Mar 2026
       multiAgentCollab:      { maturity: 3, multiplier: 0.4 },
       selfCorrection:        { maturity: 2, multiplier: 0.4 },
       semanticRAG:           { maturity: 3, multiplier: 0.7 },
       multimodalExtraction:  { maturity: 2, multiplier: 0.7 },
-      institutionalMemory:   { maturity: 3, multiplier: 0.7 },
-      decisionTraceability:  { maturity: 2, multiplier: 0.4 },
-      guardrailEnforcement:  { maturity: 3, multiplier: 0.7 },
-      iam:                   { maturity: 2, multiplier: 0.4 },
-      apiFabric:             { maturity: 2, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 3, multiplier: 0.7 },  // Managed Long-term Store
+      decisionTraceability:  { maturity: 2, multiplier: 0.4 },  // Dev-centric, no Decision Records
+      guardrailEnforcement:  { maturity: 3, multiplier: 0.4 },  // Azure AI Safety + Entra Agent ID
+      iam:                   { maturity: 1, multiplier: 0.4 },  // Guard avg = (2+3+1)/3 = 2.0
+      apiFabric:             { maturity: 3, multiplier: 0.4 },
       crossAppOrchestration: { maturity: 3, multiplier: 0.4 },
       runtimeResilience:     { maturity: 3, multiplier: 0.4 }
     }
@@ -1178,18 +1492,18 @@ const VENDORS = {
   google: {
     name: 'Google Cloud', platform: 'Vertex AI Agent Builder', color: '#4285F4',
     scores: {
-      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.4 },
-      multiAgentCollab:      { maturity: 2, multiplier: 0.4 },
-      selfCorrection:        { maturity: 2, multiplier: 0.4 },
-      semanticRAG:           { maturity: 3, multiplier: 0.7 },
+      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.7 },  // ADK flexible, Python req
+      multiAgentCollab:      { maturity: 3, multiplier: 0.7 },  // A2A protocol pioneer
+      selfCorrection:        { maturity: 2, multiplier: 0.7 },
+      semanticRAG:           { maturity: 3, multiplier: 0.7 },  // Memory Bank GA 2026
       multimodalExtraction:  { maturity: 2, multiplier: 0.7 },
-      institutionalMemory:   { maturity: 2, multiplier: 0.7 },
-      decisionTraceability:  { maturity: 3, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 3, multiplier: 0.7 },  // Cognitive fact extraction
+      decisionTraceability:  { maturity: 3, multiplier: 0.7 },  // Guard avg = 3.0 (Safe)
       guardrailEnforcement:  { maturity: 3, multiplier: 0.7 },
       iam:                   { maturity: 3, multiplier: 0.7 },
       apiFabric:             { maturity: 2, multiplier: 0.7 },
-      crossAppOrchestration: { maturity: 2, multiplier: 0.4 },
-      runtimeResilience:     { maturity: 3, multiplier: 0.4 }
+      crossAppOrchestration: { maturity: 2, multiplier: 0.7 },
+      runtimeResilience:     { maturity: 2, multiplier: 0.7 }
     }
   },
   aws_quick: {
@@ -1201,10 +1515,10 @@ const VENDORS = {
       semanticRAG:           { maturity: 2, multiplier: 1.0 },
       multimodalExtraction:  { maturity: 1, multiplier: 1.0 },
       institutionalMemory:   { maturity: 2, multiplier: 1.0 },
-      decisionTraceability:  { maturity: 1, multiplier: 1.0 },
-      guardrailEnforcement:  { maturity: 2, multiplier: 1.0 },
-      iam:                   { maturity: 1, multiplier: 1.0 },
-      apiFabric:             { maturity: 2, multiplier: 1.0 },
+      decisionTraceability:  { maturity: 1, multiplier: 1.0 },  // No crypto auditability (EU AI Act)
+      guardrailEnforcement:  { maturity: 1, multiplier: 1.0 },  // Guard avg = 1.0 → CRITICAL CAP
+      iam:                   { maturity: 1, multiplier: 1.0 },  // Rudimentary; no sub-agent identity
+      apiFabric:             { maturity: 3, multiplier: 1.0 },
       crossAppOrchestration: { maturity: 3, multiplier: 1.0 },
       runtimeResilience:     { maturity: 2, multiplier: 1.0 }
     }
@@ -1217,10 +1531,10 @@ const VENDORS = {
       selfCorrection:        { maturity: 2, multiplier: 0.4 },
       semanticRAG:           { maturity: 2, multiplier: 0.4 },
       multimodalExtraction:  { maturity: 1, multiplier: 0.4 },
-      institutionalMemory:   { maturity: 3, multiplier: 0.4 },
-      decisionTraceability:  { maturity: 2, multiplier: 0.4 },
-      guardrailEnforcement:  { maturity: 3, multiplier: 0.4 },
-      iam:                   { maturity: 3, multiplier: 0.4 },
+      institutionalMemory:   { maturity: 3, multiplier: 0.4 },  // 8-hour durable state
+      decisionTraceability:  { maturity: 2, multiplier: 0.4 },  // Guard avg = (2+3+3)/3 = 2.67
+      guardrailEnforcement:  { maturity: 3, multiplier: 0.4 },  // Cedar policy language
+      iam:                   { maturity: 3, multiplier: 0.4 },  // Workload Identity
       apiFabric:             { maturity: 3, multiplier: 0.4 },
       crossAppOrchestration: { maturity: 2, multiplier: 0.4 },
       runtimeResilience:     { maturity: 3, multiplier: 0.4 }
@@ -1229,17 +1543,17 @@ const VENDORS = {
   uipath: {
     name: 'UiPath', platform: 'Agentic Automation', color: '#FA4616',
     scores: {
-      dynamicTaskPlanning:   { maturity: 2, multiplier: 0.7 },
-      multiAgentCollab:      { maturity: 3, multiplier: 1.0 },
+      dynamicTaskPlanning:   { maturity: 2, multiplier: 0.7 },  // Autopilot, RPA-path limited
+      multiAgentCollab:      { maturity: 3, multiplier: 1.0 },  // Maestro A2A orchestration
       selfCorrection:        { maturity: 2, multiplier: 0.7 },
       semanticRAG:           { maturity: 2, multiplier: 1.0 },
-      multimodalExtraction:  { maturity: 3, multiplier: 1.0 },
+      multimodalExtraction:  { maturity: 3, multiplier: 1.0 },  // Document Understanding GA
       institutionalMemory:   { maturity: 2, multiplier: 1.0 },
-      decisionTraceability:  { maturity: 3, multiplier: 1.0 },
-      guardrailEnforcement:  { maturity: 3, multiplier: 1.0 },
+      decisionTraceability:  { maturity: 3, multiplier: 1.0 },  // Guard avg = 3.0 (Safe)
+      guardrailEnforcement:  { maturity: 3, multiplier: 1.0 },  // AI Trust Layer
       iam:                   { maturity: 3, multiplier: 1.0 },
       apiFabric:             { maturity: 3, multiplier: 1.0 },
-      crossAppOrchestration: { maturity: 3, multiplier: 0.7 },
+      crossAppOrchestration: { maturity: 3, multiplier: 1.0 },  // Legacy + SaaS via Maestro
       runtimeResilience:     { maturity: 2, multiplier: 0.7 }
     }
   },
@@ -1247,32 +1561,32 @@ const VENDORS = {
     name: 'n8n', platform: 'AI Workflow Automation', color: '#EA4B71',
     scores: {
       dynamicTaskPlanning:   { maturity: 2, multiplier: 0.7 },
-      multiAgentCollab:      { maturity: 3, multiplier: 0.7 },
-      selfCorrection:        { maturity: 1, multiplier: 0.7 },
+      multiAgentCollab:      { maturity: 3, multiplier: 0.7 },  // MCP native
+      selfCorrection:        { maturity: 2, multiplier: 0.7 },  // Error-handler nodes; no reflex loop
       semanticRAG:           { maturity: 2, multiplier: 0.7 },
       multimodalExtraction:  { maturity: 1, multiplier: 0.7 },
       institutionalMemory:   { maturity: 1, multiplier: 0.4 },
-      decisionTraceability:  { maturity: 2, multiplier: 0.7 },
-      guardrailEnforcement:  { maturity: 2, multiplier: 0.7 },
+      decisionTraceability:  { maturity: 2, multiplier: 0.7 },  // Guard avg = (2+2+2)/3 = 2.0
+      guardrailEnforcement:  { maturity: 2, multiplier: 0.7 },  // No Cedar/DMN; manual config
       iam:                   { maturity: 2, multiplier: 0.4 },
-      apiFabric:             { maturity: 3, multiplier: 0.7 },
+      apiFabric:             { maturity: 3, multiplier: 0.7 },  // MCP server trigger + 500 connectors
       crossAppOrchestration: { maturity: 3, multiplier: 0.7 },
-      runtimeResilience:     { maturity: 2, multiplier: 0.4 }
+      runtimeResilience:     { maturity: 3, multiplier: 0.4 }   // SQLite pooling n8n 2.0; keep 3
     }
   },
   otera: {
-    name: 'Otera', platform: 'Document AI', color: '#00D5D0',
+    name: 'Otera', platform: 'Autonomous Operations AI', color: '#00D5D0',
     scores: {
       dynamicTaskPlanning:   { maturity: 1, multiplier: 0.7 },
       multiAgentCollab:      { maturity: 2, multiplier: 0.7 },
-      selfCorrection:        { maturity: 3, multiplier: 0.7 },
+      selfCorrection:        { maturity: 3, multiplier: 0.7 },  // Confidence metrics + HITL
       semanticRAG:           { maturity: 3, multiplier: 0.7 },
-      multimodalExtraction:  { maturity: 3, multiplier: 0.7 },
+      multimodalExtraction:  { maturity: 3, multiplier: 0.7 },  // 98%+ vision ensemble accuracy
       institutionalMemory:   { maturity: 2, multiplier: 0.7 },
-      decisionTraceability:  { maturity: 3, multiplier: 0.7 },
-      guardrailEnforcement:  { maturity: 2, multiplier: 0.7 },
-      iam:                   { maturity: 1, multiplier: 0.7 },
-      apiFabric:             { maturity: 3, multiplier: 0.7 },
+      decisionTraceability:  { maturity: 3, multiplier: 0.7 },  // Guard avg = (3+3+3)/3 = 3.0
+      guardrailEnforcement:  { maturity: 3, multiplier: 0.7 },
+      iam:                   { maturity: 3, multiplier: 0.7 },
+      apiFabric:             { maturity: 2, multiplier: 0.7 },
       crossAppOrchestration: { maturity: 2, multiplier: 0.7 },
       runtimeResilience:     { maturity: 2, multiplier: 0.4 }
     }
@@ -1280,38 +1594,53 @@ const VENDORS = {
   camunda: {
     name: 'Camunda', platform: 'Camunda 8 Agentic Orchestration', color: '#FF5A19',
     scores: {
-      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.7 },
-      multiAgentCollab:      { maturity: 3, multiplier: 0.7 },
-      selfCorrection:        { maturity: 3, multiplier: 0.7 },
-      semanticRAG:           { maturity: 2, multiplier: 0.7 },
+      dynamicTaskPlanning:   { maturity: 2, multiplier: 0.7 },  // Orchestrates plans, doesn't create them autonomously
+      multiAgentCollab:      { maturity: 3, multiplier: 1.0 },  // MCP + A2A protocol native
+      selfCorrection:        { maturity: 2, multiplier: 0.7 },  // Requires manual error-path modelling in BPMN
+      semanticRAG:           { maturity: 1, multiplier: 0.4 },  // Must be built externally via Worker
       multimodalExtraction:  { maturity: 2, multiplier: 0.7 },
-      institutionalMemory:   { maturity: 3, multiplier: 0.7 },
-      decisionTraceability:  { maturity: 3, multiplier: 1.0 },
-      guardrailEnforcement:  { maturity: 3, multiplier: 1.0 },
-      iam:                   { maturity: 2, multiplier: 1.0 },
-      apiFabric:             { maturity: 3, multiplier: 1.0 },
+      institutionalMemory:   { maturity: 3, multiplier: 1.0 },  // Zeebe persistent state weeks
+      decisionTraceability:  { maturity: 3, multiplier: 1.0 },  // King: native BPMN history, EU AI Act ready
+      guardrailEnforcement:  { maturity: 3, multiplier: 1.0 },  // DMN + BPMN boundaries
+      iam:                   { maturity: 3, multiplier: 1.0 },
+      apiFabric:             { maturity: 3, multiplier: 1.0 },  // MCP native discovery
       crossAppOrchestration: { maturity: 3, multiplier: 1.0 },
-      runtimeResilience:     { maturity: 3, multiplier: 1.0 }
+      runtimeResilience:     { maturity: 3, multiplier: 1.0 }   // Zeebe: unmatched stability
     }
   }
 };
 
 const PRESETS = {
-  customerService:       { name: { EN:'Customer Service & Support', DE:'Kundenservice & Support', FR:'Service Client & Support', ES:'Servicio al Cliente y Soporte', IT:'Servizio Clienti e Supporto' }, vals: [3,2,2,3,1,3,2,3,2,3,2,3] },
-  financeAccounting:     { name: { EN:'Finance & Accounting Operations', DE:'Finanz- & Buchhaltungsoperationen', FR:'Finance & Comptabilité', ES:'Finanzas y Contabilidad', IT:'Finanza e Contabilità' }, vals: [1,2,3,2,3,2,3,3,3,2,2,2] },
-  documentProcessing:    { name: { EN:'Document Processing', DE:'Dokumentenverarbeitung', FR:'Traitement de Documents', ES:'Procesamiento de Documentos', IT:'Elaborazione Documenti' }, vals: [1,1,2,2,3,1,2,2,2,2,1,2] },
-  legalReview:           { name: { EN:'Legal & Contract Review', DE:'Rechts- & Vertragsüberprüfung', FR:'Revue Juridique & Contractuelle', ES:'Revisión Legal y Contractual', IT:'Revisione Legale e Contrattuale' }, vals: [1,1,3,3,3,2,3,2,2,1,1,1] },
-  hrOperations:          { name: { EN:'HR Operations', DE:'HR-Operationen', FR:'Opérations RH', ES:'Operaciones de RRHH', IT:'Operazioni HR' }, vals: [2,2,1,2,2,2,2,3,3,2,2,2] },
-  supplyChain:           { name: { EN:'Supply Chain & Logistics', DE:'Lieferkette & Logistik', FR:'Chaîne d\'Approvisionnement & Logistique', ES:'Cadena de Suministro y Logística', IT:'Supply Chain e Logistica' }, vals: [3,3,2,2,2,2,2,2,2,3,3,3] },
-  insuranceClaims:       { name: { EN:'Insurance Claims Processing', DE:'Versicherungsschadenbearbeitung', FR:'Traitement des Sinistres', ES:'Procesamiento de Siniestros', IT:'Gestione Sinistri Assicurativi' }, vals: [2,3,3,2,3,2,3,3,2,3,3,2] },
-  healthcareAdmin:       { name: { EN:'Healthcare Administration', DE:'Gesundheitsverwaltung', FR:'Administration de Santé', ES:'Administración Sanitaria', IT:'Amministrazione Sanitaria' }, vals: [1,2,2,3,3,3,3,3,3,2,2,2] },
-  regulatoryCompliance:  { name: { EN:'Regulatory & Compliance', DE:'Regulierung & Compliance', FR:'Réglementation & Conformité', ES:'Regulación y Cumplimiento', IT:'Regolamentazione e Conformità' }, vals: [1,1,3,3,2,2,3,3,3,2,1,2] },
-  salesOps:              { name: { EN:'Sales Operations', DE:'Vertriebsoperationen', FR:'Opérations Commerciales', ES:'Operaciones de Ventas', IT:'Operazioni Vendite' }, vals: [2,2,1,3,1,2,1,2,2,3,3,2] },
-  marketingContent:      { name: { EN:'Marketing & Content Generation', DE:'Marketing & Content-Generierung', FR:'Marketing & Génération de Contenu', ES:'Marketing y Generación de Contenido', IT:'Marketing e Generazione Contenuti' }, vals: [3,2,1,3,2,2,1,2,1,2,2,1] },
-  dataAnalysis:          { name: { EN:'Data Analysis & Reporting', DE:'Datenanalyse & Berichtswesen', FR:'Analyse de Données & Reporting', ES:'Análisis de Datos e Informes', IT:'Analisi Dati e Reportistica' }, vals: [3,2,2,3,2,2,2,1,2,3,2,2] },
-  softwareDev:           { name: { EN:'Software Development', DE:'Softwareentwicklung', FR:'Développement Logiciel', ES:'Desarrollo de Software', IT:'Sviluppo Software' }, vals: [3,3,2,2,1,2,2,1,2,2,1,2] },
-  itOperations:          { name: { EN:'IT Operations', DE:'IT-Operationen', FR:'Opérations IT', ES:'Operaciones TI', IT:'Operazioni IT' }, vals: [2,2,3,2,1,1,3,3,3,3,3,3] },
-  researchAnalysis:      { name: { EN:'Research & Analysis', DE:'Forschung & Analyse', FR:'Recherche & Analyse', ES:'Investigación y Análisis', IT:'Ricerca e Analisi' }, vals: [3,3,2,3,2,3,2,1,1,2,1,1] }
+  customerService:      { name: { EN:'Customer Concierge', DE:'Kunden-Concierge', FR:'Concierge Client', ES:'Concierge para Clientes', IT:'Concierge Clienti' },
+    vals: [3, 2, 2, 3, 3, 3, 1, 2, 2, 2, 2, 2] },
+  financeAccounting:    { name: { EN:'High-Risk Finance', DE:'High-Risk Finance', FR:'Finance à Haut Risque', ES:'Finanzas de Alto Riesgo', IT:'Finanza ad Alto Rischio' },
+    vals: [2, 2, 3, 2, 2, 2, 3, 3, 3, 1, 1, 3] },
+  documentProcessing:   { name: { EN:'Claims Settlement', DE:'Schadenabwicklung', FR:'Règlement de Sinistres', ES:'Liquidación de Siniestros', IT:'Liquidazione Sinistri' },
+    vals: [2, 3, 3, 2, 2, 2, 3, 3, 3, 2, 2, 3] },
+  legalReview:          { name: { EN:'Legal & Compliance', DE:'Recht & Compliance', FR:'Juridique & Conformité', ES:'Legal y Cumplimiento', IT:'Legale e Conformità' },
+    vals: [1, 1, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2] },
+  hrOperations:         { name: { EN:'HR Onboarding', DE:'HR-Onboarding', FR:'Intégration RH', ES:'Incorporación de RRHH', IT:'Onboarding HR' },
+    vals: [2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1] },
+  supplyChain:          { name: { EN:'Supply Chain Autonomy', DE:'Supply-Chain-Autonomie', FR:'Autonomie Chaîne d’Approvisionnement', ES:'Autonomía Cadena de Suministro', IT:'Autonomia Supply Chain' },
+    vals: [3, 3, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3] },
+  insuranceClaims:      { name: { EN:'Clinical Trials', DE:'Klinische Studien', FR:'Essais Cliniques', ES:'Ensayos Clínicos', IT:'Sperimentazioni Cliniche' },
+    vals: [1, 2, 3, 3, 3, 3, 3, 3, 3, 2, 2, 3] },
+  healthcareAdmin:      { name: { EN:'Healthcare Administration', DE:'Gesundheitsverwaltung', FR:'Administration de Santé', ES:'Administración Sanitaria', IT:'Amministrazione Sanitaria' },
+    vals: [2, 2, 2, 3, 3, 3, 3, 3, 3, 2, 2, 2] },
+  regulatoryCompliance: { name: { EN:'Sovereign Governance', DE:'Staatliche Governance', FR:'Gouvernance Souveraine', ES:'Gobernanza Soberana', IT:'Governance Sovrana' },
+    vals: [1, 1, 2, 3, 3, 3, 3, 3, 3, 1, 1, 3] },
+  salesOps:             { name: { EN:'E-Commerce Agents', DE:'E-Commerce-Agenten', FR:'Agents E-Commerce', ES:'Agentes E-Commerce', IT:'Agenti E-Commerce' },
+    vals: [3, 2, 1, 2, 2, 2, 1, 1, 1, 3, 3, 2] },
+  marketingContent:     { name: { EN:'Marketing Research', DE:'Marktforschung', FR:'Études de Marché', ES:'Investigación de Marketing', IT:'Ricerca di Marketing' },
+    vals: [3, 3, 1, 3, 3, 3, 1, 1, 1, 2, 2, 1] },
+  dataAnalysis:         { name: { EN:'Manufacturing IoT', DE:'Fertigungs-IoT', FR:'IoT Industriel', ES:'IoT Manufacturero', IT:'IoT Manifattura' },
+    vals: [2, 3, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3] },
+  softwareDev:          { name: { EN:'Software Refactoring', DE:'Software-Refactoring', FR:'Refactoring Logiciel', ES:'Refactorización de Software', IT:'Refactoring Software' },
+    vals: [3, 3, 3, 2, 2, 2, 2, 1, 1, 3, 3, 2] },
+  itOperations:         { name: { EN:'IT Ops & DevOps', DE:'IT-Ops & DevOps', FR:'Ops IT & DevOps', ES:'IT Ops y DevOps', IT:'IT Ops e DevOps' },
+    vals: [3, 3, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3] },
+  researchAnalysis:     { name: { EN:'Sustainability & ESG', DE:'Nachhaltigkeit & ESG', FR:'Durabilité & ESG', ES:'Sostenibilidad y ESG', IT:'Sostenibilità e ESG' },
+    vals: [2, 2, 2, 3, 3, 3, 3, 2, 2, 2, 2, 2] }
 };
 
 const SUB_IDS = [
@@ -1321,7 +1650,32 @@ const SUB_IDS = [
   'apiFabric','crossAppOrchestration','runtimeResilience'
 ];
 
-const CAT_DESCS = {"EN": {"brain": "The ability to reason logically and orchestrate complex workflows is the strategic core of operational autonomy. In 2026, providers differentiate strongly through cognitive router depth and multi-agent system flexibility. Key capabilities: dynamic task decomposition, multi-agent collaboration, and self-correction during execution.", "memory": "An agent without memory and access to enterprise data is merely a chatbot. Decision accuracy depends critically on data integration depth and long-term context management. Key capabilities: semantic RAG precision, multimodal document extraction, and institutional memory across sessions.", "guard": "As agent autonomy increases, so does the risk of unforeseen actions or data leakage. In 2026, governance is no longer optional — it is a core architectural requirement for enterprise trust. Key capabilities: decision traceability for auditors, hard-coded guardrails, and granular agent identity management.", "hands": "An agent's intelligence is only as valuable as its ability to execute actions in the real world. This layer evaluates connectivity and execution resilience. Key capabilities: breadth of native connectors, cross-application orchestration without APIs, and stability under high load."}, "DE": {"brain": "Die Fähigkeit zur logischen Schlussfolgerung und zur Orchestrierung komplexer Arbeitsabläufe ist der strategische Kernwert der operationalen Autonomie. Im Jahr 2026 differenzieren sich Anbieter stark durch die Tiefe ihrer kognitiven Router und Multi-Agenten-Systeme. Kernfähigkeiten: dynamische Aufgabenzerlegung, Multi-Agenten-Kollaboration und Selbstkorrektur.", "memory": "Ein Agent ohne Gedächtnis und Zugriff auf Unternehmensdaten ist lediglich ein Chatbot. Die Entscheidungsgenauigkeit hängt maßgeblich von der Tiefe der Datenintegration und des Langzeitkontexts ab. Kernfähigkeiten: semantische RAG-Präzision, multimodale Dokumentenextraktion und institutionelles Gedächtnis.", "guard": "Mit zunehmender Agentenautonomie steigt das Risiko unvorhergesehener Aktionen oder Datenlecks. Im Jahr 2026 ist Governance keine optionale Funktion mehr, sondern eine architektonische Kernanforderung. Kernfähigkeiten: Entscheidungstransparenz, Guardrail-Erzwingung und granulares IAM.", "hands": "Die Intelligenz eines Agenten ist nur so wertvoll wie seine Fähigkeit, Aktionen in der realen Welt auszuführen. Diese Schicht bewertet Konnektivität und Ausführungsresilienz. Kernfähigkeiten: native Konnektoren, anwendungsübergreifende Orchestrierung und Stabilität unter Last."}, "FR": {"brain": "La capacité de raisonnement logique et d'orchestration de flux de travail complexes constitue la valeur stratégique centrale de l'autonomie opérationnelle. En 2026, les fournisseurs se différencient par la profondeur de leurs routeurs cognitifs et la flexibilité de leurs systèmes multi-agents.", "memory": "Un agent sans mémoire ni accès aux données d'entreprise n'est qu'un chatbot. La précision décisionnelle dépend de la profondeur d'intégration des données et de la gestion du contexte à long terme.", "guard": "À mesure que l'autonomie des agents augmente, le risque d'actions imprévues ou de fuites de données augmente également. En 2026, la gouvernance est une exigence architecturale fondamentale pour la confiance des entreprises.", "hands": "L'intelligence d'un agent n'a de valeur que dans sa capacité à exécuter des actions dans le monde réel. Cette couche évalue la connectivité et la résilience d'exécution."}, "ES": {"brain": "La capacidad de razonamiento lógico y orquestación de flujos de trabajo complejos es el valor estratégico central de la autonomía operacional. En 2026, los proveedores se diferencian por la profundidad de sus enrutadores cognitivos y la flexibilidad de sus sistemas multi-agente.", "memory": "Un agente sin memoria ni acceso a datos empresariales es simplemente un chatbot. La precisión en la toma de decisiones depende de la profundidad de integración de datos y la gestión del contexto a largo plazo.", "guard": "A medida que aumenta la autonomía de los agentes, aumenta el riesgo de acciones imprevistas o fugas de datos. En 2026, la gobernanza es un requisito arquitectónico fundamental para la confianza empresarial.", "hands": "La inteligencia de un agente solo tiene valor en su capacidad para ejecutar acciones en el mundo real. Esta capa evalúa la conectividad y la resiliencia de ejecución."}, "IT": {"brain": "La capacità di ragionamento logico e orchestrazione di flussi di lavoro complessi è il valore strategico fondamentale dell'autonomia operativa. Nel 2026, i provider si differenziano per la profondità dei loro router cognitivi e la flessibilità dei sistemi multi-agente.", "memory": "Un agente senza memoria e accesso ai dati aziendali è semplicemente un chatbot. L'accuratezza decisionale dipende dalla profondità dell'integrazione dei dati e dalla gestione del contesto a lungo termine.", "guard": "Man mano che l'autonomia degli agenti aumenta, aumenta il rischio di azioni impreviste o perdite di dati. Nel 2026, la governance è un requisito architetturale fondamentale per la fiducia aziendale.", "hands": "L'intelligenza di un agente vale solo quanto la sua capacità di eseguire azioni nel mondo reale. Questo livello valuta la connettività e la resilienza di esecuzione."}};
+const CAT_DESCS = {"EN": {
+  "brain": "Goal Alignment and A2A Collaboration are the strategic core of 2026 agentic architectures. Providers differentiate through their ability to decompose abstract business goals into executable sub-task graphs, coordinate specialist agents via standardised A2A protocols, and detect-and-correct reasoning failures mid-execution. Key capabilities: dynamic task decomposition, multi-agent A2A collaboration, and self-correction integrity.",
+  "memory": "Cognitive Fact Extraction and Durable State management determine whether an agent operates as a stateful digital employee or a stateless chatbot. In 2026, leading platforms have moved beyond vector similarity search to topic-scoped Memory Banks that extract and persist structured facts across sessions. Key capabilities: semantic RAG precision, multimodal extraction accuracy, and long-running durable state across days or weeks.",
+  "guard": "EU AI Act compliance and Workload Identities are non-negotiable baselines in 2026. High-risk use cases require cryptographically verifiable audit trails, deterministic action boundaries (Cedar / DMN), and unique agent identities that can be separated from human identities in access logs. Key capabilities: decision traceability for regulators, hard guardrail enforcement, and granular agent IAM.",
+  "hands": "Model Context Protocol (MCP) support and resilient runtimes define execution breadth. MCP enables any agent to discover and invoke external tools without bespoke API connectors. Platforms that natively expose themselves as MCP servers gain compounding network effects. Key capabilities: MCP connectivity, cross-application orchestration, and serverless auto-scaling resilience."
+}, "DE": {
+  "brain": "Goal Alignment und A2A-Kollaboration sind der strategische Kern der agentischen Architekturen 2026. Anbieter differenzieren sich durch die Fähigkeit, abstrakte Geschäftsziele in ausführbare Sub-Task-Graphen zu zerlegen, Spezialagenten über standardisierte A2A-Protokolle zu koordinieren und Reasoning-Fehler während der Ausführung zu erkennen und zu korrigieren. Kernfähigkeiten: dynamische Aufgabenplanung, Multi-Agenten-A2A-Kollaboration und Selbstkorrektur-Integrität.",
+  "memory": "Kognitive Faktenextraktion und Durable-State-Management entscheiden, ob ein Agent als zustandsbehafteter digitaler Mitarbeiter oder als zustandsloser Chatbot operiert. Führende Plattformen sind 2026 über reine Vektorsuche hinausgegangen und nutzen themenbasierte Memory Banks, die strukturierte Fakten über Sitzungen hinweg extrahieren und persistieren. Kernfähigkeiten: semantische RAG-Präzision, multimodale Extraktionsgenauigkeit und langlebiger Durable State.",
+  "guard": "EU-KI-Gesetz-Compliance und Workload-Identitäten sind 2026 nicht verhandelbare Basisanforderungen. Hochrisiko-Anwendungen benötigen kryptografisch verifizierbare Audit-Trails, deterministische Aktionsgrenzen (Cedar / DMN) und eindeutige Agenten-Identitäten, die in Zugriffsprotokollen von menschlichen Identitäten getrennt werden können. Kernfähigkeiten: Entscheidungstransparenz für Regulatoren, harte Guardrail-Erzwingung und granulares Agenten-IAM.",
+  "hands": "Model Context Protocol (MCP) Support und resiliente Laufzeitumgebungen definieren die Ausführungsbreite. MCP ermöglicht es jedem Agenten, externe Tools ohne maßgeschneiderte API-Konnektoren zu entdecken und aufzurufen. Plattformen, die sich nativ als MCP-Server exponieren, erzielen kumulative Netzwerkeffekte. Kernfähigkeiten: MCP-Konnektivität, anwendungsübergreifende Orchestrierung und serverlose Auto-Scaling-Resilienz."
+}, "FR": {
+  "brain": "L'alignement sur les objectifs et la collaboration A2A constituent le cœur stratégique des architectures agentiques 2026. Capacités clés: décomposition dynamique des tâches, collaboration multi-agents via A2A et intégrité de l'auto-correction en cours d'exécution.",
+  "memory": "L'extraction cognitive de faits et la gestion de l'état durable déterminent si un agent opère comme un employé numérique avec état ou comme un chatbot sans état. Capacités clés: précision RAG sémantique, extraction multimodale et état durable sur des jours ou semaines.",
+  "guard": "La conformité à l’AI Act européen et les identités de charge de travail sont des exigences de base non négociables en 2026. Capacités clés: traçabilité des décisions pour les régulateurs, application déterministe des garde-fous et IAM granulaire pour agents.",
+  "hands": "La prise en charge du Model Context Protocol (MCP) et les runtimes résilients définissent l'étendue de l’exécution. Capacités clés: connectivité MCP, orchestration inter-applications et résilience avec mise à l'échelle automatique serverless."
+}, "ES": {
+  "brain": "La alineación de objetivos y la colaboración A2A son el núcleo estratégico de las arquitecturas agénticas 2026. Capacidades clave: descomposición dinámica de tareas, colaboración multi-agente via A2A e integridad de autocorrección en ejecución.",
+  "memory": "La extracción cognitiva de hechos y la gestión del estado duradero determinan si un agente opera como un empleado digital con estado o como un chatbot sin estado. Capacidades clave: precisión RAG semántica, extracción multimodal y estado duradero durante días o semanas.",
+  "guard": "El cumplimiento de la Ley de IA europea y las identidades de carga de trabajo son requisitos básicos innegociables en 2026. Capacidades clave: trazabilidad de decisiones para reguladores, aplicación determinista de guardrails e IAM granular para agentes.",
+  "hands": "El soporte de Model Context Protocol (MCP) y los runtimes resilientes definen el alcance de ejecución. Capacidades clave: conectividad MCP, orquestación entre aplicaciones y resiliencia con escalado automático serverless."
+}, "IT": {
+  "brain": "L'allineamento degli obiettivi e la collaborazione A2A sono il nucleo strategico delle architetture agentiche 2026. Capacità chiave: decomposizione dinamica dei task, collaborazione multi-agente via A2A e integrità dell'auto-correzione in esecuzione.",
+  "memory": "L'estrazione cognitiva di fatti e la gestione dello stato durevole determinano se un agente opera come dipendente digitale con stato o come chatbot senza stato. Capacità chiave: precisione RAG semantica, estrazione multimodale e stato durevole per giorni o settimane.",
+  "guard": "La conformità all’AI Act europeo e le identità di workload sono requisiti di base non negoziabili nel 2026. Capacità chiave: tracciabilità delle decisioni per i regolatori, applicazione deterministica dei guardrail e IAM granulare per agenti.",
+  "hands": "Il supporto al Model Context Protocol (MCP) e i runtime resilienti definiscono l'ampiezza di esecuzione. Capacità chiave: connettività MCP, orchestrazione cross-applicazione e resilienza con auto-scaling serverless."
+}};
 
 const BA_DESCS = {
   EN: "When <strong style='color:#fff'>ON</strong>, each vendor score is weighted by its Implementation Multiplier. Platforms requiring heavy custom engineering are penalised, reflecting real-world Time-to-Value rather than theoretical capability alone.",
@@ -1330,6 +1684,68 @@ const BA_DESCS = {
   ES: "Cuando est\u00e1 <strong style='color:#fff'>ACTIVO</strong>, cada puntuaci\u00f3n de proveedor se pondera por su Multiplicador de Implementaci\u00f3n. Las plataformas que requieren un desarrollo personalizado intensivo son penalizadas, reflejando el Time-to-Value real en lugar de la capacidad te\u00f3rica.",
   IT: "Quando \u00e8 <strong style='color:#fff'>ATTIVO</strong>, ogni punteggio vendor \u00e8 ponderato dal suo Moltiplicatore di Implementazione. Le piattaforme che richiedono un ingegnerizzazione personalizzata intensiva vengono penalizzate, riflettendo il Time-to-Value reale anzich\u00e9 la sola capacit\u00e0 teorica."
 };
+
+
+const VENDOR_SPOTLIGHTS = {
+  microsoft: {
+    EN: { pos: 'Developer-first agent infrastructure leveraging GPT-5 and Entra ID for deep enterprise integration.', str: 'Unmatched identity and security framework (Entra Agent ID). Best-in-class governance at scale.', weak: 'Technical complexity; fragmentation between Foundry and Copilot Studio. Low RAG velocity.', risk: 'Moderate — Guard avg 2.0' },
+    DE: { pos: 'Entwickler-zentrierte Agenten-Infrastruktur mit GPT-5 und Entra ID für tiefe Enterprise-Integration.', str: 'Unübertroffenes Identitäts- und Sicherheits-Framework (Entra Agent ID). Beste Governance im Maßstab.', weak: 'Hohe technische Komplexität; Fragmentierung zwischen Foundry und Copilot Studio.', risk: 'Moderat — Guard-Avg 2.0' },
+    FR: { pos: 'Infrastructure agentique orientée développeur s’appuyant sur GPT-5 et Entra ID.', str: 'Framework d’identité et de sécurité inégalé (Entra Agent ID).', weak: 'Complexité technique élevée; fragmentation entre Foundry et Copilot Studio.', risk: 'Modéré — Avg Guard 2.0' },
+    ES: { pos: 'Infraestructura agéntica orientada al desarrollador con GPT-5 y Entra ID.', str: 'Marco de identidad y seguridad sin igual (Entra Agent ID).', weak: 'Alta complejidad técnica; fragmentación entre Foundry y Copilot Studio.', risk: 'Moderado — Avg Guard 2.0' },
+    IT: { pos: 'Infrastruttura agentiva orientata agli sviluppatori con GPT-5 e Entra ID.', str: 'Framework di identità e sicurezza senza pari (Entra Agent ID).', weak: 'Alta complessità tecnica; frammentazione tra Foundry e Copilot Studio.', risk: 'Moderato — Avg Guard 2.0' }
+  },
+  google: {
+    EN: { pos: 'Knowledge-centric platform focusing on cognitive architecture (Memory Bank GA 2026) and open standards (A2A).', str: 'Best-in-class user-scoped persistent memory. Pioneer of the A2A protocol with 50+ partners.', weak: 'Steep learning curve for Vertex AI Agent Engine. Python expertise mandatory for ADK.', risk: 'Safe — Guard avg 3.0' },
+    DE: { pos: 'Wissenszentrierte Plattform mit kognitiver Architektur (Memory Bank GA 2026) und offenen Standards (A2A).', str: 'Beste benutzerbezogene persistente Gedächtnisführung. A2A-Protokoll-Pionier.', weak: 'Steile Lernkurve für Vertex AI Agent Engine. Python-Kenntnisse für ADK zwingend.', risk: 'Sicher — Guard-Avg 3.0' },
+    FR: { pos: 'Plateforme axée sur la connaissance avec architecture cognitive (Memory Bank GA 2026) et standards ouverts (A2A).', str: 'Meilleure gestion de mémoire persistante par utilisateur. Pionnier du protocole A2A.', weak: 'Courbe d’apprentissage élevée pour Vertex AI. Python obligatoire pour ADK.', risk: 'Sûr — Avg Guard 3.0' },
+    ES: { pos: 'Plataforma centrada en el conocimiento con arquitectura cognitiva (Memory Bank GA 2026) y estándares abiertos (A2A).', str: 'Mejor gestión de memoria persistente por usuario. Pionero del protocolo A2A.', weak: 'Curva de aprendizaje pronunciada para Vertex AI. Python obligatorio para ADK.', risk: 'Seguro — Avg Guard 3.0' },
+    IT: { pos: 'Piattaforma incentrata sulla conoscenza con architettura cognitiva (Memory Bank GA 2026) e standard aperti (A2A).', str: 'Migliore gestione della memoria persistente per utente. Pioniere del protocollo A2A.', weak: 'Curva di apprendimento ripida per Vertex AI. Python obbligatorio per ADK.', risk: 'Sicuro — Avg Guard 3.0' }
+  },
+  aws_quick: {
+    EN: { pos: 'Managed SaaS workspace democratising agent creation for business users via natural language — no coding required.', str: 'Instant accessibility for non-technical staff (Multiplier 1.0). Fastest deployment speed.', weak: 'Critically lacks granular governance for high-risk regulatory use cases. No cryptographic auditability.', risk: '⚠ CRITICAL — Guard avg 1.0 (Governance Cap active)' },
+    DE: { pos: 'Verwalteter SaaS-Workspace, der die Agentenerstellung für Business-User per natürlicher Sprache demokratisiert.', str: 'Sofortige Zugänglichkeit für Nicht-Techniker (Multiplier 1.0). Schnellste Deployment-Geschwindigkeit.', weak: 'Kritisch mangelhaft in Governance für regulierte Branchen. Keine kryptografische Auditierbarkeit.', risk: '⚠ KRITISCH — Guard-Avg 1.0 (Governance-Kappe aktiv)' },
+    FR: { pos: 'Espace de travail SaaS géré démocratisant la création d’agents pour les utilisateurs métier.', str: 'Accessibilité immédiate pour les non-techniciens (Multiplicateur 1.0).', weak: 'Manque critique de gouvernance granulaire pour les cas d’usage réglementés.', risk: '⚠ CRITIQUE — Avg Guard 1.0 (Plafond actif)' },
+    ES: { pos: 'Espacio de trabajo SaaS gestionado que democratiza la creación de agentes para usuarios de negocio.', str: 'Accesibilidad inmediata para no técnicos (Multiplicador 1.0).', weak: 'Carece críticamente de gobernanza granular para casos de uso regulados.', risk: '⚠ CRÍTICO — Avg Guard 1.0 (Límite activo)' },
+    IT: { pos: 'Workspace SaaS gestito che democratizza la creazione di agenti per utenti business tramite linguaggio naturale.', str: 'Accessibilità immediata per non tecnici (Moltiplicatore 1.0).', weak: 'Mancanza critica di governance granulare per casi d’uso regolamentati.', risk: '⚠ CRITICO — Avg Guard 1.0 (Limite attivo)' }
+  },
+  aws_bedrock: {
+    EN: { pos: 'Modular infrastructure stack (AgentCore) for engineers building highly secure, isolated agents with deterministic control.', str: 'Deterministic action control via Cedar Policy language. 8-hour durable agent sessions.', weak: 'High implementation effort (Multiplier 0.4). Requires AWS cloud experts for Lambda/Step-Functions orchestration.', risk: 'Safe — Guard avg 2.67' },
+    DE: { pos: 'Modularer Infrastruktur-Stack (AgentCore) für Ingenieure, die hochsichere, isolierte Agenten bauen.', str: 'Deterministisches Aktions-Controlling via Cedar Policy. 8-Stunden Durable Agent Sessions.', weak: 'Hoher Implementierungsaufwand (Multiplier 0.4). Erfordert AWS-Cloud-Experten.', risk: 'Sicher — Guard-Avg 2.67' },
+    FR: { pos: 'Stack d’infrastructure modulaire (AgentCore) pour ingénieurs construisant des agents sécurisés et isolés.', str: 'Contrôle déterministe des actions via Cedar Policy. Sessions d’agent durables de 8 heures.', weak: 'Effort d’implémentation élevé (Multiplicateur 0.4). Experts AWS cloud requis.', risk: 'Sûr — Avg Guard 2.67' },
+    ES: { pos: 'Stack de infraestructura modular (AgentCore) para ingenieros que construyen agentes seguros y aislados.', str: 'Control determinista de acciones via Cedar Policy. Sesiones de agente duraderas de 8 horas.', weak: 'Alto esfuerzo de implementación (Multiplicador 0.4). Requiere expertos en AWS cloud.', risk: 'Seguro — Avg Guard 2.67' },
+    IT: { pos: 'Stack infrastrutturale modulare (AgentCore) per ingegneri che costruiscono agenti sicuri e isolati.', str: 'Controllo deterministico delle azioni tramite Cedar Policy. Sessioni agente durevoli di 8 ore.', weak: 'Alto sforzo di implementazione (Moltiplicatore 0.4). Richiede esperti AWS cloud.', risk: 'Sicuro — Avg Guard 2.67' }
+  },
+  uipath: {
+    EN: { pos: 'The bridge between generative reasoning and legacy execution (RPA) through Maestro Orchestration — hybrid workflows at scale.', str: 'Reliable end-to-end case management. Best multimodal document extraction. Mature AI Trust Layer.', weak: 'Heavy infrastructure; expensive for smaller AI projects. Dynamic planning limited to known RPA paths.', risk: 'Safe — Guard avg 3.0' },
+    DE: { pos: 'Die Brücke zwischen generativem Reasoning und Legacy-Ausführung (RPA) durch Maestro Orchestrierung.', str: 'Zuverlässiges End-to-End Case Management. Beste multimodale Dokumentenextraktion. Reifer AI Trust Layer.', weak: 'Schwere Infrastruktur; teuer für kleinere KI-Projekte. Dynamische Planung auf bekannte RPA-Pfade beschränkt.', risk: 'Sicher — Guard-Avg 3.0' },
+    FR: { pos: 'Le pont entre le raisonnement génératif et l’exécution legacy (RPA) via Maestro Orchestration.', str: 'Gestion de cas bout-en-bout fiable. Meilleure extraction documentaire multimodale.', weak: 'Infrastructure lourde; coûteuse pour les petits projets IA.', risk: 'Sûr — Avg Guard 3.0' },
+    ES: { pos: 'El puente entre el razonamiento generativo y la ejecución legacy (RPA) a través de Maestro Orchestration.', str: 'Gestión de casos de extremo a extremo confiable. Mejor extracción documental multimodal.', weak: 'Infraestructura pesada; costosa para proyectos de IA pequeños.', risk: 'Seguro — Avg Guard 3.0' },
+    IT: { pos: 'Il ponte tra ragionamento generativo ed esecuzione legacy (RPA) tramite Maestro Orchestration.', str: 'Gestione dei casi end-to-end affidabile. Migliore estrazione documentale multimodale.', weak: 'Infrastruttura pesante; costosa per progetti IA più piccoli.', risk: 'Sicuro — Avg Guard 3.0' }
+  },
+  n8n: {
+    EN: { pos: 'Open-source integration engine favoring technical agility and cross-platform MCP connectivity for developer teams.', str: 'Native MCP server trigger module. Extreme flexibility and cost-efficiency (v2.0). 500+ connectors.', weak: 'Manual configuration of advanced governance guardrails. No central policy language like Cedar or DMN.', risk: 'Moderate — Guard avg 2.0' },
+    DE: { pos: 'Open-Source-Integrationsengine für technische Agilität und plattformübergreifende MCP-Konnektivität.', str: 'Natives MCP Server Trigger Modul. Extreme Flexibilität und Kosteneffizienz (v2.0). 500+ Konnektoren.', weak: 'Manuelle Konfiguration von Governance-Guardrails. Keine zentrale Policy-Sprache wie Cedar oder DMN.', risk: 'Moderat — Guard-Avg 2.0' },
+    FR: { pos: 'Moteur d’intégration open-source favorisant l’agilité technique et la connectivité MCP multi-plateformes.', str: 'Module de déclencheur MCP server natif. Flexibilité et efficacité coût extrêmes (v2.0).', weak: 'Configuration manuelle des guardrails de gouvernance avancés.', risk: 'Modéré — Avg Guard 2.0' },
+    ES: { pos: 'Motor de integración open-source para agilidad técnica y conectividad MCP multiplataforma.', str: 'Módulo de disparador MCP server nativo. Flexibilidad extrema y eficiencia de costes (v2.0).', weak: 'Configuración manual de guardrails de gobernanza avanzados.', risk: 'Moderado — Avg Guard 2.0' },
+    IT: { pos: 'Motore di integrazione open-source per agilità tecnica e connettività MCP multi-piattaforma.', str: 'Modulo trigger MCP server nativo. Estrema flessibilità ed efficienza dei costi (v2.0).', weak: 'Configurazione manuale dei guardrail di governance avanzati.', risk: 'Moderato — Avg Guard 2.0' }
+  },
+  otera: {
+    EN: { pos: 'Vertical specialist for Autonomous Operations in insurance and finance — superhuman accuracy on unstructured data.', str: '98%+ accuracy on handwritten claims via Vision Ensembles. Best self-correction via Confidence Metrics + HITL.', weak: 'Narrow vertical focus; not suitable as a general IT automation platform. Weak dynamic planning.', risk: 'Safe — Guard avg 3.0' },
+    DE: { pos: 'Vertikaler Spezialist für Autonomous Operations in Versicherung und Finanzwesen — übermenschliche Genauigkeit bei unstrukturierten Daten.', str: '98%+ Genauigkeit bei handschriftlichen Schäden via Vision Ensembles. Beste Selbstkorrektur via Confidence Metrics + HITL.', weak: 'Enger vertikaler Fokus; nicht als allgemeine IT-Automatisierungsplattform geeignet.', risk: 'Sicher — Guard-Avg 3.0' },
+    FR: { pos: 'Spécialiste vertical pour les opérations autonomes en assurance et finance — précision surhumaine sur les données non structurées.', str: '98%+ de précision sur les sinistres manuscrits via Vision Ensembles.', weak: 'Focus vertical étroit; inadapté comme plateforme d’automatisation IT générale.', risk: 'Sûr — Avg Guard 3.0' },
+    ES: { pos: 'Especialista vertical para Operaciones Autónomas en seguros y finanzas — precisión sobrehumana en datos no estructurados.', str: '98%+ de precisión en siniestros manuscritos via Vision Ensembles.', weak: 'Foco vertical estrecho; no adecuado como plataforma de automatización TI general.', risk: 'Seguro — Avg Guard 3.0' },
+    IT: { pos: 'Specialista verticale per Operazioni Autonome in assicurazioni e finanza — accuratezza sovrumana su dati non strutturati.', str: '98%+ di accuratezza su sinistri manoscritti tramite Vision Ensembles.', weak: 'Focus verticale ristretto; non adatto come piattaforma di automazione IT generale.', risk: 'Sicuro — Avg Guard 3.0' }
+  },
+  camunda: {
+    EN: { pos: 'Leader in Agentic Orchestration — combines BPMN determinism with autonomous reasoning for maximum transparency and control.', str: 'Purest implementation of Governed Autonomy. Visual BPMN audit trails natively EU AI Act compliant. Zeebe engine unmatched for resilience.', weak: 'Requires strong BPMN expertise. Weak native RAG — must be built externally. Not a chat-and-go solution.', risk: 'Safe — Guard avg 3.0' },
+    DE: { pos: 'Marktführer in Agentic Orchestration — kombiniert BPMN-Determinismus mit autonomem Reasoning für maximale Transparenz und Kontrolle.', str: 'Reinste Implementierung von Governed Autonomy. Visuelle BPMN-Audit-Trails nativ EU-KI-Gesetz-konform. Zeebe-Engine unschlagbar in Resilienz.', weak: 'Erfordert starke BPMN-Expertise. Schwaches natives RAG — muss extern gebaut werden.', risk: 'Sicher — Guard-Avg 3.0' },
+    FR: { pos: 'Leader en Agentic Orchestration — combine le déterminisme BPMN avec le raisonnement autonome pour une transparence maximale.', str: 'Implémentation la plus pure de la Gouvernance Autonome. Trails BPMN conformes à l’AI Act européen.', weak: 'Requiert une forte expertise BPMN. RAG natif faible — doit être construit en externe.', risk: 'Sûr — Avg Guard 3.0' },
+    ES: { pos: 'Líder en Agentic Orchestration — combina determinismo BPMN con razonamiento autónomo para máxima transparencia.', str: 'Implementación más pura de Autonomía Gobernada. Trazas BPMN conformes con la AI Act europea.', weak: 'Requiere fuerte expertise en BPMN. RAG nativo débil — debe construirse externamente.', risk: 'Seguro — Avg Guard 3.0' },
+    IT: { pos: 'Leader in Agentic Orchestration — combina determinismo BPMN con ragionamento autonomo per massima trasparenza.', str: 'Implementazione più pura di Governance Autonoma. Trail BPMN nativamente conformi all’AI Act europeo.', weak: 'Richiede forte expertise BPMN. RAG nativo debole — deve essere costruito esternamente.', risk: 'Sicuro — Avg Guard 3.0' }
+  }
+};
+
+const GOV_CAP_TEXTS = {"EN": {"title": "Governance Cap Active", "body": "This vendor's average Guard layer maturity (Decision Traceability + Guardrail Enforcement + IAM) is <strong style=\"color:#F87171\">below 2.0</strong>. In regulated industries this is a binary prerequisite — the total score has been reduced by <strong style=\"color:#F87171\">50%</strong> regardless of other capabilities."}, "DE": {"title": "Governance-Kappe aktiv", "body": "Der durchschnittliche Guard-Layer-Reifegrad dieses Anbieters (Entscheidungstransparenz + Guardrail-Erzwingung + IAM) liegt <strong style=\"color:#F87171\">unter 2.0</strong>. In regulierten Branchen ist dies eine binäre Voraussetzung — der Gesamtscore wurde unabhängig von anderen Fähigkeiten um <strong style=\"color:#F87171\">50 %</strong> reduziert."}, "FR": {"title": "Plafond de gouvernance actif", "body": "La maturité moyenne de la couche Guard de ce fournisseur (Traçabilité + Application des Garde-fous + IAM) est <strong style=\"color:#F87171\">inférieure à 2.0</strong>. Dans les secteurs réglementés, c'est un prérequis binaire — le score total a été réduit de <strong style=\"color:#F87171\">50 %</strong>."}, "ES": {"title": "Límite de gobernanza activo", "body": "La madurez promedio de la capa Guard de este proveedor (Trazabilidad + Guardrails + IAM) está <strong style=\"color:#F87171\">por debajo de 2.0</strong>. En sectores regulados esto es un requisito binario — la puntuación total se ha reducido en un <strong style=\"color:#F87171\">50 %</strong>."}, "IT": {"title": "Limite di governance attivo", "body": "La maturità media del livello Guard di questo vendor (Tracciabilità + Guardrail + IAM) è <strong style=\"color:#F87171\">inferiore a 2.0</strong>. Nei settori regolamentati questo è un prerequisito binario — il punteggio totale è stato ridotto del <strong style=\"color:#F87171\">50 %</strong>."}};
 
 const LAYERS = {
   brain:  ['dynamicTaskPlanning','multiAgentCollab','selfCorrection'],
@@ -1348,6 +1764,8 @@ const T = {
     passwordLabel: 'Access Key', loginBtn: 'Access Benchmark →',
         loginEyebrow: 'Enterprise AI Benchmark Tool',
     loginTagline: "Evaluate and compare enterprise-grade agentic AI platforms across 12 capability dimensions — tailored to your specific use case.",
+    govCap: 'Governance Cap',
+    govCapSub: 'Guard avg \u2265 2.0 required',
     loginFormTitle: 'Benchmark Access',
     loginFormSub: 'Enter the access key to open the platform.',
     loginByline: 'Capgemini Invent · Agentic AI Practice · 2026',
@@ -1390,6 +1808,9 @@ const T = {
     scoresMatrixTitle: 'Sub-Category Score Matrix',
     layerBrain: 'Brain', layerMemory: 'Memory', layerGuard: 'Guard', layerHands: 'Hands',
     kpiReliability: 'Reliability', kpiScalability: 'Scalability', kpiTTV: 'Time-to-Value',
+    kpiRelDesc: 'Avg(Brain,Memory) × (Guard÷3). How trustworthy is the output given the safety layer? High values mean capable reasoning backed by strong governance.',
+    kpiScalDesc: 'Avg(API Fabric, Cross-App, Multi-Agent, IAM). How far can this platform reach across enterprise systems? Measures integration breadth and agent coordination.',
+    kpiTtvDesc: 'Avg(Multiplier²) × 100. How fast does the investment amortise? Higher = lower engineering overhead → faster production deployment.',
     moscow3: 'Must-have', moscow2: 'Should-have', moscow1: 'Could-have', moscow0: 'Irrelevant',
     tickLabels: ['Irrelevant', 'Could-have', 'Should-have', 'Must-have'],
     subNames: {
@@ -1438,7 +1859,7 @@ const T = {
     pdfDate: 'Date',
     pdfFormula: 'Scoring Formula',
     buildAwarenessOff: 'Score% = 100 × Σ(Maturity × Weight) / Σ(3 × Weight)',
-    buildAwarenessOn: 'Score% = 100 × Σ(Maturity × Multiplier × Weight) / Σ(3 × Weight)'
+    buildAwarenessOn: 'Score% = 100 × Σ(Maturity × Multiplier² × Weight) / Σ(3 × Weight)'
   },
   DE: {
     back: '← Zurück', exportPDF: 'PDF exportieren',
@@ -1446,6 +1867,8 @@ const T = {
     passwordLabel: 'Zugangscode', loginBtn: 'Benchmark öffnen →',
         loginEyebrow: 'Enterprise AI Benchmark Tool',
     loginTagline: "Bewerten und vergleichen Sie unternehmensweite Agentic-AI-Plattformen entlang von 12 Fähigkeitsdimensionen — zugeschnitten auf Ihren spezifischen Anwendungsfall.",
+    govCap: 'Governance-Kappe',
+    govCapSub: 'Guard-Durchschnitt \u2265 2.0 erforderlich',
     loginFormTitle: 'Benchmark Zugang',
     loginFormSub: 'Zugangscode eingeben, um die Plattform zu öffnen.',
     loginByline: 'Capgemini Invent · Agentic AI Practice · 2026',
@@ -1486,6 +1909,9 @@ const T = {
     colRank: 'Rang', colVendor: 'Anbieter', colScore: 'Score',
     layerBrain: 'Gehirn', layerMemory: 'Gedächtnis', layerGuard: 'Schutz', layerHands: 'Ausführung',
     kpiReliability: 'Zuverlässigkeit', kpiScalability: 'Skalierbarkeit', kpiTTV: 'Time-to-Value',
+    kpiRelDesc: 'Avg(Brain,Memory) × (Guard÷3). Wie vertrauenswürdig ist der Output angesichts der Sicherheitsschicht? Hohe Werte = starkes Reasoning + robuste Governance.',
+    kpiScalDesc: 'Avg(API Fabric, Cross-App, Multi-Agent, IAM). Wie weit kann die Plattform im Unternehmen ausgerollt werden? Misst Integrationsbreite und Agenten-Koordination.',
+    kpiTtvDesc: 'Avg(Multiplikator²) × 100. Wie schnell amortisiert die Investition? Höher = geringerer Engineering-Aufwand → schnellere Produktionisierung.',
     moscow3: 'Muss haben', moscow2: 'Sollte haben', moscow1: 'Könnte haben', moscow0: 'Irrelevant',
     tickLabels: ['Irrelevant', 'Könnte haben', 'Sollte haben', 'Muss haben'],
     subNames: {
@@ -1530,7 +1956,7 @@ const T = {
     pdfTitle: 'Agentic AI Plattform Benchmark',
     pdfPrepared: 'Erstellt für', pdfDate: 'Datum', pdfFormula: 'Bewertungsformel',
     buildAwarenessOff: 'Score% = 100 × Σ(Reife × Gewichtung) / Σ(3 × Gewichtung)',
-    buildAwarenessOn: 'Score% = 100 × Σ(Reife × Multiplikator × Gewichtung) / Σ(3 × Gewichtung)'
+    buildAwarenessOn: 'Score% = 100 × Σ(Reife × Multiplikator² × Gewichtung) / Σ(3 × Gewichtung)'
   },
   FR: {
     back: '← Retour', exportPDF: 'Exporter PDF',
@@ -1538,6 +1964,8 @@ const T = {
     passwordLabel: 'Clé d\'accès', loginBtn: 'Accéder au Benchmark →',
         loginEyebrow: 'Outil de Benchmark IA Entreprise',
     loginTagline: "Évaluez et comparez les plateformes d'IA agentique de niveau entreprise selon 12 dimensions de capacité — adaptées à votre cas d'usage spécifique.",
+    govCap: 'Plafond de gouvernance',
+    govCapSub: 'Moyenne Guard \u2265 2.0 requise',
     loginFormTitle: 'Accès Benchmark',
     betaTitle: 'En cours de développement',
     betaSub: 'Scores & calculs en cours de développement',
@@ -1578,6 +2006,9 @@ const T = {
     colRank: 'Rang', colVendor: 'Fournisseur', colScore: 'Score',
     layerBrain: 'Cerveau', layerMemory: 'Mémoire', layerGuard: 'Garde', layerHands: 'Mains',
     kpiReliability: 'Fiabilité', kpiScalability: 'Évolutivité', kpiTTV: 'Délai de valeur',
+    kpiRelDesc: 'Avg(Brain,Memory) × (Guard÷3). Dans quelle mesure peut-on faire confiance à l\'output compte tenu de la couche de sécurité?',
+    kpiScalDesc: 'Avg(API, Cross-App, Multi-Agent, IAM). Quelle est l\'étendue opérationnelle de la plateforme dans l\'entreprise?',
+    kpiTtvDesc: 'Avg(Multiplicateur²) × 100. Quelle est la vitesse d\'amortissement? Plus élevé = moins d\'ingénierie nécessaire.',
     moscow3: 'Indispensable', moscow2: 'Souhaitable', moscow1: 'Optionnel', moscow0: 'Irrelevant',
     tickLabels: ['Irrelevant', 'Optionnel', 'Souhaitable', 'Indispensable'],
     subNames: {
@@ -1622,7 +2053,7 @@ const T = {
     pdfTitle: 'Benchmark des plateformes IA agentiques',
     pdfPrepared: 'Préparé pour', pdfDate: 'Date', pdfFormula: 'Formule de notation',
     buildAwarenessOff: 'Score% = 100 × Σ(Maturité × Poids) / Σ(3 × Poids)',
-    buildAwarenessOn: 'Score% = 100 × Σ(Maturité × Multiplicateur × Poids) / Σ(3 × Poids)'
+    buildAwarenessOn: 'Score% = 100 × Σ(Maturité × Multiplicateur² × Poids) / Σ(3 × Poids)'
   },
   ES: {
     back: '← Volver', exportPDF: 'Exportar PDF',
@@ -1630,6 +2061,8 @@ const T = {
     passwordLabel: 'Clave de acceso', loginBtn: 'Acceder al Benchmark →',
         loginEyebrow: 'Herramienta de Benchmark IA Empresarial',
     loginTagline: "Evalúe y compare plataformas de IA agéntica de nivel empresarial en 12 dimensiones de capacidad — adaptadas a su caso de uso específico.",
+    govCap: 'Límite de gobernanza',
+    govCapSub: 'Promedio Guard \u2265 2.0 requerido',
     loginFormTitle: 'Acceso Benchmark',
     betaTitle: 'En desarrollo',
     betaSub: 'Puntuaciones & cálculos en desarrollo',
@@ -1670,6 +2103,9 @@ const T = {
     colRank: 'Rango', colVendor: 'Proveedor', colScore: 'Puntuación',
     layerBrain: 'Cerebro', layerMemory: 'Memoria', layerGuard: 'Guardia', layerHands: 'Ejecución',
     kpiReliability: 'Fiabilidad', kpiScalability: 'Escalabilidad', kpiTTV: 'Tiempo hasta valor',
+    kpiRelDesc: 'Avg(Brain,Memory) × (Guard÷3). ¿Cuánto se puede confiar en el output dado el nivel de gobernanza?',
+    kpiScalDesc: 'Avg(API Fabric, Cross-App, Multi-Agente, IAM). ¿Qué tan lejos puede llegar la plataforma en la empresa?',
+    kpiTtvDesc: 'Avg(Multiplicador²) × 100. ¿Con qué rapidez se amortiza la inversión? Más alto = menos ingeniería requerida.',
     moscow3: 'Imprescindible', moscow2: 'Deseable', moscow1: 'Opcional', moscow0: 'Irrelevante',
     tickLabels: ['Irrelevante', 'Opcional', 'Deseable', 'Imprescindible'],
     subNames: {
@@ -1714,7 +2150,7 @@ const T = {
     pdfTitle: 'Benchmark de Plataformas IA Agénticas',
     pdfPrepared: 'Preparado para', pdfDate: 'Fecha', pdfFormula: 'Fórmula de puntuación',
     buildAwarenessOff: 'Score% = 100 × Σ(Madurez × Peso) / Σ(3 × Peso)',
-    buildAwarenessOn: 'Score% = 100 × Σ(Madurez × Multiplicador × Peso) / Σ(3 × Peso)'
+    buildAwarenessOn: 'Score% = 100 × Σ(Madurez × Multiplicador² × Peso) / Σ(3 × Peso)'
   },
   IT: {
     back: '← Indietro', exportPDF: 'Esporta PDF',
@@ -1722,6 +2158,8 @@ const T = {
     passwordLabel: 'Chiave di accesso', loginBtn: 'Accedi al Benchmark →',
         loginEyebrow: 'Strumento di Benchmark IA Aziendale',
     loginTagline: "Valuta e confronta le piattaforme di IA agentiva di livello enterprise su 12 dimensioni di capacità — personalizzate per il tuo caso d'uso specifico.",
+    govCap: 'Limite di governance',
+    govCapSub: 'Media Guard \u2265 2.0 richiesta',
     loginFormTitle: 'Accesso Benchmark',
     betaTitle: 'In sviluppo',
     betaSub: 'Punteggi & calcoli in sviluppo',
@@ -1762,6 +2200,9 @@ const T = {
     colRank: 'Posizione', colVendor: 'Vendor', colScore: 'Punteggio',
     layerBrain: 'Cervello', layerMemory: 'Memoria', layerGuard: 'Guardia', layerHands: 'Esecuzione',
     kpiReliability: 'Affidabilità', kpiScalability: 'Scalabilità', kpiTTV: 'Tempo al valore',
+    kpiRelDesc: 'Avg(Brain,Memory) × (Guard÷3). Quanto ci si può fidare dell\'output dato il livello di governance?',
+    kpiScalDesc: 'Avg(API Fabric, Cross-App, Multi-Agente, IAM). Quanto può estendersi la piattaforma nell\'impresa?',
+    kpiTtvDesc: 'Avg(Moltiplicatore²) × 100. Con quale velocità si ammortizza l\'investimento? Più alto = meno ingegneria richiesta.',
     moscow3: 'Indispensabile', moscow2: 'Desiderabile', moscow1: 'Opzionale', moscow0: 'Irrilevante',
     tickLabels: ['Irrilevante', 'Opzionale', 'Desiderabile', 'Indispensabile'],
     subNames: {
@@ -1817,7 +2258,9 @@ let currentLang = 'EN';
 let currentView = 1;
 let selectedVendors = [];
 let sliderValues = {};
+let savedCustomSliders = {};  // persists user's custom weights
 let buildAwareness = false;
+let governanceCap = false;
 let currentPreset = 'custom';
 
 function t(key) { return T[currentLang][key] || T['EN'][key] || key; }
@@ -2031,6 +2474,7 @@ function renderPresets() {
   // View 3 preset bar
   renderV3PresetBar();
   renderV3BaBox();
+  wireFormulaBtn();
 }
 
 function renderV3PresetBar() {
@@ -2058,41 +2502,56 @@ function renderV3PresetBar() {
 function renderV3BaBox() {
   const box = document.getElementById('v3-ba-box');
   if(!box) return;
-  const isOn = buildAwareness;
+  const isBA = buildAwareness;
+  const isGC = governanceCap;
+
   box.innerHTML =
-    '<div class="v3-ba-left">'+
-      '<div class="v3-ba-title">'+
-        '<span class="v3-ba-title-dot '+(isOn?'on':'')+'"></span>'+
-        'Build-Awareness Mode'+
-        '<button class="ba-info-btn" id="ba-info-btn" tabindex="-1">?</button>'+
+    // ── Build-Awareness card ──
+    '<div class="v3-toggle-card" id="v3-ba-card">'+
+      '<div class="v3-toggle-card-header">'+
+        '<span class="v3-toggle-dot '+(isBA?'on ba':'')+'"></span>'+
+        '<span class="v3-toggle-card-label">Build-Awareness Mode</span>'+
+        '<button class="v3-toggle-qbtn" id="ba-info-btn" tabindex="-1">?</button>'+
       '</div>'+
+      '<div class="v3-toggle-card-footer">'+
+        '<span class="v3-toggle-status '+(isBA?'on':'off')+'">'+(isBA?'ON':'OFF')+'</span>'+
+        '<label class="toggle-switch">'+
+          '<input type="checkbox" id="v3-build-toggle" '+(isBA?'checked':'')+'>'+
+          '<span class="toggle-slider"></span>'+
+        '</label>'+
+      '</div>'+
+      '<div id="ba-info-tooltip" class="ba-info-tooltip"></div>'+
     '</div>'+
-    '<div id="ba-info-tooltip" class="ba-info-tooltip"></div>'+
-    '<div class="v3-ba-right">'+
-      '<span class="v3-ba-status '+(isOn?'on':'off')+'">'+(isOn?'ON':'OFF')+'</span>'+
-      '<label class="toggle-switch">'+
-        '<input type="checkbox" id="v3-build-toggle" '+(isOn?'checked':'')+'>'+
-        '<span class="toggle-slider"></span>'+
-      '</label>'+
+    // ── Governance Cap card ──
+    '<div class="v3-toggle-card" id="v3-gc-card">'+
+      '<div class="v3-toggle-card-header">'+
+        '<span class="v3-toggle-dot '+(isGC?'on gc':'')+'"></span>'+
+        '<span class="v3-toggle-card-label">'+t('govCap')+'</span>'+
+        '<button class="v3-toggle-qbtn" id="gc-info-btn" tabindex="-1">?</button>'+
+      '</div>'+
+      '<div class="v3-toggle-card-footer">'+
+        '<span class="v3-gc-status v3-toggle-status '+(isGC?'on gc':'off')+'">'+(isGC?'ON':'OFF')+'</span>'+
+        '<label class="toggle-switch">'+
+          '<input type="checkbox" id="v3-gc-toggle" '+(isGC?'checked':'')+'>'+
+          '<span class="toggle-slider"></span>'+
+        '</label>'+
+      '</div>'+
+      '<div id="gc-info-tooltip" class="ba-info-tooltip"></div>'+
     '</div>';
+
   setTimeout(() => {
-    // Wire ? button tooltip
+    // ── Wire Build-Awareness ──────────────────────────────
     const baBtn = document.getElementById('ba-info-btn');
     const baTip = document.getElementById('ba-info-tooltip');
     if(baBtn && baTip) {
       baTip.innerHTML = BA_DESCS[currentLang] || BA_DESCS['EN'];
       baBtn.onmouseenter = () => {
         const r = baBtn.getBoundingClientRect();
-        const ttW = 340;
-        let left = r.right - ttW;
-        if(left < 8) left = 8;
+        let left = r.right - 340; if(left < 8) left = 8;
         baTip.style.left = left + 'px';
-        baTip.style.top  = (r.top - 8) + 'px';
+        baTip.style.top  = r.top - 8 + 'px';
         baTip.style.transform = 'translateY(-100%)';
-        if(r.top < 120) {
-          baTip.style.top = (r.bottom + 8) + 'px';
-          baTip.style.transform = 'translateY(0)';
-        }
+        if(r.top < 120) { baTip.style.top = r.bottom + 8 + 'px'; baTip.style.transform = 'translateY(0)'; }
         baTip.classList.add('visible');
       };
       baBtn.onmouseleave = () => baTip.classList.remove('visible');
@@ -2102,20 +2561,53 @@ function renderV3BaBox() {
       buildAwareness = tog.checked;
       const v2tog = document.getElementById('build-toggle');
       if(v2tog) v2tog.checked = tog.checked;
-      // Update badge immediately without waiting for full re-render
-      const badge = document.querySelector('.v3-ba-status');
-      if(badge) { badge.textContent = buildAwareness?'ON':'OFF'; badge.className='v3-ba-status '+(buildAwareness?'on':'off'); }
-      const dot = document.querySelector('.v3-ba-title-dot');
-      if(dot) dot.className='v3-ba-title-dot '+(buildAwareness?'on':'');
+      renderResults();
+    };
+    // ── Wire Governance Cap ───────────────────────────────
+    const gcBtn = document.getElementById('gc-info-btn');
+    const gcTip = document.getElementById('gc-info-tooltip');
+    if(gcBtn && gcTip) {
+      const gc = GOV_CAP_TEXTS[currentLang] || GOV_CAP_TEXTS['EN'];
+      gcTip.innerHTML = '<div class="gov-cap-tooltip-title">'+gc.title+'</div>'+gc.body;
+      gcBtn.onmouseenter = () => {
+        const r = gcBtn.getBoundingClientRect();
+        let left = r.right - 300; if(left < 8) left = 8;
+        gcTip.style.left = left + 'px';
+        gcTip.style.top  = r.top - 8 + 'px';
+        gcTip.style.transform = 'translateY(-100%)';
+        if(r.top < 120) { gcTip.style.top = r.bottom + 8 + 'px'; gcTip.style.transform = 'translateY(0)'; }
+        gcTip.classList.add('visible');
+      };
+      gcBtn.onmouseleave = () => gcTip.classList.remove('visible');
+    }
+    const gcTog = document.getElementById('v3-gc-toggle');
+    if(gcTog) gcTog.onchange = () => {
+      governanceCap = gcTog.checked;
       renderResults();
     };
   }, 0);
 }
 
 function selectPreset(id) {
+  // Save current custom values before switching away
+  if(currentPreset === 'custom') {
+    SUB_IDS.forEach(sub => { savedCustomSliders[sub] = sliderValues[sub]; });
+  }
   currentPreset = id;
-  if(id !== 'custom') applyPreset(id);
-  // Update pill active states
+  if(id === 'custom') {
+    const hasCustom = Object.keys(savedCustomSliders).length > 0;
+    if(hasCustom) {
+      SUB_IDS.forEach(sub => {
+        if(savedCustomSliders[sub] !== undefined) {
+          sliderValues[sub] = savedCustomSliders[sub];
+          const el = document.getElementById('slider-'+sub);
+          if(el) { el.value = savedCustomSliders[sub]; updateBadge(sub, savedCustomSliders[sub]); }
+        }
+      });
+    }
+  } else {
+    applyPreset(id);
+  }
   document.querySelectorAll('.v2-preset-pill, .v3-preset-pill').forEach(el => {
     el.classList.toggle('active', el.dataset.preset === id || el.textContent.trim() === (id==='custom'?'Custom':'') && id==='custom');
   });
@@ -2220,6 +2712,14 @@ function getMoscowStyle(v) {
 }
 
 function onSlider(sub, val) {
+  // Switching to custom when user adjusts a slider
+  if(currentPreset !== 'custom') {
+    currentPreset = 'custom';
+    document.querySelectorAll('.v2-preset-pill, .v3-preset-pill').forEach(el => {
+      el.classList.toggle('active', el.dataset.preset === 'custom' ||
+        (el.textContent.trim() === 'Custom' && !el.dataset.preset));
+    });
+  }
   sliderValues[sub] = parseInt(val);
   updateBadge(sub, val);
 }
@@ -2232,6 +2732,18 @@ function updateBadge(sub, val) {
 // ============================================================
 // SCORING ENGINE
 // ============================================================
+// Returns raw guard avg (maturity only, 0–3 scale) — used for Governance Cap
+function calcGuardAvg(vendorId) {
+  const v = VENDORS[vendorId];
+  const subs = LAYERS.guard;
+  return subs.reduce((s, sub) => s + v.scores[sub].maturity, 0) / subs.length;
+}
+
+// Returns true if governance cap is ON and vendor fails guard threshold
+function isGovernanceCapped(vendorId) {
+  return governanceCap && calcGuardAvg(vendorId) < 2.0;
+}
+
 function calcScore(vendorId, useMultiplier) {
   const v = VENDORS[vendorId];
   let num = 0, den = 0;
@@ -2240,11 +2752,16 @@ function calcScore(vendorId, useMultiplier) {
     if(w === 0) return;
     const mat = v.scores[sub].maturity;
     const mult = useMultiplier ? v.scores[sub].multiplier : 1;
-    num += mat * mult * w;
-    den += 3 * w;
+    // Non-linear: multiplier² penalises high-code complexity exponentially
+    const effectiveMult = useMultiplier ? mult * mult : 1;
+    num += mat * effectiveMult * w;
+    den += 3 * 1.0 * w;
   });
   if(den === 0) return 0;
-  return Math.round((num/den)*1000)/10;
+  let score = Math.round((num/den)*1000)/10;
+  // Governance Cap: if avg guard maturity < 2.0 → 50% penalty
+  if(isGovernanceCapped(vendorId)) score = Math.round(score * 0.5 * 10) / 10;
+  return score;
 }
 
 function calcLayerScore(vendorId, layerSubs) {
@@ -2255,8 +2772,10 @@ function calcLayerScore(vendorId, layerSubs) {
     if(w === 0) return;
     const mat = v.scores[sub].maturity;
     const mult = buildAwareness ? v.scores[sub].multiplier : 1;
-    num += mat * mult * w;
-    den += 3 * w;
+    // Non-linear: multiplier² penalises high-code complexity exponentially
+    const effectiveMult = buildAwareness ? mult * mult : 1;
+    num += mat * effectiveMult * w;
+    den += 3 * 1.0 * w;
   });
   if(den === 0) return 0;
   return Math.round((num/den)*30)/10;
@@ -2264,16 +2783,27 @@ function calcLayerScore(vendorId, layerSubs) {
 
 function calcKPIs(vendorId) {
   const v = VENDORS[vendorId];
-  const rel = ['decisionTraceability','guardrailEnforcement','iam','selfCorrection','semanticRAG'];
-  const scal = ['apiFabric','crossAppOrchestration','runtimeResilience','multiAgentCollab','iam'];
-  const relScore = rel.reduce((s,sub)=>s+v.scores[sub].maturity,0)/(5*3)*100;
-  const scalScore = scal.reduce((s,sub)=>s+v.scores[sub].maturity,0)/(5*3)*100;
-  const ttvScore = SUB_IDS.reduce((s,sub)=>s+v.scores[sub].multiplier,0)/SUB_IDS.length*100;
-  return {
-    reliability: Math.round(relScore),
-    scalability: Math.round(scalScore),
-    ttv: Math.round(ttvScore)
-  };
+
+  // Reliability: Avg(Brain, Memory) × (GuardAvg / 3)
+  // Reflects: "How much can you trust the output given the safety layer?"
+  const brainAvg  = LAYERS.brain.reduce((s,sub)=>s+v.scores[sub].maturity, 0) / LAYERS.brain.length;
+  const memAvg    = LAYERS.memory.reduce((s,sub)=>s+v.scores[sub].maturity, 0) / LAYERS.memory.length;
+  const guardAvg  = calcGuardAvg(vendorId);  // raw, not capped
+  const relRaw    = ((brainAvg + memAvg) / 2) * (guardAvg / 3);  // 0–3 scale
+  const reliability = Math.round((relRaw / 3) * 100);
+
+  // Scalability: Avg(apiFabric, crossAppOrchestration, multiAgentCollab, iam)
+  // Reflects: "How far can this platform reach across the enterprise?"
+  const scalSubs   = ['apiFabric','crossAppOrchestration','multiAgentCollab','iam'];
+  const scalRaw    = scalSubs.reduce((s,sub)=>s+v.scores[sub].maturity, 0) / scalSubs.length;
+  const scalability = Math.round((scalRaw / 3) * 100);
+
+  // Time-to-Value: Avg(Multiplier²) × 100
+  // Reflects: "How fast does the investment amortise? Higher = faster."
+  const ttvRaw = SUB_IDS.reduce((s,sub)=>s + Math.pow(v.scores[sub].multiplier, 2), 0) / SUB_IDS.length;
+  const ttv = Math.round(ttvRaw * 100);
+
+  return { reliability, scalability, ttv };
 }
 
 // ============================================================
@@ -2337,6 +2867,111 @@ function generate() {
 // RENDER RESULTS
 // ============================================================
 
+
+function buildFormulaPopover() {
+  const pop = document.getElementById('formula-popover');
+  if(!pop) return;
+  const isOn = buildAwareness;
+  const L = currentLang;
+
+  const legends = {
+    EN: [
+      ['Score%',     'Final weighted score 0–100%'],
+      ['Maturity',   'Capability score 1–3 (1=Basic, 2=Advanced, 3=Leading)'],
+      ['Multiplier', 'Implementation ease 0.4/0.7/1.0 (Low/Mid/High-Code)'],
+      ['Multiplier²','Quadratic penalty: high-code platforms lose exponentially more'],
+      ['Weight',     'Your configured importance per sub-category (0–3)'],
+    ],
+    DE: [
+      ['Score%',     'Gewichteter Gesamtscore 0–100%'],
+      ['Maturity',   'Fähigkeitswert 1–3 (1=Basis, 2=Fortgeschritten, 3=Führend)'],
+      ['Multiplier', 'Implementierungsaufwand 0.4/0.7/1.0 (High/Mid/Low-Code)'],
+      ['Multiplier²','Quadratische Strafe: High-Code-Plattformen verlieren exponentiell'],
+      ['Weight',     'Ihre konfigurierte Wichtigkeit je Unterkategorie (0–3)'],
+    ],
+    FR: [
+      ['Score%',     'Score pondéré final 0–100%'],
+      ['Maturity',   'Score de capacité 1–3 (1=Basique, 2=Avancé, 3=Leader)'],
+      ['Multiplier', "Facilité d’implémentation 0.4/0.7/1.0"],
+      ['Multiplier²','Pénalité quadratique : les plateformes high-code perdent exponentiellement'],
+      ['Weight',     'Importance configurée par sous-catégorie (0–3)'],
+    ],
+    ES: [
+      ['Score%',     'Puntuación ponderada final 0–100%'],
+      ['Maturity',   'Puntuación de capacidad 1–3 (1=Básico, 2=Avanzado, 3=Líder)'],
+      ['Multiplier', 'Facilidad de implementación 0.4/0.7/1.0'],
+      ['Multiplier²','Penalización cuadrática: plataformas high-code pierden exponencialmente'],
+      ['Weight',     'Importancia configurada por subcategoría (0–3)'],
+    ],
+    IT: [
+      ['Score%',     'Punteggio ponderato finale 0–100%'],
+      ['Maturity',   'Punteggio di capacità 1–3 (1=Base, 2=Avanzato, 3=Leader)'],
+      ['Multiplier', 'Facilità di implementazione 0.4/0.7/1.0'],
+      ['Multiplier²','Penalità quadratica: le piattaforme high-code perdono esponenzialmente'],
+      ['Weight',     'Importanza configurata per sottocategoria (0–3)'],
+    ],
+  };
+  const leg = legends[L] || legends['EN'];
+  const labels = { EN:['Without Build-Awareness','With Build-Awareness (Quadratic Penalty)','Variables','Example: Build-Awareness ON'],
+                   DE:['Ohne Build-Awareness','Mit Build-Awareness (Quadratische Strafe)','Variablen','Beispiel: Build-Awareness AN'],
+                   FR:['Sans Build-Awareness','Avec Build-Awareness (Pénalité Quadratique)','Variables','Exemple: Build-Awareness ACTIF'],
+                   ES:['Sin Build-Awareness','Con Build-Awareness (Penalización Cuadrática)','Variables','Ejemplo: Build-Awareness ACTIVO'],
+                   IT:['Senza Build-Awareness','Con Build-Awareness (Penalità Quadratica)','Variabili','Esempio: Build-Awareness ATTIVO'],
+                 };
+  const lbl = labels[L] || labels['EN'];
+
+  pop.innerHTML =
+    '<div class="formula-pop-header">'+
+      '<span class="formula-pop-dot"></span>'+
+      '<span class="formula-pop-header-title">Scoring Formula</span>'+
+    '</div>'+
+    '<div class="formula-pop-body">'+
+      '<div class="formula-block">'+
+        '<div class="formula-block-label off">'+lbl[0]+'</div>'+
+        '<div class="formula-eq">Score% = 100 × Σ(Mat × W) / Σ(3 × W)</div>'+
+      '</div>'+
+      '<div class="formula-block">'+
+        '<div class="formula-block-label on">'+lbl[1]+'</div>'+
+        '<div class="formula-eq">Score% = 100 × Σ(Mat × Mult<sup>2</sup> × W) / Σ(3 × W)</div>'+
+      '</div>'+
+      '<div class="formula-sep"></div>'+
+      '<div class="formula-legend">'+
+        leg.map(([k,v])=>'<div class="formula-legend-row"><span class="formula-legend-key">'+k+'</span><span class="formula-legend-val">'+v+'</span></div>').join('')+
+      '</div>'+
+      '<div class="formula-sep"></div>'+
+      '<div class="formula-block" style="border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.05)">'+
+        '<div class="formula-block-label" style="color:#F87171">Governance Cap</div>'+
+        '<div class="formula-eq" style="font-size:10.5px">IF avg(Guard maturity) &lt; 2.0 → Score × 0.5</div>'+
+        '<div style="font-size:10.5px;color:rgba(255,255,255,0.45);margin-top:5px;line-height:1.5">Decision Traceability + Guardrail Enforcement + IAM must average ≥ 2.0 to avoid a 50% score penalty.</div>'+
+      '</div>'+
+      '<div class="formula-sep"></div>'+
+      '<div class="formula-example">'+
+        '<div class="formula-example-title">'+lbl[3]+'</div>'+
+        '<div class="formula-example-rows">'+
+          '<div class="formula-example-row"><span>Maturity 3 × Mult 0.4² × W1</span><span>= 0.48</span></div>'+
+          '<div class="formula-example-row"><span>Maturity 2 × Mult 1.0² × W1</span><span>= 2.00</span></div>'+
+          '<div class="formula-example-row" style="border-top:1px solid rgba(0,229,204,0.15);margin-top:4px;padding-top:4px;color:rgba(255,255,255,0.85)"><span>Low-Code advantage</span><span style="color:#00E5CC">× 4.2</span></div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+}
+
+function wireFormulaBtn() {
+  const btn = document.getElementById('formula-info-btn');
+  const pop = document.getElementById('formula-popover');
+  if(!btn || !pop) return;
+  btn.onmouseenter = () => {
+    buildFormulaPopover();
+    const r = btn.getBoundingClientRect();
+    let left = r.right - 380;
+    if(left < 8) left = 8;
+    pop.style.left = left + 'px';
+    pop.style.top  = (r.bottom + 10) + 'px';
+    pop.classList.add('visible');
+  };
+  btn.onmouseleave = () => pop.classList.remove('visible');
+}
+
 function renderResults() {
   window._hiddenVendors = new Set();
   const presetSel = document.getElementById('preset-select');
@@ -2350,6 +2985,7 @@ function renderResults() {
   document.getElementById('results-subtitle').textContent = t('useCase') + ': ' + presetName + '  ·  Build-Awareness: ' + baStatus;
   renderV3PresetBar();
   renderV3BaBox();
+  wireFormulaBtn();
 
   const ranked = selectedVendors.map(id => ({
     id, name: VENDORS[id].name, platform: VENDORS[id].platform, color: VENDORS[id].color,
@@ -2357,10 +2993,103 @@ function renderResults() {
     brain: calcLayerScore(id, LAYERS.brain),
     memory: calcLayerScore(id, LAYERS.memory),
     guard: calcLayerScore(id, LAYERS.guard),
-    hands: calcLayerScore(id, LAYERS.hands)
+    hands: calcLayerScore(id, LAYERS.hands),
+    govCapped: isGovernanceCapped(id),
+    guardAvg: calcGuardAvg(id)
   })).sort((a,b) => b.total - a.total);
 
   renderRankCards(ranked);
+  // Ensure vendor spotlight tooltip div
+  if(!document.getElementById('vendor-spotlight-tip')) {
+    const vt = document.createElement('div');
+    vt.id = 'vendor-spotlight-tip';
+    vt.className = 'vendor-spotlight-tip';
+    document.body.appendChild(vt);
+  }
+  // Wire vendor name hover
+  setTimeout(() => {
+    const vst = document.getElementById('vendor-spotlight-tip');
+    document.querySelectorAll('.r3-vcard[data-vendor-id]').forEach(card => {
+      const vid = card.dataset.vendorId;
+      const sp = (VENDOR_SPOTLIGHTS[vid] || {})[currentLang] || (VENDOR_SPOTLIGHTS[vid] || {})['EN'];
+      const v = VENDORS[vid];
+      if(!sp || !v) return;
+      const nameEl = card.querySelector('.r3-vcard-name');
+      if(!nameEl) return;
+      nameEl.style.cursor = 'help';
+      nameEl.onmouseenter = () => {
+        vst.innerHTML =
+          '<div class="vst-accent" style="background:'+v.color+'"></div>'+
+          '<div class="vst-header">'+
+            '<div class="vst-name">'+v.name+'</div>'+
+            '<div class="vst-platform">'+v.platform+'</div>'+
+          '</div>'+
+          '<div class="vst-body">'+
+            '<div class="vst-row"><div class="vst-row-label pos">Positioning</div><div class="vst-row-text">'+sp.pos+'</div></div>'+
+            '<div class="vst-row"><div class="vst-row-label str">Key Strength</div><div class="vst-row-text">'+sp.str+'</div></div>'+
+            '<div class="vst-row"><div class="vst-row-label weak">Key Weakness</div><div class="vst-row-text">'+sp.weak+'</div></div>'+
+            '<div class="vst-row"><div class="vst-row-label risk">Risk Rating</div><div class="vst-row-text">'+sp.risk+'</div></div>'+
+          '</div>';
+        const r = nameEl.getBoundingClientRect();
+        let left = r.left; if(left + 320 > window.innerWidth - 8) left = window.innerWidth - 328;
+        if(left < 8) left = 8;
+        vst.style.left  = left + 'px';
+        vst.style.top   = (r.top - 8) + 'px';
+        vst.style.transform = 'translateY(-100%)';
+        if(r.top < 200) { vst.style.top=(r.bottom+8)+'px'; vst.style.transform='translateY(0)'; }
+        vst.classList.add('visible');
+      };
+      nameEl.onmouseleave = () => vst.classList.remove('visible');
+    });
+  }, 80);
+  // Wire KPI ? tooltips
+  setTimeout(() => {
+    // Ensure one shared tooltip div
+    let kpiTip = document.getElementById('kpi-global-tip');
+    if(!kpiTip){
+      kpiTip = document.createElement('div');
+      kpiTip.id = 'kpi-global-tip';
+      kpiTip.className = 'r3-kpi-tooltip';
+      document.body.appendChild(kpiTip);
+    }
+    document.querySelectorAll('.r3-kpi[data-kpikey]').forEach(btn => {
+      btn.onmouseenter = () => {
+        kpiTip.innerHTML = '<div class="r3-kpi-tooltip-title">'+btn.dataset.label+'</div>'+btn.dataset.desc;
+        const r = btn.getBoundingClientRect();
+        let left = r.left - 130; if(left<8) left=8; if(left+260>window.innerWidth-8) left=window.innerWidth-268;
+        kpiTip.style.left  = left+'px';
+        kpiTip.style.top   = (r.top - 8)+'px';
+        kpiTip.style.transform = 'translateY(-100%)';
+        if(r.top < 120){ kpiTip.style.top=(r.bottom+8)+'px'; kpiTip.style.transform='translateY(0)'; }
+        kpiTip.classList.add('visible');
+      };
+      btn.onmouseleave = () => kpiTip.classList.remove('visible');
+    });
+  }, 60);
+  // Wire governance cap tooltips
+  setTimeout(() => {
+    ranked.filter(r => r.govCapped).forEach(r => {
+      const badge = document.querySelector('[data-vendor="'+r.id+'"]');
+      const tip   = document.getElementById('gctip-'+r.id);
+      if(!badge || !tip) return;
+      const gc = GOV_CAP_TEXTS[currentLang] || GOV_CAP_TEXTS['EN'];
+      tip.innerHTML = '<div class="gov-cap-tooltip-title">'+gc.title+'</div>'+gc.body;
+      badge.onmouseenter = () => {
+        const rect = badge.getBoundingClientRect();
+        let left = rect.right - 300;
+        if(left < 8) left = 8;
+        tip.style.left = left + 'px';
+        tip.style.top  = (rect.top - 8) + 'px';
+        tip.style.transform = 'translateY(-100%)';
+        if(rect.top < 140) {
+          tip.style.top = (rect.bottom + 8) + 'px';
+          tip.style.transform = 'translateY(0)';
+        }
+        tip.classList.add('visible');
+      };
+      badge.onmouseleave = () => tip.classList.remove('visible');
+    });
+  }, 50);
   renderRadar(ranked);
   renderVerdict(ranked);
   renderSubScores(ranked);
@@ -2371,9 +3100,17 @@ function renderRankCards(ranked) {
   const grid = document.getElementById('rank-cards-row');
   grid.innerHTML = '';
 
+  // Dense ranking: same score = same position
+  let denseRank = 1;
+  const rankPositions = ranked.map((r, i) => {
+    if(i > 0 && r.total < ranked[i-1].total) denseRank = i + 1;
+    return denseRank;
+  });
+
   ranked.forEach((r, i) => {
     const kpis = calcKPIs(r.id);
-    const rankClass = ['r3-rank-1','r3-rank-2','r3-rank-3'][i] || 'r3-rank-n';
+    const pos = rankPositions[i];
+    const rankClass = ['r3-rank-1','r3-rank-2','r3-rank-3'][pos-1] || 'r3-rank-n';
     const layerData = [
       { label: t('layerBrain'),  val: r.brain,  color: '#28B4ED' },
       { label: t('layerMemory'), val: r.memory, color: '#00CCCD' },
@@ -2381,45 +3118,56 @@ function renderRankCards(ranked) {
       { label: t('layerHands'),  val: r.hands,  color: '#FF8A71' }
     ];
 
-    const layerBars = layerData.map(l =>
-      '<div class="r3-layer-row">' +
-        '<div class="r3-layer-label">' + l.label + '</div>' +
+const layerIcons = {'brain':'<div class="r3-layer-icon" style="color:#28B4ED"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M6 2c-2.2.5-3.5 2.2-3.5 4C2.5 8.5 4 10 4 10H8M10 2c2.2.5 3.5 2.2 3.5 4 0 2.5-1.5 4-1.5 4H8M8 10v4M5.5 7h5"/></svg></div>','memory':'<div class="r3-layer-icon" style="color:#00CCCD"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><ellipse cx="8" cy="5" rx="5" ry="2"/><path d="M3 5v3c0 1.1 2.2 2 5 2s5-.9 5-2V5"/><path d="M3 8v3c0 1.1 2.2 2 5 2s5-.9 5-2V8"/></svg></div>','guard':'<div class="r3-layer-icon" style="color:#FFAB00"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M8 2L3 4v4c0 3 2.5 5.5 5 6 2.5-.5 5-3 5-6V4L8 2z"/><polyline points="5.5,8 7,9.5 10.5,6.5"/></svg></div>','hands':'<div class="r3-layer-icon" style="color:#FF8A71"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M10 8V4.5a1 1 0 00-2 0V7M8 7V3.5a1 1 0 00-2 0V7M6 7V5a1 1 0 00-2 0v4c0 2.2 1.8 4 4 4s4-1.8 4-4V8a1 1 0 00-2 0"/></svg></div>'};
+
+    const layerBars = layerData.map((l,li) => {
+      const lk = ['brain','memory','guard','hands'][li];
+      return '<div class="r3-layer-row">' +
+        '<div class="r3-layer-header">' + layerIcons[lk] +
+          '<span class="r3-layer-label">' + l.label + '</span>' +
+        '</div>' +
         '<div class="r3-layer-bar-track">' +
           '<div class="r3-layer-bar-fill" style="background:' + l.color + '" data-w="' + (l.val/3*100).toFixed(0) + '"></div>' +
         '</div>' +
-        '<div class="r3-layer-val">' + l.val.toFixed(1) + ' / 3</div>' +
-      '</div>'
-    ).join('');
+        '<div class="r3-layer-val">' + l.val.toFixed(1) + '</div>' +
+      '</div>';
+    }).join('');
 
     const kpiColor = p => p>80?'#34D399':p>=50?'#28B4ED':'#F87171';
     const kpiItems = [
-      { val: kpis.reliability, label: t('kpiReliability') },
-      { val: kpis.scalability, label: t('kpiScalability') },
-      { val: kpis.ttv,         label: t('kpiTTV')         }
+      { val: kpis.reliability, label: t('kpiReliability'), desc: t('kpiRelDesc'),  key:'rel'  },
+      { val: kpis.scalability, label: t('kpiScalability'), desc: t('kpiScalDesc'), key:'scal' },
+      { val: kpis.ttv,         label: t('kpiTTV'),         desc: t('kpiTtvDesc'),  key:'ttv'  }
     ].map(k =>
-      '<div class="r3-kpi">' +
+      '<div class="r3-kpi" data-kpikey="' + k.key + '" data-desc="' + (k.desc||'').replace(/"/g,'&quot;') + '" data-label="' + k.label + '">' +
+        '<div class="r3-kpi-dot" style="color:' + kpiColor(k.val) + ';background:' + kpiColor(k.val) + '"></div>' +
         '<div class="r3-kpi-val" style="color:' + kpiColor(k.val) + '">' + k.val + '</div>' +
         '<div class="r3-kpi-lbl">' + k.label + '</div>' +
       '</div>'
     ).join('');
 
     const card = document.createElement('div');
-    card.className = 'r3-vcard';
+    card.className = 'r3-vcard' + (rankPositions[i]===1?' rank-first':'');
     card.style.setProperty('--vcard-color', r.color);
+    card.dataset.vendorId = r.id;
     card.innerHTML =
       '<div class="r3-vcard-top">' +
-        '<div>' +
+        '<div style="min-width:0">' +
           '<div class="r3-vcard-name">' + r.name + '</div>' +
           '<div class="r3-vcard-platform">' + r.platform + '</div>' +
+          (r.govCapped ? '<div class="gov-cap-wrap" style="margin-top:5px"><div class="gov-cap-badge" data-vendor="'+r.id+'">⚠ Governance Cap −50%</div><div class="gov-cap-tooltip" id="gctip-'+r.id+'"></div></div>' : '') +
         '</div>' +
-        '<div class="r3-vcard-rank ' + rankClass + '">' + (i+1) + '</div>' +
+        '<div class="r3-vcard-rank ' + rankClass + '">' + pos + '</div>' +
       '</div>' +
-      '<div class="r3-vcard-score" style="color:' + r.color + '">' + r.total + '%</div>' +
+      '<div class="r3-vcard-score-block">' +
+        '<div class="r3-vcard-score" style="--vcard-color:' + r.color + '">' + r.total + '</div>' +
+        '<span class="r3-vcard-score-unit" style="color:' + r.color + '">%</span>' +
+      '</div>' +
       '<div class="r3-vcard-score-label">Weighted Score</div>' +
-      '<div class="r3-vcard-bar"><div class="r3-vcard-bar-fill" style="background:' + r.color + '" data-w="' + r.total + '"></div></div>' +
-      '<div class="r3-vcard-divider"></div>' +
-      '<div class="r3-vcard-layers">' + layerBars + '</div>' +
-      '<div class="r3-vcard-divider"></div>' +
+      '<div class="r3-vcard-bar"><div class="r3-vcard-bar-fill" data-w="' + r.total + '"></div></div>' +
+      '<div class="r3-vcard-layers-box">' +
+        '<div class="r3-vcard-layers">' + layerBars + '</div>' +
+      '</div>' +
       '<div class="r3-vcard-kpis">' + kpiItems + '</div>';
 
     grid.appendChild(card);
