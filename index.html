@@ -3,954 +3,2826 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capgemini Invent · Agentic AI Platform Benchmark</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<title>Agentic AI Benchmark | Capgemini Invent</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800\&family=DM+Sans:wght@300;400;500;600;700;800\&family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root {
-  --bg-primary: #0D162D;
-  --bg-secondary: #131B35;
-  --bg-card: #1A2342;
-  --bg-card-hover: #1F2A4E;
-  --bg-input: #0F1729;
-  --border-color: #2A3558;
-  --border-light: #3A4568;
+  --bg-dark: #0D162D;
+  --bg-secondary: #131B33;
+  --bg-card: #1A2340;
+  --bg-hover: #212B4A;
+  --primary: #005FB8;
+  --secondary: #28B4ED;
+  --accent-teal: #00CCCD;
+  --accent-orange: #FFAB00;
+  --accent-coral: #FF8A71;
   --text-primary: #FFFFFF;
-  --text-secondary: #A0AEC0;
-  --text-muted: #6B7A99;
-  --blue-dark: #005FB8;
-  --blue-light: #28B4ED;
-  --turquoise: #00CCCD;
-  --orange: #FFAB00;
-  --red: #FF8A71;
-  --green: #4ADE80;
-  --purple: #A78BFA;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #6B7A99;
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+  --radius: 8px;
+  --radius-sm: 6px;
   --shadow: 0 4px 24px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.4);
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-xs: 6px;
-  --transition: all 0.3s ease;
-  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --ci-gradient: linear-gradient(90deg, #0066CC 0%, #00AADD 55%, #00E5CC 100%);
+  --ci-gradient-glow: linear-gradient(90deg, rgba(13,27,62,0.8) 0%, rgba(0,85,184,0.8) 40%, rgba(0,170,221,0.8) 75%, rgba(0,229,204,0.8) 100%);
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: var(--font);
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  min-height: 100vh;
-  overflow-x: hidden;
+  font-family: Ubuntu, sans-serif; font-size: 1rem; font-weight: 300;
+  letter-spacing: .24px; line-height: 1.625; color: var(--text-primary); min-height: 100vh;
+  background:
+    radial-gradient(ellipse 60% 50% at 25% 20%, rgba(0,95,184,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at 75% 80%, rgba(40,180,237,0.10) 0%, transparent 70%),
+    #0D162D;
+  background-attachment: fixed;
 }
-::-webkit-scrollbar { width:8px; }
-::-webkit-scrollbar-track { background:var(--bg-primary); }
-::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:4px; }
-::-webkit-scrollbar-thumb:hover { background:var(--blue-dark); }
+.view { display: none; }
+.view.active { display: block; }
+#view1.active { display: flex; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--text-tertiary); border-radius: 3px; }
 
 /* HEADER */
-.header {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:12px 32px;
-  background:var(--bg-secondary);
-  border-bottom:1px solid var(--border-color);
-  position:sticky; top:0; z-index:100;
+#header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: 64px; background: rgba(13,22,45,0.92); backdrop-filter: blur(20px);
+  border-bottom: none;
+  display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
 }
-.header-left { display:flex; align-items:center; gap:16px; }
-.header-logo-img { height:36px; object-fit:contain; }
-.header-divider { width:1px; height:32px; background:var(--border-color); }
-.header-title-block {}
-.header-title {
-  font-size:15px; font-weight:700; color:var(--text-primary); letter-spacing:0.3px;
-}
-.header-subtitle {
-  font-size:10px; color:var(--turquoise); letter-spacing:1.5px; text-transform:uppercase;
-}
-.header-right { display:flex; align-items:center; gap:10px; }
-.lang-select {
-  background:var(--bg-input); color:var(--text-secondary);
-  border:1px solid var(--border-color); border-radius:var(--radius-xs);
-  padding:6px 10px; font-size:12px; font-family:var(--font); cursor:pointer; outline:none;
+#header-logo { height: 36px; filter: brightness(0) invert(1); cursor: pointer; }
+#header-logo.hidden { visibility: hidden; pointer-events: none; }
+/* On login view, center the lang select */
+#header.login-mode { justify-content: flex-end; border-bottom-color: transparent; background: transparent; backdrop-filter: none; }
+#header-right { display: flex; align-items: center; gap: 12px; }
+#lang-select {
+  background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-primary); padding: 6px 12px; border-radius: var(--radius-sm);
+  font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer;
 }
 .header-btn {
-  padding:7px 14px; background:var(--bg-card); border:1px solid var(--border-color);
-  border-radius:var(--radius-xs); color:var(--text-secondary); font-size:12px;
-  font-family:var(--font); cursor:pointer; transition:var(--transition);
-  display:flex; align-items:center; gap:6px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; padding: 7px 16px; border-radius: var(--radius-sm);
+  font-family: 'Ubuntu', 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+  transition: all 0.2s ease; position: relative;
 }
-.header-btn:hover { background:var(--bg-card-hover); color:var(--text-primary); border-color:var(--blue-dark); }
-.header-btn.primary {
-  background:linear-gradient(135deg,var(--blue-dark),var(--blue-light));
-  border-color:transparent; color:white;
+.header-btn:hover { transform: translateY(-1px); }
+.header-btn.back-btn { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); }
+body:not(.login-mode) #header { border-bottom: 1px solid rgba(255,255,255,0.06); }
+
+
+/* ── BETA BADGE ──────────────────────────────────────────── */
+.beta-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+  cursor: default;
+  transition: border-color 0.2s, background 0.2s;
 }
-.header-btn.primary:hover { box-shadow:0 2px 12px rgba(0,95,184,0.3); }
-.user-badge {
-  font-size:11px; color:var(--text-muted); padding:6px 10px;
-  background:var(--bg-input); border-radius:var(--radius-xs);
+.beta-badge:hover {
+  border-color: rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.07);
+}
+.beta-badge { position: relative; }
+.beta-tooltip {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  width: 280px; padding: 14px 16px;
+  background: #0e1a2e; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  pointer-events: none; opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 999;
+}
+.beta-badge:hover .beta-tooltip {
+  opacity: 1; transform: translateY(0);
+}
+.beta-tooltip::before {
+  content: ''; position: absolute;
+  bottom: 100%; right: 18px;
+  border: 6px solid transparent;
+  border-bottom-color: rgba(255,255,255,0.12);
+}
+.beta-tooltip::after {
+  content: ''; position: absolute;
+  bottom: calc(100% - 1px); right: 19px;
+  border: 5px solid transparent;
+  border-bottom-color: #0e1a2e;
+}
+.beta-tooltip-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #FFAB00; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.beta-tooltip-title::before {
+  content: ''; display: inline-block;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #FFAB00;
+}
+.beta-tooltip-body {
+  font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.65;
+}
+.beta-tooltip-body strong { color: rgba(255,255,255,0.9); font-weight: 500; }
+.beta-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #FFAB00; flex-shrink: 0;
+  animation: beta-pulse 2.2s ease-in-out infinite;
+}
+@keyframes beta-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,171,0,0.55); }
+  60%  { box-shadow: 0 0 0 6px rgba(255,171,0,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,171,0,0); }
+}
+.beta-badge-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.beta-badge-icon svg { width: 100%; height: 100%; }
+.beta-badge-text { display: flex; flex-direction: column; gap: 2px; }
+.beta-badge-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(255,255,255,0.9); line-height: 1;
+}
+.beta-badge-sub {
+  font-size: 9.5px; color: rgba(255,255,255,0.42);
+  font-weight: 400; letter-spacing: 0.02em; line-height: 1.3; max-width: 200px;
 }
 
-/* MAIN */
-.main-content { padding:24px 32px; max-width:1600px; margin:0 auto; }
-.section-title { font-size:18px; font-weight:700; margin-bottom:4px; }
-.section-subtitle { font-size:13px; color:var(--text-secondary); margin-bottom:20px; }
-
-/* BUILD BANNER */
-.build-banner {
-  display:flex; align-items:center; justify-content:space-between;
-  background:var(--bg-card); border:1px solid var(--border-color);
-  border-radius:var(--radius); padding:14px 24px; margin-bottom:24px;
+/* VIEW 1: LOGIN — Capgemini Invent dark CI */
+#view1 {
+  padding-top: 0; min-height: 100vh;
+  align-items: stretch; justify-content: stretch;
 }
-.build-banner-left { display:flex; align-items:center; gap:16px; }
-.build-banner-title { font-size:14px; font-weight:600; }
-.build-banner-desc { font-size:12px; color:var(--text-secondary); }
-.build-multipliers { display:flex; gap:10px; }
-.multiplier-badge { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; }
-.multiplier-badge.native { background:rgba(74,222,128,0.15); color:var(--green); }
-.multiplier-badge.lowcode { background:rgba(255,171,0,0.15); color:var(--orange); }
-.multiplier-badge.framework { background:rgba(255,138,113,0.15); color:var(--red); }
+/* Remove header border on login */
+#view1.active ~ #header,
+body.login-active #header { border-bottom: none; }
 
-/* TOGGLE */
-.toggle-switch { position:relative; width:48px; height:26px; cursor:pointer; display:inline-block; }
-.toggle-switch input { display:none; }
+.login-split {
+  display: flex; width: 100%; min-height: 100vh;
+}
+
+/* LEFT BRAND PANEL */
+.login-left {
+  flex: 1.1; display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 64px; position: relative; overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 30%, rgba(0,95,184,0.28) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(40,180,237,0.14) 0%, transparent 60%),
+    #091428;
+}
+.login-left::after {
+  content: ''; position: absolute; right: 0; top: 10%; bottom: 10%;
+  width: 1px; background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.08) 60%, transparent);
+}
+.login-left-logo img {
+  height: 36px; margin-bottom: 56px; display: block;
+}
+.login-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: #1DB6F3;
+  margin-bottom: 18px;
+}
+.login-headline {
+  font-size: 42px; font-weight: 700; line-height: 1.15;
+  color: #fff; margin-bottom: 24px; letter-spacing: -0.5px;
+  max-width: 480px;
+}
+.login-headline span {
+  background: linear-gradient(90deg, #1DB6F3, #00E5CC);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.login-tagline {
+  font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.75;
+  max-width: 400px; font-weight: 300;
+}
+.login-left-dots {
+  margin-top: 56px; display: flex; gap: 8px;
+}
+.login-left-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+}
+.login-left-dot:first-child { background: #1DB6F3; }
+
+/* RIGHT FORM PANEL */
+.login-right {
+  flex: 0 0 440px; display: flex; flex-direction: column;
+  justify-content: center; padding: 80px 56px;
+  background: rgba(10, 20, 40, 0.7);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  position: relative;
+}
+.login-form-icon { margin-bottom: 20px; }
+.login-form-title {
+  font-size: 24px; font-weight: 700; color: #fff;
+  margin-bottom: 8px; letter-spacing: -0.2px;
+}
+.login-form-sub {
+  font-size: 13px; color: rgba(255,255,255,0.4);
+  margin-bottom: 40px; font-weight: 300;
+}
+.form-group { margin-bottom: 24px; }
+.form-group label {
+  display: block; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); margin-bottom: 8px;
+}
+.form-group input {
+  width: 100%; padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+  color: #fff; font-family: Ubuntu, sans-serif; font-size: 14px; font-weight: 300;
+  transition: border-color 0.2s, background 0.2s;
+}
+.form-group input::placeholder { color: rgba(255,255,255,0.2); }
+.form-group input:focus { outline: none; border-color: #1DB6F3; background: rgba(29,182,243,0.04); }
+.form-group input.error { border-color: var(--error); }
+.field-error { color: var(--error); font-size: 11px; margin-top: 6px; letter-spacing: 0.02em; }
+.login-btn {
+  width: 100%; padding: 14px 28px; border-radius: 999px;
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.5);
+  color: #fff; font-family: Ubuntu, sans-serif;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
+  margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  position: relative;
+}
+.login-btn:hover { background: #fff; color: #0D162D; border-color: #fff; }
+.login-btn::before {
+  content: ''; position: absolute; inset: -1px; border-radius: 999px;
+  background: linear-gradient(90deg, #0066CC, #00E5CC);
+  z-index: -1; opacity: 0; transition: opacity 0.2s;
+}
+.login-btn:focus-visible::before { opacity: 1; }
+.login-right-byline {
+  position: absolute; bottom: 32px; left: 56px; right: 56px;
+  font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 0.05em;
+  text-align: center;
+}
+
+@media(max-width: 900px) {
+  .login-split { flex-direction: column; }
+  .login-left { padding: 56px 32px; flex: none; min-height: 40vh; }
+  .login-left::after { display: none; }
+  .login-right { flex: none; padding: 48px 32px; }
+  .login-headline { font-size: 30px; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+  20%, 40%, 60%, 80% { transform: translateX(6px); }
+}
+.shake { animation: shake 0.4s ease; }
+
+/* VIEW 2: CONFIG */
+
+.vendor-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.vendor-chip {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 7px 14px 7px 10px;
+  border-radius: 999px;
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.vendor-chip:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.55); }
+.vendor-chip.selected { background: rgba(255,255,255,0.08); }
+.chip-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.chip-name { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.85); transition: color 0.15s; }
+.vendor-chip:hover .chip-name, .vendor-chip.selected .chip-name { color: #fff; font-weight: 500; }
+.chip-check { display: none; font-size: 13px; font-weight: 700; flex-shrink: 0; line-height: 1; }
+.vendor-chip.selected .chip-check { display: inline; }
+.chip-platform { display: none; }
+/* Tooltip */
+.chip-tooltip {
+  position: absolute; bottom: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #1e293b; color: #fff; border: 1px solid rgba(255,255,255,0.12);
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+  padding: 5px 10px; border-radius: 6px;
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  z-index: 200;
+}
+.chip-tooltip::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: #1e293b;
+}
+.vendor-chip:hover .chip-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+
+
+
+/* GENERATE BUTTON */
+
+
+/* LOADING OVERLAY */
+#loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(9,20,40,0.97);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  z-index: 9999; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+}
+#loading-overlay.active { display: flex; }
+.ci-loader { display: flex; flex-direction: column; align-items: center; gap: 0; width: 360px; max-width: 90vw; }
+.ci-loader-logo { margin-bottom: 44px; }
+.ci-loader-logo img { height: 26px; filter: brightness(0) invert(1); }
+.ci-loader-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 16px; text-align: center;
+}
+.ci-loader-msg {
+  font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.7);
+  margin-bottom: 24px; text-align: center; min-height: 20px;
+  transition: opacity 0.25s ease; letter-spacing: 0.01em;
+}
+.ci-bar-track { width: 100%; height: 2px; background: rgba(255,255,255,0.07); border-radius: 1px; overflow: hidden; }
+.ci-bar-fill {
+  height: 100%; width: 0; border-radius: 1px;
+  background: linear-gradient(90deg, #0066CC 0%, #00AADD 55%, #00E5CC 100%);
+  transition: width 1.1s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.ci-bar-fill::after {
+  content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 80px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: ci-shimmer 1.6s infinite;
+}
+@keyframes ci-shimmer {
+  from { transform: translateX(-80px); } to { transform: translateX(80px); }
+}
+.ci-bar-pct {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.22); margin-top: 10px; text-align: right; width: 100%;
+}
+
+
+/* ============================================================
+   VIEW 3 — RESULTS (complete rebuild)
+   ============================================================ */
+
+/* ============================================================
+   VIEW 3 — STRATEGIC ANALYSIS RESULTS
+   Premium consulting layout – Capgemini Invent CI
+   ============================================================ */
+
+#view3 { padding-top: 80px; background: var(--bg-dark); }
+.r3-wrap { max-width: 1440px; margin: 0 auto; padding: 40px 32px 80px; }
+
+/* ── PAGE HEADER ── */
+.r3-page-header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-bottom: 40px; padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.r3-page-title {
+  font-size: 30px; font-weight: 700; color: #fff; letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+.r3-page-meta { font-size: 12px; color: var(--text-tertiary); }
+.r3-meta-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.r3-badge {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6);
+}
+
+/* ── SECTION HEADINGS ── */
+.r3-section {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin: 36px 0 14px; display: flex; align-items: center; gap: 10px;
+}
+.r3-section::after {
+  content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06);
+}
+
+/* ── VENDOR CARDS GRID (Ranking) ── */
+.r3-vendor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.r3-vcard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 24px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+}
+.r3-vcard::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--vcard-color, #28B4ED);
+}
+.r3-vcard:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.14);
+}
+.r3-vcard-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.r3-vcard-name { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+.r3-vcard-platform { font-size: 11px; color: var(--text-tertiary); }
+.r3-vcard-rank {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.r3-rank-1 { background: rgba(255,171,0,0.15); color: #FFAB00; border: 1px solid rgba(255,171,0,0.3); }
+.r3-rank-2 { background: rgba(200,210,230,0.1); color: #C8D2E6; border: 1px solid rgba(200,210,230,0.2); }
+.r3-rank-3 { background: rgba(255,138,113,0.1); color: #FF8A71; border: 1px solid rgba(255,138,113,0.25); }
+.r3-rank-n { background: rgba(107,122,153,0.08); color: var(--text-tertiary); border: 1px solid rgba(107,122,153,0.15); }
+
+.r3-vcard-score {
+  font-size: 42px; font-weight: 800; line-height: 1; letter-spacing: -1px;
+  margin-bottom: 2px;
+}
+.r3-vcard-score-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 14px;
+}
+.r3-vcard-bar {
+  height: 2px; background: rgba(255,255,255,0.07); border-radius: 1px;
+  margin-bottom: 20px; overflow: hidden;
+}
+.r3-vcard-bar-fill {
+  height: 100%; border-radius: 1px; width: 0;
+  transition: width 1.1s cubic-bezier(0.4,0,0.2,1);
+}
+.r3-vcard-divider {
+  height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 16px;
+}
+.r3-vcard-layers {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px;
+}
+.r3-layer-row { }
+.r3-layer-label { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 3px; }
+.r3-layer-bar-track { height: 3px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+.r3-layer-bar-fill { height: 100%; border-radius: 2px; width: 0; transition: width 1.1s ease; }
+.r3-layer-val { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+.r3-vcard-kpis { display: flex; justify-content: space-between; padding-top: 4px; }
+.r3-kpi { text-align: center; flex: 1; }
+.r3-kpi-val { font-size: 14px; font-weight: 700; }
+.r3-kpi-lbl { font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-tertiary); margin-top: 2px; }
+
+/* ── ANALYTICS ROW: RADAR + VERDICT ── */
+.r3-analytics {
+  display: grid; grid-template-columns: 2fr 3fr; gap: 20px; align-items: stretch;
+}
+.r3-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 28px;
+}
+.r3-panel-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+.r3-panel-title svg { opacity: 0.6; }
+.radar-panel-inner { display: flex; flex-direction: row; gap: 20px; align-items: center; }
+.radar-svg-wrap { flex: 1; min-width: 0; display: flex; align-items: center; max-height: 340px; }
+.radar-svg { width: 100%; max-height: 340px; display: block; }
+.radar-legend-col {
+  width: 130px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 4px 0;
+}
+.radar-legend-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px;
+}
+.radar-legend-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: 6px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  user-select: none;
+}
+.radar-legend-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+.radar-legend-btn.hidden { opacity: 0.35; }
+.radar-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.radar-legend-name { font-size: 11px; color: rgba(255,255,255,0.75); font-weight: 400; line-height: 1.2; }
+.radar-legend-btn.hidden .radar-legend-name { text-decoration: line-through; color: var(--text-tertiary); }
+.radar-svg { width: 100%; height: auto; display: block; }
+.radar-legend {
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  margin-top: 12px; justify-content: center;
+}
+.radar-legend-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10.5px; color: var(--text-secondary); font-weight: 400;
+}
+.radar-legend-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* Verdict */
+.r3-verdict-intro { font-size: 14px; color: rgba(255,255,255,0.85); line-height: 1.7; margin-bottom: 16px; }
+.r3-verdict-items { display: flex; flex-direction: column; gap: 10px; }
+.r3-verdict-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 12px 14px;
+}
+.r3-verdict-item-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px;
+}
+.r3-verdict-item-text { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+.r3-verdict-strength .r3-verdict-item-label { color: #34D399; }
+.r3-verdict-risk .r3-verdict-item-label { color: #F87171; }
+.r3-verdict-challenger .r3-verdict-item-label { color: #28B4ED; }
+.r3-verdict-rec {
+  margin-top: 14px; padding: 12px 16px;
+  background: rgba(0,102,204,0.1); border-left: 3px solid #0066CC;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px; color: rgba(255,255,255,0.8); line-height: 1.6;
+}
+
+/* ── MATRIX ── */
+.r3-matrix-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 28px;
+}
+.matrix-scroll { overflow-x: auto; }
+.matrix-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.matrix-table th {
+  padding: 8px 12px; text-align: center; font-size: 10px; font-weight: 600;
+  color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em;
+  white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.matrix-table th.sub-header { text-align: left; min-width: 220px; }
+.matrix-table td { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+.matrix-table tr:hover td { background: rgba(255,255,255,0.02); }
+.layer-section-hdr td {
+  padding: 10px 12px 4px; font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.01);
+}
+.sub-name-cell { font-size: 12px; color: var(--text-secondary); font-weight: 400; white-space: nowrap; }
+.cat-tag { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+.mat-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.mat-dots { display: flex; gap: 2px; }
+.mat-dot { width: 6px; height: 6px; border-radius: 50%; }
+.mat-val { font-size: 11px; font-weight: 700; }
+.mat-mult { font-size: 9px; color: var(--text-tertiary); background: rgba(255,255,255,0.05); padding: 1px 4px; border-radius: 3px; }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 1100px) {
+  .r3-analytics { grid-template-columns: 1fr; }
+}
+@media(max-width: 800px) {
+  .r3-vendor-grid { grid-template-columns: 1fr 1fr; }
+  .r3-page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+@media(max-width: 500px) {
+  .r3-vendor-grid { grid-template-columns: 1fr; }
+  .r3-wrap { padding: 20px 16px 60px; }
+}
+
+
+/* ============================================================
+   VIEW 2 — CONFIGURATION (consulting rebuild)
+   ============================================================ */
+#view2 { padding-top: 80px; background: var(--bg-dark); }
+.v2-wrap { max-width: 1320px; margin: 0 auto; padding: 40px 32px 80px; }
+
+/* ── STEP INDICATOR ── */
+.v2-steps {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 40px; padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.v2-step { display: flex; align-items: center; gap: 10px; }
+.v2-step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  background: #fff; color: #0D162D;
+  border: none; flex-shrink: 0;
+  transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.v2-step.active .v2-step-num { background: #fff; color: #0D162D; }
+.v2-step.done .v2-step-num { background: rgba(255,255,255,0.85); color: #0D162D; }
+.v2-step-label { font-size: 13px; font-weight: 500; color: var(--text-tertiary); }
+.v2-step.active .v2-step-label { color: #fff; }
+.v2-step.done .v2-step-label { color: var(--text-secondary); }
+.v2-step-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); margin: 0 16px; min-width: 32px; }
+
+/* ── SECTION HEADINGS ── */
+.v2-section {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin: 0 0 14px; display: flex; align-items: center; gap: 10px;
+}
+.v2-section::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+
+/* ── VENDOR AREA ── */
+.v2-vendor-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 24px; margin-bottom: 28px;
+}
+.v2-vendor-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.v2-vendor-title { font-size: 15px; font-weight: 600; color: #fff; }
+.v2-vendor-meta { font-size: 12px; color: var(--text-tertiary); }
+.v2-vendor-actions { display: flex; align-items: center; gap: 8px; }
+.v2-action-btn {
+  padding: 5px 12px; border-radius: 999px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6); font-family: Ubuntu, sans-serif;
+  font-size: 11px; font-weight: 500; cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.v2-action-btn:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+.v2-chip-hint { font-size: 12px; color: var(--accent-orange); margin-top: 10px; min-height: 16px; }
+
+/* ── PRESET PILLS ── */
+.v2-preset-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 24px; margin-bottom: 28px;
+}
+.v2-preset-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px; flex-wrap: wrap; gap: 12px;
+}
+.v2-preset-title { font-size: 15px; font-weight: 600; color: #fff; }
+.v2-build-toggle {
+  display: flex; align-items: center; gap: 10px;
+}
+.v2-build-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.toggle-switch { position: relative; width: 44px; height: 24px; cursor: pointer; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
 .toggle-slider {
-  position:absolute; inset:0; background:var(--border-color);
-  border-radius:13px; transition:var(--transition);
+  position: absolute; inset: 0; background: rgba(255,255,255,0.08);
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+  transition: background 0.25s;
 }
-.toggle-slider::before {
-  content:''; position:absolute; width:20px; height:20px;
-  background:white; border-radius:50%; top:3px; left:3px; transition:var(--transition);
+.toggle-slider:before {
+  content: ''; position: absolute; height: 16px; width: 16px;
+  left: 3px; bottom: 3px; background: var(--text-tertiary);
+  border-radius: 50%; transition: all 0.25s;
 }
-.toggle-switch input:checked + .toggle-slider { background:var(--turquoise); }
-.toggle-switch input:checked + .toggle-slider::before { transform:translateX(22px); }
+input:checked + .toggle-slider { background: rgba(0,102,204,0.5); border-color: #0066CC; }
+input:checked + .toggle-slider:before { transform: translateX(20px); background: #fff; }
 
-/* PRESETS */
-.presets-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:24px; }
-.preset-chip {
-  padding:6px 14px; background:var(--bg-card); border:1px solid var(--border-color);
-  border-radius:20px; font-size:11px; color:var(--text-secondary); cursor:pointer;
-  transition:var(--transition); font-family:var(--font); white-space:nowrap;
+.v2-preset-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.v2-preset-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 999px; cursor: pointer;
+  font-size: 12px; font-weight: 400;
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  transition: all 0.15s ease; user-select: none;
 }
-.preset-chip:hover { border-color:var(--blue-light); color:var(--text-primary); }
-.preset-chip.active {
-  background:linear-gradient(135deg,var(--blue-dark),var(--blue-light));
-  border-color:transparent; color:white;
+.v2-preset-pill:hover { border-color: rgba(255,255,255,0.35); color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.04); }
+.v2-preset-pill.active {
+  border-color: #0066CC; background: rgba(0,102,204,0.12);
+  color: #fff; font-weight: 500;
 }
+.v2-preset-pill-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.3); flex-shrink: 0;
+  transition: background 0.15s;
+}
+.v2-preset-pill.active .v2-preset-pill-dot { background: #0066CC; }
 
-/* GRIDS */
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px; }
-.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-bottom:24px; }
-.grid-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
+/* ── CATEGORY GRID ── */
+.v2-cat-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin-bottom: 28px;
+}
+.v2-cat-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  transition: border-color 0.2s;
+  position: relative;
+}
+.v2-cat-card:hover { border-color: rgba(255,255,255,0.13); }
+.v2-cat-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.v2-cat-icon {
+  width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.v2-cat-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.v2-cat-subtitle { font-size: 11px; color: var(--text-tertiary); }
+.v2-cat-body { padding: 20px 22px; }
 
-/* CARDS */
-.card {
-  background:var(--bg-card); border:1px solid var(--border-color);
-  border-radius:var(--radius); padding:24px; transition:var(--transition);
+/* Sliders */
+.v2-slider-group {
+  padding-bottom: 18px; margin-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-.card:hover { border-color:var(--border-light); }
-.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.card-title { font-size:14px; font-weight:600; }
+.v2-slider-group:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.v2-slider-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.v2-slider-name { font-size: 13px; font-weight: 500; color: #fff; }
+.v2-moscow-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 10px;
+  border-radius: 999px; min-width: 90px; text-align: center;
+}
+.v2-slider-desc { font-size: 11.5px; color: var(--text-tertiary); line-height: 1.55; margin-bottom: 10px; }
+input[type=range] {
+  -webkit-appearance: none; width: 100%; height: 4px;
+  background: rgba(255,255,255,0.08); border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; cursor: pointer; box-shadow: 0 0 0 3px rgba(0,102,204,0.4);
+}
+.v2-slider-ticks { display: flex; justify-content: space-between; margin-top: 5px; }
+.v2-slider-ticks span { font-size: 10px; color: var(--text-tertiary); }
 
-/* VENDOR CARDS */
-.vendor-card {
-  background:var(--bg-card); border:1px solid var(--border-color);
-  border-radius:var(--radius); padding:20px; transition:var(--transition);
-  position:relative; overflow:hidden;
+/* ── GENERATE CTA ── */
+.v2-cta {
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 0 0; gap: 16px; flex-wrap: wrap;
 }
-.vendor-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
-.vendor-card.microsoft::before { background:linear-gradient(90deg,#005FB8,#28B4ED); }
-.vendor-card.aws::before { background:linear-gradient(90deg,#FF9900,#FFAB00); }
-.vendor-card.uipath::before { background:linear-gradient(90deg,#FA4616,#FF8A71); }
-.vendor-card.n8n::before { background:linear-gradient(90deg,#EA4B71,#A78BFA); }
-.vendor-card.otera::before { background:linear-gradient(90deg,#00CCCD,#4ADE80); }
-.vendor-name { font-size:16px; font-weight:700; margin-bottom:2px; }
-.vendor-product { font-size:11px; color:var(--text-muted); margin-bottom:12px; }
-.vendor-score { font-size:36px; font-weight:800; margin-bottom:2px; }
-.vendor-score-label { font-size:11px; color:var(--text-muted); margin-bottom:14px; }
-.vendor-rank {
-  position:absolute; top:14px; right:14px; width:28px; height:28px;
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:12px; font-weight:700; background:var(--bg-input); border:1px solid var(--border-color);
+.v2-cta-hint { font-size: 12px; color: var(--text-tertiary); }
+.generate-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 999px;
+  color: #fff; font-family: Ubuntu, sans-serif;
+  font-size: 14px; font-weight: 400; letter-spacing: 0.02em;
+  padding: 13px 36px; cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  position: relative;
 }
-.vendor-rank.r1 { background:rgba(255,171,0,0.2); color:var(--orange); border-color:var(--orange); }
-.vendor-rank.r2 { background:rgba(167,139,250,0.2); color:var(--purple); border-color:var(--purple); }
-.vendor-rank.r3 { background:rgba(0,204,205,0.2); color:var(--turquoise); border-color:var(--turquoise); }
+.generate-btn:hover:not(:disabled) { background: #fff; color: #0D162D; border-color: #fff; }
+.generate-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-/* IMPACT BADGES */
-.impact-badges { display:flex; gap:6px; margin-top:12px; }
-.impact-badge {
-  flex:1; text-align:center; padding:6px 2px;
-  background:var(--bg-input); border-radius:var(--radius-xs);
+/* ── RESPONSIVE ── */
+@media(max-width: 900px) {
+  .v2-cat-grid { grid-template-columns: 1fr; }
+  .v2-steps { flex-wrap: wrap; gap: 12px; }
+  .v2-step-line { display: none; }
 }
-.impact-badge-value { font-size:14px; font-weight:700; }
-.impact-badge-label { font-size:8px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
-
-/* WEIGHT TABLE */
-.weight-table { width:100%; border-collapse:collapse; }
-.weight-table th {
-  text-align:left; font-size:11px; font-weight:600; color:var(--text-muted);
-  text-transform:uppercase; letter-spacing:0.5px; padding:8px 10px;
-  border-bottom:1px solid var(--border-color);
-}
-.weight-table td {
-  padding:8px 10px; font-size:13px;
-  border-bottom:1px solid rgba(42,53,88,0.5); vertical-align:middle;
-}
-.weight-table tr:hover td { background:rgba(42,53,88,0.3); }
-.layer-header td {
-  font-weight:700; color:var(--blue-light); font-size:12px;
-  text-transform:uppercase; letter-spacing:0.5px;
-  padding-top:14px !important; border-bottom:1px solid var(--blue-dark) !important;
-}
-.moscow-select {
-  background:var(--bg-input); color:var(--text-primary);
-  border:1px solid var(--border-color); border-radius:var(--radius-xs);
-  padding:4px 8px; font-size:12px; font-family:var(--font); cursor:pointer; outline:none; width:120px;
-}
-
-/* SCORE MATRIX */
-.score-matrix { width:100%; border-collapse:collapse; }
-.score-matrix th {
-  text-align:center; font-size:10px; font-weight:600; color:var(--text-muted);
-  text-transform:uppercase; letter-spacing:0.5px; padding:8px 4px;
-  border-bottom:1px solid var(--border-color);
-}
-.score-matrix th:first-child { text-align:left; }
-.score-matrix td {
-  padding:6px 4px; text-align:center;
-  border-bottom:1px solid rgba(42,53,88,0.5); font-size:12px;
-}
-.score-matrix td:first-child { text-align:left; font-size:12px; }
-.score-badge {
-  display:inline-flex; align-items:center; justify-content:center;
-  min-width:32px; height:26px; border-radius:var(--radius-xs);
-  font-size:11px; font-weight:700; cursor:pointer; transition:var(--transition); padding:0 4px;
-}
-.score-badge:hover { transform:scale(1.15); box-shadow:0 2px 8px rgba(0,0,0,0.3); }
-.score-badge.s0 { background:rgba(255,138,113,0.2); color:var(--red); }
-.score-badge.s1 { background:rgba(255,171,0,0.2); color:var(--orange); }
-.score-badge.s2 { background:rgba(40,180,237,0.2); color:var(--blue-light); }
-.score-badge.s3 { background:rgba(74,222,128,0.2); color:var(--green); }
-.effective-score { font-size:9px; color:var(--text-muted); display:block; margin-top:1px; }
-
-/* MODAL */
-.modal-overlay {
-  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6);
-  z-index:1000; align-items:center; justify-content:center; padding:20px;
-}
-.modal-overlay.active { display:flex; }
-.modal-content {
-  background:var(--bg-card); border:1px solid var(--border-color);
-  border-radius:var(--radius); padding:32px; max-width:560px; width:100%;
-  box-shadow:var(--shadow-lg); max-height:80vh; overflow-y:auto;
-}
-.modal-close {
-  float:right; background:none; border:none; color:var(--text-muted);
-  font-size:20px; cursor:pointer; padding:4px 8px;
-}
-.modal-close:hover { color:var(--text-primary); }
-.modal-title { font-size:18px; font-weight:700; margin-bottom:8px; }
-.modal-vendor {
-  font-size:12px; color:var(--blue-light); text-transform:uppercase;
-  letter-spacing:1px; margin-bottom:16px;
-}
-.modal-score-row { display:flex; gap:12px; margin-bottom:16px; }
-.modal-score-item {
-  flex:1; padding:12px; background:var(--bg-input);
-  border-radius:var(--radius-sm); text-align:center;
-}
-.modal-score-item .value { font-size:22px; font-weight:700; }
-.modal-score-item .label { font-size:10px; color:var(--text-muted); text-transform:uppercase; }
-.modal-evidence {
-  font-size:13px; color:var(--text-secondary); line-height:1.7;
-  padding:16px; background:var(--bg-input); border-radius:var(--radius-sm);
-  border-left:3px solid var(--blue-light);
+@media(max-width: 600px) {
+  .v2-wrap { padding: 20px 16px 60px; }
 }
 
-/* RADAR */
-.radar-container { position:relative; height:380px; }
+/* ── VIEW 3 PRESET BAR ── */
+.v3-preset-bar {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; margin-bottom: 28px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+}
+.v3-preset-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-tertiary);
+  margin-right: 4px; white-space: nowrap;
+}
+.v3-preset-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  font-size: 11px; font-weight: 400;
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.55);
+  transition: all 0.15s ease;
+}
+.v3-preset-pill:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.85); }
+.v3-preset-pill.active { border-color: #0066CC; background: rgba(0,102,204,0.12); color: #fff; font-weight: 500; }
+.v3-build-badge {
+  margin-left: auto; font-size: 11px; font-weight: 500;
+  color: var(--text-tertiary); display: flex; align-items: center; gap: 8px;
+}
+.v3-build-badge span {
+  padding: 3px 9px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.v3-build-badge span.on { border-color: rgba(0,229,204,0.3); color: #00E5CC; background: rgba(0,229,204,0.08); }
+.v3-build-badge span.off { color: var(--text-tertiary); }
 
-/* TCO */
-.tco-controls { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-.tco-control-group { flex:1; min-width:160px; }
-.tco-control-group label {
-  display:block; font-size:11px; font-weight:600; color:var(--text-muted);
-  text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
-}
-.tco-control-group select {
-  width:100%; padding:8px 12px; background:var(--bg-input); color:var(--text-primary);
-  border:1px solid var(--border-color); border-radius:var(--radius-xs);
-  font-size:12px; font-family:var(--font); cursor:pointer; outline:none;
-}
-.tco-chart-container { height:280px; position:relative; }
 
-/* VERDICT */
-.verdict-card {
-  background:linear-gradient(135deg,rgba(0,95,184,0.1),rgba(0,204,205,0.05));
-  border:1px solid var(--blue-dark);
-}
-.verdict-winner { font-size:24px; font-weight:800; margin-bottom:8px; }
-.verdict-text { font-size:13px; color:var(--text-secondary); line-height:1.7; }
-.verdict-must-haves { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
-.verdict-must-tag {
-  padding:4px 10px; background:rgba(255,171,0,0.15); color:var(--orange);
-  border-radius:20px; font-size:11px; font-weight:600;
-}
 
-/* CHALLENGES */
-.challenge-item {
-  padding:14px 16px; background:var(--bg-input); border-radius:var(--radius-sm);
-  margin-bottom:10px; border-left:3px solid var(--orange);
-  font-size:12px; color:var(--text-secondary); line-height:1.6;
+/* Category info tooltip */
+.cat-info-btn {
+  position: absolute; top: 14px; right: 16px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.4); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+  font-family: Ubuntu,sans-serif; line-height: 1;
 }
-.challenge-item strong { color:var(--text-primary); }
-.challenge-item:nth-child(2) { border-left-color:var(--red); }
-.challenge-item:nth-child(3) { border-left-color:var(--turquoise); }
-.challenge-item:nth-child(4) { border-left-color:var(--purple); }
-.challenge-item:nth-child(5) { border-left-color:var(--blue-light); }
-
-/* RESPONSIVE */
-@media(max-width:1200px) { .grid-5 { grid-template-columns:repeat(3,1fr); } }
-@media(max-width:900px) {
-  .grid-2,.grid-3 { grid-template-columns:1fr; }
-  .grid-5 { grid-template-columns:repeat(2,1fr); }
-  .header { flex-direction:column; gap:12px; padding:12px 16px; }
-  .main-content { padding:16px; }
-  .build-banner { flex-direction:column; gap:12px; text-align:center; }
+.cat-info-btn:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.25); }
+.v2-cat-card { position: relative; }
+.cat-info-tooltip {
+  position: absolute; bottom: calc(100% + 10px); top: auto; left: 0; right: 0; z-index: 9999;
+  background: #1e293b; border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px; padding: 16px 18px;
+  font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.7;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  pointer-events: none; opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-@media(max-width:600px) { .grid-5 { grid-template-columns:1fr; } }
+.cat-info-tooltip::before {
+  content: ''; position: absolute; top: 100%; left: 28px;
+  border: 7px solid transparent; border-top-color: #1e293b;
+}
+.cat-info-tooltip.visible { opacity: 1; transform: translateY(0) !important; pointer-events: none; }
 
-@keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.fade-in { animation:fadeIn 0.4s ease forwards; }
+/* Build-Awareness standalone box in View 3 */
+.v3-ba-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 20px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 28px; margin-bottom: 28px; flex-wrap: wrap;
+}
+.v3-ba-left { flex: 1; min-width: 0; max-width: none; }
+.v3-ba-title {
+  font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.v3-ba-title-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  background: var(--accent-teal); transition: background 0.2s;
+}
+.v3-ba-title-dot.on { background: #00E5CC; box-shadow: 0 0 6px rgba(0,229,204,0.5); }
+.v3-ba-desc {
+  font-size: 12.5px; color: var(--text-tertiary); line-height: 1.65; max-width: none;
+}
+.v3-ba-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.v3-ba-status {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 999px;
+}
+.v3-ba-status.on { color: #00E5CC; background: rgba(0,229,204,0.1); border: 1px solid rgba(0,229,204,0.25); }
+.v3-ba-status.off { color: var(--text-tertiary); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+
+/* PDF */
+#pdfContent { display: none; }
+.pdf-pb { page-break-before: always !important; }
+
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     DASHBOARD (no login)
-     ============================================================ -->
-<header class="header">
-  <div class="header-left">
-    <img src="https://righttoplay.de/globalassets/national-offices/germany/bilder/capgemini_invent_logo_rgb.png"
-         alt="Capgemini Invent"
-         class="header-logo-img"
-         onerror="this.onerror=null;this.outerHTML='<div><div style=font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#28B4ED>CAPGEMINI INVENT</div><div style=font-size:10px;color:#00CCCD;letter-spacing:1.5px;text-transform:uppercase>AI Strategy &amp; Advisory</div></div>';">
-    <div class="header-divider"></div>
-    <div class="header-title-block">
-      <div class="header-title" data-i18n="headerTitle">Agentic AI Platform Benchmark</div>
-      <div class="header-subtitle">Decision Framework · Q3 2025</div>
+<!-- HEADER -->
+<div id="header">
+  <img id="header-logo" src="https://www.capgemini.com/de-de/wp-content/themes/capgemini2025/assets/images/logo-invent-white.svg" alt="Capgemini Invent" onclick="if(currentView===3){goBack()}">
+  <div id="header-right">
+    <div class="beta-badge" title="This tool is in active development. Scores and calculations are subject to change.">
+      <div class="beta-badge-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+            stroke="rgba(255,255,255,0.65)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="12" y1="9" x2="12" y2="13" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="12" y1="17" x2="12.01" y2="17" stroke="rgba(255,255,255,0.65)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="beta-dot"></div>
+      <div class="beta-badge-text">
+        <span class="beta-badge-label">BETA</span>
+        <span class="beta-badge-sub" id="beta-badge-sub">Scores & calculations under development</span>
+      </div>
+      <div class="beta-tooltip">
+        <div class="beta-tooltip-title" id="beta-tooltip-title">Work in Progress</div>
+        <div class="beta-tooltip-body" id="beta-tooltip-body">This benchmarking tool is currently under active development.</div>
+      </div>
     </div>
-  </div>
-  <div class="header-right">
-    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
-      <option value="en">EN</option><option value="de">DE</option>
-      <option value="fr">FR</option><option value="es">ES</option><option value="it">IT</option>
+    <select id="lang-select" onchange="setLang(this.value)">
+      <option value="EN">🇬🇧 EN</option>
+      <option value="DE">🇩🇪 DE</option>
+      <option value="FR">🇫🇷 FR</option>
+      <option value="ES">🇪🇸 ES</option>
+      <option value="IT">🇮🇹 IT</option>
     </select>
-    <button class="header-btn primary" onclick="exportSlide()">📊 Export Slide</button>
-    <button class="header-btn" onclick="exportPDF()">📄 PDF</button>
+    <button class="header-btn back-btn" id="btn-back" style="display:none" onclick="goBack()" data-i18n="back">← Back</button>
+    <button class="header-btn" id="btn-pdf" style="display:none" onclick="exportPDF()" data-i18n="exportPDF">Export PDF</button>
   </div>
-</header>
+</div>
 
-<div class="main-content" id="mainContent">
-  <!-- Build-Awareness Banner -->
-  <div class="build-banner">
-    <div class="build-banner-left">
-      <label class="toggle-switch">
-        <input type="checkbox" id="buildToggle" checked onchange="recalculate()">
-        <span class="toggle-slider"></span>
-      </label>
-      <div>
-        <div class="build-banner-title" data-i18n="buildTitle">Build-Awareness · Apply implementation effort multiplier</div>
-        <div class="build-banner-desc" data-i18n="buildDesc">Toggle to see raw maturity vs. effort-adjusted scores</div>
+<!-- VIEW 1: LOGIN -->
+<div id="view1" class="view active">
+  <div class="login-split">
+    <!-- LEFT: Brand panel -->
+    <div class="login-left">
+      <div class="login-left-logo">
+        <img src="https://www.capgemini.com/de-de/wp-content/themes/capgemini2025/assets/images/logo-invent-white.svg" alt="Capgemini Invent">
       </div>
+      <div class="login-eyebrow" data-i18n="loginEyebrow">Enterprise AI Benchmark Tool</div>
+      <div class="login-headline">Agentic AI<br><span>Platform Assessment</span><br>Framework</div>
+      <div class="login-tagline" data-i18n="loginTagline">Evaluate and compare enterprise-grade agentic AI platforms across 12 capability dimensions — tailored to your specific use case.</div>
+      <div class="login-left-decorline"></div>
     </div>
-    <div class="build-multipliers">
-      <span class="multiplier-badge native">Native 1.0×</span>
-      <span class="multiplier-badge lowcode">Low-Code 0.65–0.7×</span>
-      <span class="multiplier-badge framework">Framework 0.4–0.45×</span>
-    </div>
-  </div>
-
-  <!-- Use-Case Presets -->
-  <div class="presets-bar" id="presetsBar"></div>
-
-  <!-- Vendor Score Cards -->
-  <div class="grid-5" id="vendorCards"></div>
-
-  <!-- Criteria Weighting + Score Matrix -->
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title" data-i18n="criteriaWeighting">📋 Criteria Weighting (MoSCoW)</div>
-        <button class="header-btn" onclick="resetWeights()" style="font-size:11px;">↺ Reset</button>
+    <!-- RIGHT: Login form -->
+    <div class="login-right">
+        <div class="login-form-wrap">
+        <div class="login-form-title" data-i18n="loginFormTitle">Benchmark Access</div>
+        <div class="login-form-sub" data-i18n="loginFormSub">Enter your access credentials to continue.</div>
+        <div class="form-group">
+          <label data-i18n="passwordLabel">Access Key</label>
+          <input type="password" id="login-password" placeholder="Enter password">
+          <div class="field-error" id="password-error"></div>
+        </div>
+        <button class="login-btn" onclick="doLogin()" data-i18n="loginBtn">Access Benchmark →</button>
       </div>
-      <div style="max-height:500px;overflow-y:auto;">
-        <table class="weight-table" id="weightTable"></table>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title" data-i18n="scoreMatrix">📊 Score Matrix</div>
-        <span style="font-size:11px;color:var(--text-muted);">Click badge → evidence</span>
-      </div>
-      <div style="max-height:500px;overflow-y:auto;">
-        <table class="score-matrix" id="scoreMatrix"></table>
-      </div>
+      <div class="login-right-bar"></div>
     </div>
   </div>
+</div>
 
-  <!-- Radar Chart + TCO -->
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title" data-i18n="archComparison">🕸️ Architecture Layer Comparison</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:11px;color:var(--text-muted);">Potential</span>
-          <label class="toggle-switch" style="width:40px;height:22px;">
-            <input type="checkbox" id="potentialToggle" onchange="updateRadar()">
-            <span class="toggle-slider" style="border-radius:11px;"></span>
+<!-- VIEW 2: CONFIG -->
+<div id="view2" class="view">
+  <div class="v2-wrap">
+
+    <!-- STEP INDICATOR -->
+    <div class="v2-steps">
+      <div class="v2-step done">
+        <div class="v2-step-num">1</div>
+        <div class="v2-step-label">Select Platforms</div>
+      </div>
+      <div class="v2-step-line"></div>
+      <div class="v2-step active">
+        <div class="v2-step-num">2</div>
+        <div class="v2-step-label">Configure Weights</div>
+      </div>
+      <div class="v2-step-line"></div>
+      <div class="v2-step">
+        <div class="v2-step-num">3</div>
+        <div class="v2-step-label">Generate Analysis</div>
+      </div>
+    </div>
+
+    <!-- STEP 1: VENDOR SELECTION -->
+    <div class="v2-section">Platform Selection</div>
+    <div class="v2-vendor-box">
+      <div class="v2-vendor-header">
+        <div>
+          <div class="v2-vendor-title" data-i18n="selectPlatforms">Select Platforms to Compare</div>
+          <div class="v2-vendor-meta" id="vendor-sub-label">0 of 7 platforms selected &middot; Max 8</div>
+        </div>
+        <div class="v2-vendor-actions">
+          <button class="v2-action-btn" onclick="selectAll()" data-i18n="selectAll">Select All</button>
+          <button class="v2-action-btn" onclick="clearAll()" data-i18n="clearAll">Clear All</button>
+          <span class="chip-counter" id="chip-counter" style="font-size:12px;color:var(--text-tertiary);margin-left:4px"></span>
+        </div>
+      </div>
+      <div class="vendor-chips" id="vendor-chips-container"></div>
+      <div class="v2-chip-hint" id="chip-hint"></div>
+    </div>
+
+    <!-- STEP 2: USE-CASE PRESET + BUILD TOGGLE -->
+    <div class="v2-section">Use-Case Configuration</div>
+    <div class="v2-preset-box">
+      <div class="v2-preset-header">
+        <div class="v2-preset-title">Select a Use-Case Preset</div>
+        <div class="v2-build-toggle">
+          <span class="v2-build-label" data-i18n="buildAwareness">Build-Awareness Mode</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="build-toggle">
+            <span class="toggle-slider"></span>
           </label>
         </div>
       </div>
-      <div class="radar-container"><canvas id="radarChart"></canvas></div>
+      <div class="v2-preset-pills" id="v2-preset-pills"></div>
+      <!-- hidden select kept for compatibility -->
+      <select id="preset-select" style="display:none" onchange="applyPreset(this.value)">
+        <option value="custom">Custom</option>
+      </select>
     </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title" data-i18n="tcoTitle">💰 3-Year TCO Estimation</div>
-        <span style="font-size:11px;color:var(--text-muted);">TEUR · excl. internal FTE</span>
-      </div>
-      <div class="tco-controls">
-        <div class="tco-control-group">
-          <label>License Tier</label>
-          <select id="tcoLicense" onchange="updateTCO()">
-            <option value="low">Low (POC / SME)</option>
-            <option value="medium" selected>Medium (Enterprise)</option>
-            <option value="high">High (Global Scale)</option>
-          </select>
-        </div>
-        <div class="tco-control-group">
-          <label>Team Size</label>
-          <select id="tcoTeam" onchange="updateTCO()">
-            <option value="small">Small (1–5 FTE)</option>
-            <option value="medium" selected>Medium (5–15 FTE)</option>
-            <option value="large">Large (15+ FTE)</option>
-          </select>
-        </div>
-        <div class="tco-control-group">
-          <label>Build Mode</label>
-          <select id="tcoBuild" onchange="updateTCO()">
-            <option value="buy">Buy-heavy</option>
-            <option value="hybrid" selected>Hybrid</option>
-            <option value="build">Build-heavy</option>
-          </select>
-        </div>
-      </div>
-      <div class="tco-chart-container"><canvas id="tcoChart"></canvas></div>
-    </div>
-  </div>
 
-  <!-- Verdict + Challenges -->
-  <div class="grid-2">
-    <div class="card verdict-card">
-      <div class="card-header">
-        <div class="card-title">🏆 Consultant's Verdict</div>
+    <!-- STEP 3: WEIGHT CONFIGURATION -->
+    <div class="v2-section">Capability Weight Configuration</div>
+    <div class="v2-cat-grid">
+      <div class="v2-cat-card">
+        <div class="v2-cat-header">
+          <div class="v2-cat-icon" style="background:rgba(40,180,237,0.12);color:#28B4ED"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M7 9H4M7 12H4M7 15H4M17 9h3M17 12h3M17 15h3M9 7V4M12 7V4M15 7V4M9 17v3M12 17v3M15 17v3"/></svg></div>
+          <div style="flex:1">
+            <div class="v2-cat-title" data-i18n="cat1name">Reasoning & Orchestration</div>
+            <div class="v2-cat-subtitle" data-i18n="cat1sv">Drives Operational Autonomy</div>
+          </div>
+        </div>
+        <button class="cat-info-btn" data-catkey="brain" tabindex="-1">?</button>
+        <div class="cat-info-tooltip" id="cat-tooltip-brain"></div>
+        <div class="v2-cat-body" id="cat1-body"></div>
       </div>
-      <div class="verdict-winner" id="verdictWinner">–</div>
-      <div class="verdict-text" id="verdictText">Adjust MoSCoW weights above to generate a dynamic recommendation.</div>
-      <div class="verdict-must-haves" id="verdictMustHaves"></div>
+      <div class="v2-cat-card">
+        <div class="v2-cat-header">
+          <div class="v2-cat-icon" style="background:rgba(0,204,205,0.12);color:#00CCCD"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v4c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 10v4c0 1.66 3.58 3 8 3s8-1.34 8-3v-4"/></svg></div>
+          <div style="flex:1">
+            <div class="v2-cat-title" data-i18n="cat2name">Context & Knowledge Layer</div>
+            <div class="v2-cat-subtitle" data-i18n="cat2sv">Drives Decision Accuracy</div>
+          </div>
+        </div>
+        <button class="cat-info-btn" data-catkey="memory" tabindex="-1">?</button>
+        <div class="cat-info-tooltip" id="cat-tooltip-memory"></div>
+        <div class="v2-cat-body" id="cat2-body"></div>
+      </div>
+      <div class="v2-cat-card">
+        <div class="v2-cat-header">
+          <div class="v2-cat-icon" style="background:rgba(255,171,0,0.12);color:#FFAB00"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 4.42-3.37 8.57-8 9.93C7.37 20.57 4 16.42 4 12V7l8-4z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+          <div style="flex:1">
+            <div class="v2-cat-title" data-i18n="cat3name">Governance & Security</div>
+            <div class="v2-cat-subtitle" data-i18n="cat3sv">Drives Trust & Compliance</div>
+          </div>
+        </div>
+        <button class="cat-info-btn" data-catkey="guard" tabindex="-1">?</button>
+        <div class="cat-info-tooltip" id="cat-tooltip-guard"></div>
+        <div class="v2-cat-body" id="cat3-body"></div>
+      </div>
+      <div class="v2-cat-card">
+        <div class="v2-cat-header">
+          <div class="v2-cat-icon" style="background:rgba(255,138,113,0.12);color:#FF8A71"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+          <div style="flex:1">
+            <div class="v2-cat-title" data-i18n="cat4name">Integration & Execution</div>
+            <div class="v2-cat-subtitle" data-i18n="cat4sv">Drives Implementation Velocity</div>
+          </div>
+        </div>
+        <button class="cat-info-btn" data-catkey="hands" tabindex="-1">?</button>
+        <div class="cat-info-tooltip" id="cat-tooltip-hands"></div>
+        <div class="v2-cat-body" id="cat4-body"></div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title">⚠️ Critical Consulting Challenges</div>
-      </div>
-      <div id="challengesContent">
-        <div class="challenge-item"><strong>Microsoft:</strong> Agent Governance Toolkit (Apr 2026) delivers the strongest cryptographic audit infrastructure — but it's newly open-sourced. Validate production readiness before mission-critical deployment.</div>
-        <div class="challenge-item"><strong>AWS:</strong> 0.4× multiplier is the lowest here — strong infrastructure, but expect 9–15 months to first production agent with full Lambda/SDK build requirements factored in.</div>
-        <div class="challenge-item"><strong>Otera:</strong> 90%+ STP claim is production-validated in insurance/banking. Do not assume it transfers to other verticals without a PoC on your document corpus.</div>
-        <div class="challenge-item"><strong>n8n:</strong> Deliberately not an enterprise HITL tool — the low score reflects missing native features, not poor engineering. For the right use case it's the best value in this set.</div>
-        <div class="challenge-item"><strong>UiPath:</strong> License costs at global scale can erode TCO advantage. Negotiate volume pricing early and benchmark against a hybrid UiPath + n8n architecture for non-regulated processes.</div>
-      </div>
+
+    <!-- GENERATE CTA -->
+    <div class="v2-cta">
+      <span class="v2-cta-hint" id="v2-cta-hint"></span>
+      <button class="generate-btn" id="generate-btn" onclick="generate()">Generate Strategic Analysis &rarr;</button>
     </div>
+
   </div>
 </div>
 
-<!-- Evidence Modal -->
-<div class="modal-overlay" id="evidenceModal" onclick="if(event.target===this)closeModal()">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-vendor" id="modalVendor"></div>
-    <div class="modal-title" id="modalTitle"></div>
-    <div class="modal-score-row" id="modalScores"></div>
-    <div class="modal-evidence" id="modalEvidence"></div>
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay">
+  <div class="ci-loader">
+    <div class="ci-loader-logo">
+      <img src="https://www.capgemini.com/de-de/wp-content/themes/capgemini2025/assets/images/logo-invent-white.svg" alt="Capgemini Invent">
+    </div>
+    <div class="ci-loader-eyebrow">Generating Analysis</div>
+    <div class="ci-loader-msg" id="loading-text">Preparing platform data...</div>
+    <div class="ci-bar-track"><div class="ci-bar-fill" id="ci-bar-fill"></div></div>
+    <div class="ci-bar-pct" id="loading-pct">0%</div>
   </div>
 </div>
+
+<!-- VIEW 3: RESULTS -->
+<div id="view3" class="view">
+  <div class="r3-wrap">
+
+    <!-- PRESET BAR -->
+    <div class="v3-preset-bar" id="v3-preset-bar"></div>
+
+    <!-- BUILD-AWARENESS BOX -->
+    <div class="v3-ba-box" id="v3-ba-box"></div>
+
+    <!-- PAGE HEADER -->
+    <div class="r3-page-header">
+      <div>
+        <div class="r3-page-title" data-i18n="resultsTitle">Strategic Analysis Results</div>
+        <div id="results-subtitle" class="r3-page-meta"></div>
+      </div>
+    </div>
+
+    <!-- RANKING CARDS -->
+    <div class="r3-section">Platform Ranking</div>
+    <div class="r3-vendor-grid" id="rank-cards-row"></div>
+
+    <!-- RADAR + VERDICT -->
+    <div class="r3-section">Strategic Assessment</div>
+    <div class="r3-analytics">
+      <div class="r3-panel" id="verdict-panel">
+        <div class="r3-panel-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><polyline points="9 12 11 14 15 10"/></svg>
+          <span data-i18n="verdictTitle">Consultant's Verdict</span>
+        </div>
+        <div id="verdict-box"></div>
+      </div>
+      <div class="r3-panel">
+        <div class="r3-panel-title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+          <span data-i18n="radarTitle">Capability Radar</span>
+        </div>
+        <div class="radar-panel-inner"><div class="radar-svg-wrap" id="radarChart"></div><div class="radar-legend-col" id="radarLegend"></div></div>
+      </div>
+    </div>
+
+    <!-- SUB-CATEGORY MATRIX -->
+    <div class="r3-section" data-i18n="scoresMatrixTitle">Sub-Category Score Matrix</div>
+    <div class="r3-matrix-panel">
+      <div id="scores-matrix-wrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- PDF CONTENT -->
+<div id="pdfContent"></div>
 
 <script>
 // ============================================================
-// DATA MODEL
+// DATA
 // ============================================================
 const VENDORS = {
-  microsoft: { name:'Microsoft', product:'Azure AI Foundry', color:'#28B4ED', colorRGB:'40,180,237', implMode:'lowcode', multiplier:0.70 },
-  aws:       { name:'AWS', product:'Bedrock Agents', color:'#FFAB00', colorRGB:'255,171,0', implMode:'framework', multiplier:0.40 },
-  uipath:    { name:'UiPath', product:'Agentic Automation', color:'#FF8A71', colorRGB:'255,138,113', implMode:'lowcode', multiplier:0.65 },
-  n8n:       { name:'n8n', product:'LangChain / AI Nodes', color:'#A78BFA', colorRGB:'167,139,250', implMode:'lowcode', multiplier:0.70 },
-  otera:     { name:'Otera', product:'Agentic Document AI', color:'#00CCCD', colorRGB:'0,204,205', implMode:'native', multiplier:1.00 }
+  microsoft: {
+    name: 'Microsoft', platform: 'Azure AI Foundry Agents', color: '#00A4EF',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.4 },
+      multiAgentCollab:      { maturity: 3, multiplier: 0.4 },
+      selfCorrection:        { maturity: 2, multiplier: 0.4 },
+      semanticRAG:           { maturity: 3, multiplier: 0.7 },
+      multimodalExtraction:  { maturity: 2, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 3, multiplier: 0.7 },
+      decisionTraceability:  { maturity: 2, multiplier: 0.4 },
+      guardrailEnforcement:  { maturity: 3, multiplier: 0.7 },
+      iam:                   { maturity: 2, multiplier: 0.4 },
+      apiFabric:             { maturity: 2, multiplier: 0.7 },
+      crossAppOrchestration: { maturity: 3, multiplier: 0.4 },
+      runtimeResilience:     { maturity: 3, multiplier: 0.4 }
+    }
+  },
+  google: {
+    name: 'Google Cloud', platform: 'Vertex AI Agent Builder', color: '#4285F4',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.4 },
+      multiAgentCollab:      { maturity: 2, multiplier: 0.4 },
+      selfCorrection:        { maturity: 2, multiplier: 0.4 },
+      semanticRAG:           { maturity: 3, multiplier: 0.7 },
+      multimodalExtraction:  { maturity: 2, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 2, multiplier: 0.7 },
+      decisionTraceability:  { maturity: 3, multiplier: 0.7 },
+      guardrailEnforcement:  { maturity: 3, multiplier: 0.7 },
+      iam:                   { maturity: 3, multiplier: 0.7 },
+      apiFabric:             { maturity: 2, multiplier: 0.7 },
+      crossAppOrchestration: { maturity: 2, multiplier: 0.4 },
+      runtimeResilience:     { maturity: 3, multiplier: 0.4 }
+    }
+  },
+  aws_quick: {
+    name: 'Amazon Quick Suite', platform: 'Agentic AI Workspace', color: '#FF9900',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 2, multiplier: 1.0 },
+      multiAgentCollab:      { maturity: 2, multiplier: 1.0 },
+      selfCorrection:        { maturity: 1, multiplier: 1.0 },
+      semanticRAG:           { maturity: 2, multiplier: 1.0 },
+      multimodalExtraction:  { maturity: 1, multiplier: 1.0 },
+      institutionalMemory:   { maturity: 2, multiplier: 1.0 },
+      decisionTraceability:  { maturity: 1, multiplier: 1.0 },
+      guardrailEnforcement:  { maturity: 2, multiplier: 1.0 },
+      iam:                   { maturity: 1, multiplier: 1.0 },
+      apiFabric:             { maturity: 2, multiplier: 1.0 },
+      crossAppOrchestration: { maturity: 3, multiplier: 1.0 },
+      runtimeResilience:     { maturity: 2, multiplier: 1.0 }
+    }
+  },
+  aws_bedrock: {
+    name: 'AWS Bedrock', platform: 'AI Foundation & AgentCore', color: '#FF9900',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 3, multiplier: 0.4 },
+      multiAgentCollab:      { maturity: 2, multiplier: 0.4 },
+      selfCorrection:        { maturity: 2, multiplier: 0.4 },
+      semanticRAG:           { maturity: 2, multiplier: 0.4 },
+      multimodalExtraction:  { maturity: 1, multiplier: 0.4 },
+      institutionalMemory:   { maturity: 3, multiplier: 0.4 },
+      decisionTraceability:  { maturity: 2, multiplier: 0.4 },
+      guardrailEnforcement:  { maturity: 3, multiplier: 0.4 },
+      iam:                   { maturity: 3, multiplier: 0.4 },
+      apiFabric:             { maturity: 3, multiplier: 0.4 },
+      crossAppOrchestration: { maturity: 2, multiplier: 0.4 },
+      runtimeResilience:     { maturity: 3, multiplier: 0.4 }
+    }
+  },
+  uipath: {
+    name: 'UiPath', platform: 'Agentic Automation', color: '#FA4616',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 2, multiplier: 0.7 },
+      multiAgentCollab:      { maturity: 3, multiplier: 1.0 },
+      selfCorrection:        { maturity: 2, multiplier: 0.7 },
+      semanticRAG:           { maturity: 2, multiplier: 1.0 },
+      multimodalExtraction:  { maturity: 3, multiplier: 1.0 },
+      institutionalMemory:   { maturity: 2, multiplier: 1.0 },
+      decisionTraceability:  { maturity: 3, multiplier: 1.0 },
+      guardrailEnforcement:  { maturity: 3, multiplier: 1.0 },
+      iam:                   { maturity: 3, multiplier: 1.0 },
+      apiFabric:             { maturity: 3, multiplier: 1.0 },
+      crossAppOrchestration: { maturity: 3, multiplier: 0.7 },
+      runtimeResilience:     { maturity: 2, multiplier: 0.7 }
+    }
+  },
+  n8n: {
+    name: 'n8n', platform: 'AI Workflow Automation', color: '#EA4B71',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 2, multiplier: 0.7 },
+      multiAgentCollab:      { maturity: 3, multiplier: 0.7 },
+      selfCorrection:        { maturity: 1, multiplier: 0.7 },
+      semanticRAG:           { maturity: 2, multiplier: 0.7 },
+      multimodalExtraction:  { maturity: 1, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 1, multiplier: 0.4 },
+      decisionTraceability:  { maturity: 2, multiplier: 0.7 },
+      guardrailEnforcement:  { maturity: 2, multiplier: 0.7 },
+      iam:                   { maturity: 2, multiplier: 0.4 },
+      apiFabric:             { maturity: 3, multiplier: 0.7 },
+      crossAppOrchestration: { maturity: 3, multiplier: 0.7 },
+      runtimeResilience:     { maturity: 2, multiplier: 0.4 }
+    }
+  },
+  otera: {
+    name: 'Otera', platform: 'Document AI', color: '#00D5D0',
+    scores: {
+      dynamicTaskPlanning:   { maturity: 1, multiplier: 0.7 },
+      multiAgentCollab:      { maturity: 2, multiplier: 0.7 },
+      selfCorrection:        { maturity: 3, multiplier: 0.7 },
+      semanticRAG:           { maturity: 3, multiplier: 0.7 },
+      multimodalExtraction:  { maturity: 3, multiplier: 0.7 },
+      institutionalMemory:   { maturity: 2, multiplier: 0.7 },
+      decisionTraceability:  { maturity: 3, multiplier: 0.7 },
+      guardrailEnforcement:  { maturity: 2, multiplier: 0.7 },
+      iam:                   { maturity: 1, multiplier: 0.7 },
+      apiFabric:             { maturity: 3, multiplier: 0.7 },
+      crossAppOrchestration: { maturity: 2, multiplier: 0.7 },
+      runtimeResilience:     { maturity: 2, multiplier: 0.4 }
+    }
+  }
 };
-const VO = ['microsoft','aws','uipath','n8n','otera'];
 
-const LAYERS = [
-  { id:'reasoning', name:'Reasoning & Orchestration', emoji:'🧠', sub:'The Brain', subs:[
-    { id:'dynamic_planning', name:'Dynamic Planning',
-      scores:{microsoft:3,aws:3,uipath:2,n8n:2,otera:2},
-      evidence:{
-        microsoft:'Azure AI Foundry + Semantic Kernel: full dynamic planning via Planner (Handlebars/Stepwise). Native multi-step orchestration with auto-retry. Low-Code via Studio → 0.7× multiplier.',
-        aws:'Bedrock Agents use ReAct-style reasoning with custom Lambda orchestration. Extremely powerful but requires significant Python/SDK work → 0.4× multiplier.',
-        uipath:'Autopilot uses pre-built planning templates. Good for structured workflows, limited for open-ended reasoning → 0.65×.',
-        n8n:'LangChain AI Agent node supports ReAct, Plan-and-Execute via LangGraph. Node config, no raw code → 0.7×.',
-        otera:'Purpose-built planning for document processing pipelines. Excellent within domain, limited general-purpose → 1.0× native.'
-      }},
-    { id:'task_decomposition', name:'Task Decomposition',
-      scores:{microsoft:3,aws:2,uipath:2,n8n:2,otera:2},
-      evidence:{
-        microsoft:'Semantic Kernel auto-decomposes complex goals into sub-tasks with dependency tracking. Mature and well-documented.',
-        aws:'Requires manual decomposition logic in Lambda or Step Functions. Powerful but high-effort.',
-        uipath:'Workflow decomposition native to Studio. Agentic layer adds AI-driven task splitting for document workflows.',
-        n8n:'Sub-workflow nodes enable decomposition. LangGraph adds AI-driven splitting. Good but requires manual wiring.',
-        otera:'Automatic decomposition of document processing into extraction → validation → enrichment. Domain-specific excellence.'
-      }},
-    { id:'multi_agent', name:'Multi-Agent Coordination',
-      scores:{microsoft:3,aws:2,uipath:2,n8n:1,otera:1},
-      evidence:{
-        microsoft:'AutoGen framework (now integrated) provides native multi-agent conversations, role assignment, and coordination protocols.',
-        aws:'Multi-agent possible via Step Functions + multiple Bedrock Agents. Requires custom orchestration code.',
-        uipath:'Orchestrator supports multi-robot coordination. Agentic multi-agent is emerging but not yet mature.',
-        n8n:'No native multi-agent framework. Can be simulated with multiple workflow triggers but lacks coordination primitives.',
-        otera:'Single-agent architecture optimized for document pipelines. Multi-agent not a design goal.'
-      }},
-    { id:'self_correction', name:'Self-Correction Logic',
-      scores:{microsoft:2,aws:2,uipath:2,n8n:1,otera:3},
-      evidence:{
-        microsoft:'Retry policies and feedback loops in Semantic Kernel. Prompt Shields add guardrail-based correction.',
-        aws:'Custom retry logic in Lambda. Bedrock Guardrails can trigger re-prompting. Requires manual implementation.',
-        uipath:'Exception handling and retry mechanisms mature in RPA layer. AI self-correction is emerging.',
-        n8n:'Error handling nodes exist but no AI-driven self-correction. Manual retry configuration only.',
-        otera:'Production-validated self-correction with confidence scoring, automatic re-extraction, and human-in-the-loop escalation. Best-in-class for document AI.'
-      }}
-  ]},
-  { id:'context', name:'Context & Knowledge', emoji:'📚', sub:'The Memory', subs:[
-    { id:'rag', name:'RAG Architecture',
-      scores:{microsoft:3,aws:3,uipath:1,n8n:2,otera:3},
-      evidence:{
-        microsoft:'Azure AI Search + Semantic Kernel RAG is best-in-class. Hybrid search, re-ranking, chunking strategies built-in.',
-        aws:'Bedrock Knowledge Bases with OpenSearch/Kendra. Excellent but requires SDK configuration.',
-        uipath:'Limited native RAG. Relies on third-party integrations (Pinecone). Not a core competency.',
-        n8n:'Vector store nodes (Pinecone, Qdrant, Supabase) with embedding nodes. Functional but manual pipeline setup.',
-        otera:'Purpose-built RAG for document understanding. Layout-aware parsing + semantic retrieval. Domain-leading.'
-      }},
-    { id:'multimodal', name:'Data Parsing (Multimodal)',
-      scores:{microsoft:3,aws:2,uipath:2,n8n:1,otera:3},
-      evidence:{
-        microsoft:'Azure Document Intelligence + GPT-4o multimodal. PDFs, images, tables, handwriting. Very mature.',
-        aws:'Textract + Bedrock multimodal models. Strong OCR but multimodal reasoning requires custom integration.',
-        uipath:'Document Understanding module handles structured/semi-structured docs. Good for forms, limited for unstructured.',
-        n8n:'Basic file parsing nodes. No native multimodal AI. Relies on external API calls to vision models.',
-        otera:'Core competency. Layout-aware parsing, table extraction, handwriting recognition. Production-validated across insurance/banking.'
-      }},
-    { id:'memory', name:'Long-term Memory',
-      scores:{microsoft:2,aws:2,uipath:2,n8n:1,otera:2},
-      evidence:{
-        microsoft:'Semantic Kernel memory with Cosmos DB persistence. Session and long-term memory patterns documented.',
-        aws:'DynamoDB-based session state. Long-term memory requires custom implementation.',
-        uipath:'Data Service and Orchestrator queues provide state persistence. Not designed for conversational memory.',
-        n8n:'Workflow-level variables only. No native long-term memory. Can use external DBs but manual setup.',
-        otera:'Document processing state management with audit trails. Good within domain, not general-purpose.'
-      }},
-    { id:'state_mgmt', name:'State Management',
-      scores:{microsoft:3,aws:2,uipath:3,n8n:2,otera:2},
-      evidence:{
-        microsoft:'Durable Functions + Semantic Kernel provide robust state management with checkpointing and replay.',
-        aws:'Step Functions offer excellent state machines. Bedrock agent state requires custom DynamoDB integration.',
-        uipath:'Orchestrator provides enterprise-grade state management, queuing, and transaction tracking. Very mature.',
-        n8n:'Execution-level state. Persistent state requires external database nodes. Functional but not enterprise-grade.',
-        otera:'Pipeline state tracking with status dashboards. Good for document workflows, limited for general orchestration.'
-      }}
-  ]},
-  { id:'governance', name:'Governance & Security', emoji:'🛡️', sub:'The Guardrails', subs:[
-    { id:'audit', name:'Audit Trails',
-      scores:{microsoft:3,aws:2,uipath:3,n8n:1,otera:3},
-      evidence:{
-        microsoft:'Agent Governance Toolkit (Apr 2026) delivers cryptographic audit infrastructure. Newly open-sourced — strongest in class.',
-        aws:'CloudTrail + CloudWatch logging. Comprehensive but requires custom aggregation for agent-specific audit trails.',
-        uipath:'Orchestrator provides detailed execution logs, audit trails, and compliance reporting. Enterprise-proven.',
-        n8n:'Execution logs available but no enterprise audit trail features. No compliance certifications for audit.',
-        otera:'Full document processing audit trail with decision rationale logging. Compliance-ready for regulated industries.'
-      }},
-    { id:'encryption', name:'Encryption',
-      scores:{microsoft:3,aws:3,uipath:2,n8n:1,otera:2},
-      evidence:{
-        microsoft:'Azure Key Vault, CMK, TLS 1.3, at-rest encryption. Enterprise-grade across all services.',
-        aws:'KMS, CloudHSM, S3 encryption, VPC endpoints. Best-in-class infrastructure-level encryption.',
-        uipath:'Credential vault with AES-256. Relies on underlying cloud provider for infrastructure encryption.',
-        n8n:'Basic credential encryption. Self-hosted version allows custom encryption. No enterprise key management.',
-        otera:'Data encryption at rest and in transit. Meets banking/insurance requirements. Not hyperscaler-level.'
-      }},
-    { id:'iam', name:'IAM (Identity & Access)',
-      scores:{microsoft:3,aws:3,uipath:2,n8n:1,otera:2},
-      evidence:{
-        microsoft:'Entra ID with RBAC, Conditional Access, PIM. Most comprehensive IAM in the market.',
-        aws:'IAM with fine-grained policies, STS, Organizations. Extremely granular but complex to configure.',
-        uipath:'Role-based access in Orchestrator. SAML/OIDC integration. Less granular than hyperscalers.',
-        n8n:'Basic user management. Enterprise SSO in paid tier. No fine-grained RBAC for agent operations.',
-        otera:'Role-based access with team management. Adequate for mid-market, less mature than enterprise IAM.'
-      }},
-    { id:'compliance', name:'Regulatory Compliance',
-      scores:{microsoft:3,aws:3,uipath:2,n8n:0,otera:2},
-      evidence:{
-        microsoft:'SOC 1/2/3, ISO 27001, GDPR, HIPAA, FedRAMP. Most certifications of any cloud provider.',
-        aws:'Equivalent certification portfolio. GovCloud for highest compliance requirements.',
-        uipath:'SOC 2, ISO 27001, GDPR. Good but fewer certifications than hyperscalers.',
-        n8n:'Self-hosted option enables compliance by architecture. No platform-level certifications. Gap for regulated industries.',
-        otera:'GDPR-compliant, banking/insurance validated. Growing certification portfolio. Adequate for EU regulated sectors.'
-      }},
-    { id:'hallucination', name:'Hallucination Filter',
-      scores:{microsoft:3,aws:2,uipath:1,n8n:1,otera:3},
-      evidence:{
-        microsoft:'Prompt Shields, Content Safety API, groundedness detection. Most comprehensive hallucination prevention.',
-        aws:'Bedrock Guardrails with topic denial, content filters. Good but requires manual configuration.',
-        uipath:'Basic output validation. Relies on underlying LLM provider for hallucination prevention.',
-        n8n:'No native hallucination detection. Must implement custom validation nodes or external APIs.',
-        otera:'Confidence scoring with automatic flagging of low-confidence extractions. Production-validated in regulated environments.'
-      }}
-  ]},
-  { id:'integration', name:'Integration & Execution', emoji:'🔌', sub:'The Hands', subs:[
-    { id:'api', name:'API Connectivity',
-      scores:{microsoft:3,aws:3,uipath:2,n8n:3,otera:1},
-      evidence:{
-        microsoft:'Logic Apps + 1000+ connectors. Azure API Management. Comprehensive REST/GraphQL/gRPC.',
-        aws:'API Gateway, EventBridge, AppSync. Massive AWS ecosystem. Requires SDK knowledge.',
-        uipath:'Integration Service with 300+ connectors. Focused on RPA-adjacent systems.',
-        n8n:'400+ native integrations. Community nodes extend further. Best integration breadth for the price.',
-        otera:'REST API for document ingestion/retrieval. Limited general-purpose API connectivity.'
-      }},
-    { id:'tool_calling', name:'Tool-Calling Capabilities',
-      scores:{microsoft:3,aws:2,uipath:2,n8n:2,otera:2},
-      evidence:{
-        microsoft:'Semantic Kernel native function calling with auto-invoke. Plugin architecture for tool registration. Very mature.',
-        aws:'Bedrock Agent action groups with Lambda. Powerful but requires custom Lambda per tool.',
-        uipath:'Activities as tools. Large activity library but AI-driven tool selection is emerging.',
-        n8n:'Tool nodes with LangChain agent. Can call any n8n node as a tool. Flexible but requires config.',
-        otera:'Built-in tools for document processing (OCR, extraction, validation). Limited general-purpose tool calling.'
-      }},
-    { id:'runtime', name:'Runtime Stability',
-      scores:{microsoft:3,aws:3,uipath:3,n8n:2,otera:2},
-      evidence:{
-        microsoft:'Azure SLAs (99.9%+). Durable Functions for long-running agents. Enterprise-grade.',
-        aws:'Industry-leading infrastructure reliability. Lambda cold starts are main concern for agent latency.',
-        uipath:'Orchestrator provides enterprise runtime management. Proven at scale in Fortune 500.',
-        n8n:'Self-hosted stability depends on infrastructure. Cloud version improving but not enterprise SLA.',
-        otera:'Cloud-native with good uptime. Smaller scale than hyperscalers. Adequate for mid-market.'
-      }},
-    { id:'legacy', name:'Legacy System Support',
-      scores:{microsoft:2,aws:2,uipath:3,n8n:2,otera:1},
-      evidence:{
-        microsoft:'Good legacy support via Logic Apps, BizTalk successor. Mainframe connectivity available but complex.',
-        aws:'Mainframe modernization tools. Good but requires significant integration effort.',
-        uipath:'Best-in-class legacy support. Screen scraping, Citrix automation, mainframe connectors. Core strength.',
-        n8n:'HTTP/SSH/database nodes cover many legacy systems. No native screen scraping or mainframe.',
-        otera:'Focused on modern document APIs. Limited legacy system connectivity.'
-      }}
-  ]}
+const PRESETS = {
+  customerService:       { name: { EN:'Customer Service & Support', DE:'Kundenservice & Support', FR:'Service Client & Support', ES:'Servicio al Cliente y Soporte', IT:'Servizio Clienti e Supporto' }, vals: [3,2,2,3,1,3,2,3,2,3,2,3] },
+  financeAccounting:     { name: { EN:'Finance & Accounting Operations', DE:'Finanz- & Buchhaltungsoperationen', FR:'Finance & Comptabilité', ES:'Finanzas y Contabilidad', IT:'Finanza e Contabilità' }, vals: [1,2,3,2,3,2,3,3,3,2,2,2] },
+  documentProcessing:    { name: { EN:'Document Processing', DE:'Dokumentenverarbeitung', FR:'Traitement de Documents', ES:'Procesamiento de Documentos', IT:'Elaborazione Documenti' }, vals: [1,1,2,2,3,1,2,2,2,2,1,2] },
+  legalReview:           { name: { EN:'Legal & Contract Review', DE:'Rechts- & Vertragsüberprüfung', FR:'Revue Juridique & Contractuelle', ES:'Revisión Legal y Contractual', IT:'Revisione Legale e Contrattuale' }, vals: [1,1,3,3,3,2,3,2,2,1,1,1] },
+  hrOperations:          { name: { EN:'HR Operations', DE:'HR-Operationen', FR:'Opérations RH', ES:'Operaciones de RRHH', IT:'Operazioni HR' }, vals: [2,2,1,2,2,2,2,3,3,2,2,2] },
+  supplyChain:           { name: { EN:'Supply Chain & Logistics', DE:'Lieferkette & Logistik', FR:'Chaîne d\'Approvisionnement & Logistique', ES:'Cadena de Suministro y Logística', IT:'Supply Chain e Logistica' }, vals: [3,3,2,2,2,2,2,2,2,3,3,3] },
+  insuranceClaims:       { name: { EN:'Insurance Claims Processing', DE:'Versicherungsschadenbearbeitung', FR:'Traitement des Sinistres', ES:'Procesamiento de Siniestros', IT:'Gestione Sinistri Assicurativi' }, vals: [2,3,3,2,3,2,3,3,2,3,3,2] },
+  healthcareAdmin:       { name: { EN:'Healthcare Administration', DE:'Gesundheitsverwaltung', FR:'Administration de Santé', ES:'Administración Sanitaria', IT:'Amministrazione Sanitaria' }, vals: [1,2,2,3,3,3,3,3,3,2,2,2] },
+  regulatoryCompliance:  { name: { EN:'Regulatory & Compliance', DE:'Regulierung & Compliance', FR:'Réglementation & Conformité', ES:'Regulación y Cumplimiento', IT:'Regolamentazione e Conformità' }, vals: [1,1,3,3,2,2,3,3,3,2,1,2] },
+  salesOps:              { name: { EN:'Sales Operations', DE:'Vertriebsoperationen', FR:'Opérations Commerciales', ES:'Operaciones de Ventas', IT:'Operazioni Vendite' }, vals: [2,2,1,3,1,2,1,2,2,3,3,2] },
+  marketingContent:      { name: { EN:'Marketing & Content Generation', DE:'Marketing & Content-Generierung', FR:'Marketing & Génération de Contenu', ES:'Marketing y Generación de Contenido', IT:'Marketing e Generazione Contenuti' }, vals: [3,2,1,3,2,2,1,2,1,2,2,1] },
+  dataAnalysis:          { name: { EN:'Data Analysis & Reporting', DE:'Datenanalyse & Berichtswesen', FR:'Analyse de Données & Reporting', ES:'Análisis de Datos e Informes', IT:'Analisi Dati e Reportistica' }, vals: [3,2,2,3,2,2,2,1,2,3,2,2] },
+  softwareDev:           { name: { EN:'Software Development', DE:'Softwareentwicklung', FR:'Développement Logiciel', ES:'Desarrollo de Software', IT:'Sviluppo Software' }, vals: [3,3,2,2,1,2,2,1,2,2,1,2] },
+  itOperations:          { name: { EN:'IT Operations', DE:'IT-Operationen', FR:'Opérations IT', ES:'Operaciones TI', IT:'Operazioni IT' }, vals: [2,2,3,2,1,1,3,3,3,3,3,3] },
+  researchAnalysis:      { name: { EN:'Research & Analysis', DE:'Forschung & Analyse', FR:'Recherche & Analyse', ES:'Investigación y Análisis', IT:'Ricerca e Analisi' }, vals: [3,3,2,3,2,3,2,1,1,2,1,1] }
+};
+
+const SUB_IDS = [
+  'dynamicTaskPlanning','multiAgentCollab','selfCorrection',
+  'semanticRAG','multimodalExtraction','institutionalMemory',
+  'decisionTraceability','guardrailEnforcement','iam',
+  'apiFabric','crossAppOrchestration','runtimeResilience'
 ];
 
-// Flatten helper
-function allSubs() {
-  const r=[];
-  LAYERS.forEach(l=>l.subs.forEach(s=>r.push({...s,layerId:l.id,layerName:l.name,layerEmoji:l.emoji})));
-  return r;
-}
+const CAT_DESCS = {"EN": {"brain": "The ability to reason logically and orchestrate complex workflows is the strategic core of operational autonomy. In 2026, providers differentiate strongly through cognitive router depth and multi-agent system flexibility. Key capabilities: dynamic task decomposition, multi-agent collaboration, and self-correction during execution.", "memory": "An agent without memory and access to enterprise data is merely a chatbot. Decision accuracy depends critically on data integration depth and long-term context management. Key capabilities: semantic RAG precision, multimodal document extraction, and institutional memory across sessions.", "guard": "As agent autonomy increases, so does the risk of unforeseen actions or data leakage. In 2026, governance is no longer optional — it is a core architectural requirement for enterprise trust. Key capabilities: decision traceability for auditors, hard-coded guardrails, and granular agent identity management.", "hands": "An agent's intelligence is only as valuable as its ability to execute actions in the real world. This layer evaluates connectivity and execution resilience. Key capabilities: breadth of native connectors, cross-application orchestration without APIs, and stability under high load."}, "DE": {"brain": "Die Fähigkeit zur logischen Schlussfolgerung und zur Orchestrierung komplexer Arbeitsabläufe ist der strategische Kernwert der operationalen Autonomie. Im Jahr 2026 differenzieren sich Anbieter stark durch die Tiefe ihrer kognitiven Router und Multi-Agenten-Systeme. Kernfähigkeiten: dynamische Aufgabenzerlegung, Multi-Agenten-Kollaboration und Selbstkorrektur.", "memory": "Ein Agent ohne Gedächtnis und Zugriff auf Unternehmensdaten ist lediglich ein Chatbot. Die Entscheidungsgenauigkeit hängt maßgeblich von der Tiefe der Datenintegration und des Langzeitkontexts ab. Kernfähigkeiten: semantische RAG-Präzision, multimodale Dokumentenextraktion und institutionelles Gedächtnis.", "guard": "Mit zunehmender Agentenautonomie steigt das Risiko unvorhergesehener Aktionen oder Datenlecks. Im Jahr 2026 ist Governance keine optionale Funktion mehr, sondern eine architektonische Kernanforderung. Kernfähigkeiten: Entscheidungstransparenz, Guardrail-Erzwingung und granulares IAM.", "hands": "Die Intelligenz eines Agenten ist nur so wertvoll wie seine Fähigkeit, Aktionen in der realen Welt auszuführen. Diese Schicht bewertet Konnektivität und Ausführungsresilienz. Kernfähigkeiten: native Konnektoren, anwendungsübergreifende Orchestrierung und Stabilität unter Last."}, "FR": {"brain": "La capacité de raisonnement logique et d'orchestration de flux de travail complexes constitue la valeur stratégique centrale de l'autonomie opérationnelle. En 2026, les fournisseurs se différencient par la profondeur de leurs routeurs cognitifs et la flexibilité de leurs systèmes multi-agents.", "memory": "Un agent sans mémoire ni accès aux données d'entreprise n'est qu'un chatbot. La précision décisionnelle dépend de la profondeur d'intégration des données et de la gestion du contexte à long terme.", "guard": "À mesure que l'autonomie des agents augmente, le risque d'actions imprévues ou de fuites de données augmente également. En 2026, la gouvernance est une exigence architecturale fondamentale pour la confiance des entreprises.", "hands": "L'intelligence d'un agent n'a de valeur que dans sa capacité à exécuter des actions dans le monde réel. Cette couche évalue la connectivité et la résilience d'exécution."}, "ES": {"brain": "La capacidad de razonamiento lógico y orquestación de flujos de trabajo complejos es el valor estratégico central de la autonomía operacional. En 2026, los proveedores se diferencian por la profundidad de sus enrutadores cognitivos y la flexibilidad de sus sistemas multi-agente.", "memory": "Un agente sin memoria ni acceso a datos empresariales es simplemente un chatbot. La precisión en la toma de decisiones depende de la profundidad de integración de datos y la gestión del contexto a largo plazo.", "guard": "A medida que aumenta la autonomía de los agentes, aumenta el riesgo de acciones imprevistas o fugas de datos. En 2026, la gobernanza es un requisito arquitectónico fundamental para la confianza empresarial.", "hands": "La inteligencia de un agente solo tiene valor en su capacidad para ejecutar acciones en el mundo real. Esta capa evalúa la conectividad y la resiliencia de ejecución."}, "IT": {"brain": "La capacità di ragionamento logico e orchestrazione di flussi di lavoro complessi è il valore strategico fondamentale dell'autonomia operativa. Nel 2026, i provider si differenziano per la profondità dei loro router cognitivi e la flessibilità dei sistemi multi-agente.", "memory": "Un agente senza memoria e accesso ai dati aziendali è semplicemente un chatbot. L'accuratezza decisionale dipende dalla profondità dell'integrazione dei dati e dalla gestione del contesto a lungo termine.", "guard": "Man mano che l'autonomia degli agenti aumenta, aumenta il rischio di azioni impreviste o perdite di dati. Nel 2026, la governance è un requisito architetturale fondamentale per la fiducia aziendale.", "hands": "L'intelligenza di un agente vale solo quanto la sua capacità di eseguire azioni nel mondo reale. Questo livello valuta la connettività e la resilienza di esecuzione."}};
 
-// Weights state (default all = 2 "Should-have")
-let weights = {};
-allSubs().forEach(s=>weights[s.id]=2);
-
-// ============================================================
-// USE-CASE PRESETS
-// ============================================================
-const PRESETS = {
-  'Custom': null,
-  'Customer Service': { dynamic_planning:3,task_decomposition:2,multi_agent:3,self_correction:3,rag:3,multimodal:1,memory:3,state_mgmt:2,audit:2,encryption:1,iam:1,compliance:1,hallucination:3,api:3,tool_calling:3,runtime:3,legacy:1 },
-  'Finance & Accounting': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:2,multimodal:3,memory:2,state_mgmt:3,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:2,tool_calling:2,runtime:3,legacy:3 },
-  'Document Processing': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:3,multimodal:3,memory:1,state_mgmt:2,audit:3,encryption:2,iam:2,compliance:2,hallucination:3,api:2,tool_calling:2,runtime:3,legacy:2 },
-  'Legal & Contracts': { dynamic_planning:2,task_decomposition:3,multi_agent:2,self_correction:3,rag:3,multimodal:3,memory:3,state_mgmt:2,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:1,tool_calling:2,runtime:3,legacy:1 },
-  'HR Operations': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:2,rag:2,multimodal:2,memory:2,state_mgmt:2,audit:3,encryption:2,iam:3,compliance:3,hallucination:2,api:2,tool_calling:2,runtime:2,legacy:2 },
-  'Supply Chain': { dynamic_planning:3,task_decomposition:3,multi_agent:2,self_correction:2,rag:2,multimodal:1,memory:2,state_mgmt:3,audit:2,encryption:2,iam:2,compliance:2,hallucination:1,api:3,tool_calling:3,runtime:3,legacy:3 },
-  'Insurance Claims': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:3,multimodal:3,memory:2,state_mgmt:3,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:2,tool_calling:2,runtime:3,legacy:2 },
-  'Healthcare Admin': { dynamic_planning:2,task_decomposition:2,multi_agent:1,self_correction:3,rag:2,multimodal:3,memory:2,state_mgmt:2,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:2,tool_calling:1,runtime:3,legacy:2 },
-  'Regulatory & Compliance': { dynamic_planning:1,task_decomposition:2,multi_agent:1,self_correction:3,rag:3,multimodal:2,memory:3,state_mgmt:2,audit:3,encryption:3,iam:3,compliance:3,hallucination:3,api:1,tool_calling:1,runtime:3,legacy:1 },
-  'Sales Operations': { dynamic_planning:3,task_decomposition:2,multi_agent:2,self_correction:2,rag:2,multimodal:1,memory:3,state_mgmt:2,audit:1,encryption:1,iam:1,compliance:1,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:1 },
-  'Marketing & Content': { dynamic_planning:3,task_decomposition:2,multi_agent:2,self_correction:2,rag:2,multimodal:2,memory:2,state_mgmt:1,audit:1,encryption:1,iam:1,compliance:1,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:0 },
-  'Data Analysis': { dynamic_planning:3,task_decomposition:3,multi_agent:2,self_correction:2,rag:3,multimodal:2,memory:2,state_mgmt:2,audit:2,encryption:2,iam:2,compliance:2,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:1 },
-  'Software Dev': { dynamic_planning:3,task_decomposition:3,multi_agent:3,self_correction:3,rag:2,multimodal:1,memory:2,state_mgmt:2,audit:1,encryption:1,iam:1,compliance:0,hallucination:2,api:3,tool_calling:3,runtime:2,legacy:1 },
-  'IT Operations': { dynamic_planning:2,task_decomposition:2,multi_agent:2,self_correction:3,rag:2,multimodal:1,memory:2,state_mgmt:3,audit:3,encryption:2,iam:3,compliance:2,hallucination:1,api:3,tool_calling:3,runtime:3,legacy:3 },
-  'Research & Analysis': { dynamic_planning:3,task_decomposition:3,multi_agent:2,self_correction:2,rag:3,multimodal:2,memory:3,state_mgmt:1,audit:1,encryption:1,iam:1,compliance:1,hallucination:3,api:2,tool_calling:2,runtime:2,legacy:0 }
+const BA_DESCS = {
+  EN: "When <strong style='color:#fff'>ON</strong>, each vendor score is weighted by its Implementation Multiplier. Platforms requiring heavy custom engineering are penalised, reflecting real-world Time-to-Value rather than theoretical capability alone.",
+  DE: "Wenn <strong style='color:#fff'>AKTIV</strong>, wird jeder Anbieter-Score mit seinem Implementierungs-Multiplikator gewichtet. Plattformen mit hohem Entwicklungsaufwand werden abgewertet \u2013 damit spiegelt der Score den tats\u00e4chlichen Time-to-Value wider, nicht nur die theoretische F\u00e4higkeit.",
+  FR: "Quand <strong style='color:#fff'>ACTIF</strong>, chaque score fournisseur est pond\u00e9r\u00e9 par son Multiplicateur d'Impl\u00e9mentation. Les plateformes n\u00e9cessitant un d\u00e9veloppement personnalis\u00e9 important sont p\u00e9nalis\u00e9es, refl\u00e9tant le Time-to-Value r\u00e9el plut\u00f4t que la seule capacit\u00e9 th\u00e9orique.",
+  ES: "Cuando est\u00e1 <strong style='color:#fff'>ACTIVO</strong>, cada puntuaci\u00f3n de proveedor se pondera por su Multiplicador de Implementaci\u00f3n. Las plataformas que requieren un desarrollo personalizado intensivo son penalizadas, reflejando el Time-to-Value real en lugar de la capacidad te\u00f3rica.",
+  IT: "Quando \u00e8 <strong style='color:#fff'>ATTIVO</strong>, ogni punteggio vendor \u00e8 ponderato dal suo Moltiplicatore di Implementazione. Le piattaforme che richiedono un ingegnerizzazione personalizzata intensiva vengono penalizzate, riflettendo il Time-to-Value reale anzich\u00e9 la sola capacit\u00e0 teorica."
 };
 
-let activePreset = 'Custom';
-
-// ============================================================
-// TCO DATA (TEUR over 3 years)
-// ============================================================
-const TCO_DATA = {
-  microsoft: { license:{low:45,medium:180,high:540}, impl:{small:80,medium:200,high:420}, buildFactor:1.3 },
-  aws:       { license:{low:30,medium:150,high:480}, impl:{small:120,medium:320,high:600}, buildFactor:1.8 },
-  uipath:    { license:{low:60,medium:240,high:720}, impl:{small:60,medium:160,high:350}, buildFactor:1.1 },
-  n8n:       { license:{low:5,medium:25,high:80},    impl:{small:40,medium:100,high:220}, buildFactor:1.4 },
-  otera:     { license:{low:35,medium:120,high:360}, impl:{small:30,medium:80,high:180},  buildFactor:1.0 }
+const LAYERS = {
+  brain:  ['dynamicTaskPlanning','multiAgentCollab','selfCorrection'],
+  memory: ['semanticRAG','multimodalExtraction','institutionalMemory'],
+  guard:  ['decisionTraceability','guardrailEnforcement','iam'],
+  hands:  ['apiFabric','crossAppOrchestration','runtimeResilience']
 };
 
 // ============================================================
-// CALCULATION ENGINE
+// I18N
 // ============================================================
-function getMultiplier(vendorId) {
-  const on = document.getElementById('buildToggle').checked;
-  return on ? VENDORS[vendorId].multiplier : 1.0;
-}
-
-function calcVendorScore(vendorId) {
-  let num=0, den=0;
-  allSubs().forEach(s => {
-    const w = weights[s.id] || 0;
-    const raw = s.scores[vendorId];
-    const eff = raw * getMultiplier(vendorId);
-    num += eff * w;
-    den += 3 * w;
-  });
-  return den > 0 ? (100 * num / den) : 0;
-}
-
-function calcLayerScore(vendorId, layerId) {
-  const layer = LAYERS.find(l=>l.id===layerId);
-  if(!layer) return 0;
-  let sum=0, count=0;
-  layer.subs.forEach(s => {
-    sum += s.scores[vendorId] * getMultiplier(vendorId);
-    count++;
-  });
-  return count > 0 ? (sum/count) : 0;
-}
-
-function calcLayerScoreRaw(vendorId, layerId) {
-  const layer = LAYERS.find(l=>l.id===layerId);
-  if(!layer) return 0;
-  let sum=0, count=0;
-  layer.subs.forEach(s => { sum += s.scores[vendorId]; count++; });
-  return count > 0 ? (sum/count) : 0;
-}
-
-// Impact KPIs
-function calcReliability(vid) {
-  return ((calcLayerScore(vid,'governance') + calcLayerScore(vid,'reasoning') + calcLayerScore(vid,'context')) / 9 * 100);
-}
-function calcScalability(vid) {
-  const iamSub = LAYERS.find(l=>l.id==='governance').subs.find(s=>s.id==='iam');
-  const iamScore = iamSub.scores[vid] * getMultiplier(vid);
-  return ((calcLayerScore(vid,'integration') + calcLayerScore(vid,'reasoning') + iamScore/3) / 3 / 3 * 100);
-}
-function calcTTV(vid) {
-  return (VENDORS[vid].multiplier * 100);
-}
-
-// ============================================================
-// RENDERING
-// ============================================================
-function renderPresets() {
-  const bar = document.getElementById('presetsBar');
-  bar.innerHTML = '';
-  Object.keys(PRESETS).forEach(name => {
-    const chip = document.createElement('div');
-    chip.className = 'preset-chip' + (activePreset===name?' active':'');
-    chip.textContent = name;
-    chip.onclick = () => applyPreset(name);
-    bar.appendChild(chip);
-  });
-}
-
-function applyPreset(name) {
-  activePreset = name;
-  if(PRESETS[name]) {
-    Object.keys(PRESETS[name]).forEach(k => weights[k] = PRESETS[name][k]);
+const T = {
+  EN: {
+    back: '← Back', exportPDF: 'Export PDF',
+    emailLabel: 'Email Address', emailPlaceholder: 'you@company.com',
+    passwordLabel: 'Access Key', loginBtn: 'Access Benchmark →',
+        loginEyebrow: 'Enterprise AI Benchmark Tool',
+    loginTagline: "Evaluate and compare enterprise-grade agentic AI platforms across 12 capability dimensions — tailored to your specific use case.",
+    loginFormTitle: 'Benchmark Access',
+    loginFormSub: 'Enter the access key to open the platform.',
+    loginByline: 'Capgemini Invent · Agentic AI Practice · 2026',
+    betaTitle: 'Work in Progress',
+    betaSub: 'Scores & calculations under development',
+    betaBody: 'This benchmarking tool is currently under <strong>active development</strong>. Both <strong>content errors</strong> (scores, weightings, vendor data) and <strong>UI issues</strong> may occur. All information is continuously reviewed and updated.',
+    emailRequired: 'Please enter a valid email address.',
+    passwordWrong: 'Incorrect password. Please try again.',
+    selectPlatforms: 'Select Platforms to Compare',
+    selectAll: 'Select All', clearAll: 'Clear All',
+    minHint: 'Select at least 2 platforms to proceed.',
+    maxHint: 'Maximum 8 platforms for readable comparison.',
+    selected: 'selected',
+    presetLabel: 'Use-Case Preset:', customConfig: '— Custom Configuration —',
+    buildAwareness: 'Build-Awareness Mode',
+    cat1name: 'Reasoning & Orchestration', cat1sv: 'Strategic Value: Drives Operational Autonomy',
+    cat2name: 'Context & Knowledge Layer', cat2sv: 'Strategic Value: Drives Decision Accuracy',
+    cat3name: 'Governance & Security Layer', cat3sv: 'Strategic Value: Drives Trust & Compliance',
+    cat4name: 'Integration & Execution Layer', cat4sv: 'Strategic Value: Drives Implementation Velocity',
+    generateBtn: 'Generate Strategic Analysis', generateBtnDisabled: 'Select at least 2 platforms',
+    analyzing: 'Analyzing vendor capabilities...',
+    loadingMsgs: [
+      'Analyzing vendor capabilities...',
+      'Calculating weighted maturity scores...',
+      'Generating radar profiles...',
+      'Determining platform ranking...',
+      'Computing impact KPIs...',
+      'Composing strategic verdict...',
+      'Finalizing executive report...'
+    ],
+    resultsTitle: 'Strategic Analysis Results',
+    preparedFor: 'Prepared for',
+    useCase: 'Use Case',
+    custom: 'Custom',
+    buildOn: 'ON', buildOff: 'OFF',
+    radarTitle: 'Capability Radar',
+    rankingTitle: 'Platform Ranking',
+    kpiTitle: 'Impact KPIs by Vendor',
+    verdictTitle: "Consultant's Verdict",
+    scoresMatrixTitle: 'Sub-Category Score Matrix',
+    layerBrain: 'Brain', layerMemory: 'Memory', layerGuard: 'Guard', layerHands: 'Hands',
+    kpiReliability: 'Reliability', kpiScalability: 'Scalability', kpiTTV: 'Time-to-Value',
+    moscow3: 'Must-have', moscow2: 'Should-have', moscow1: 'Could-have', moscow0: 'Irrelevant',
+    tickLabels: ['0 – Irrelevant', '1 – Could-have', '2 – Should-have', '3 – Must-have'],
+    subNames: {
+      dynamicTaskPlanning: 'Dynamic Task Planning',
+      multiAgentCollab: 'Multi-Agent Collaboration',
+      selfCorrection: 'Self-Correction & Reasoning',
+      semanticRAG: 'Semantic RAG Maturity',
+      multimodalExtraction: 'Multimodal Data Extraction',
+      institutionalMemory: 'Institutional Memory & State Management',
+      decisionTraceability: 'Decision Traceability (Audit)',
+      guardrailEnforcement: 'Guardrail Enforcement',
+      iam: 'Identity & Access Management',
+      apiFabric: 'API Fabric & Connectivity',
+      crossAppOrchestration: 'Cross-Application Orchestration',
+      runtimeResilience: 'Runtime Resilience'
+    },
+    subDescs: {
+      dynamicTaskPlanning: 'The ability of the AI to autonomously decompose high-level business goals into actionable sub-tasks without pre-defined step-by-step programming.',
+      multiAgentCollab: 'The sophistication of the Multi-Agent Engine where specialized agents communicate, exchange data, and hand off tasks to one another to complete end-to-end workflows.',
+      selfCorrection: 'The system\'s capability to detect its own errors or hallucinations during execution and automatically adjust its logic path to reach the correct outcome.',
+      semanticRAG: 'The depth of Retrieval-Augmented Generation (RAG) to find and utilize relevant information from unstructured company data with high precision.',
+      multimodalExtraction: 'The ability to read and understand complex documents, including tables, handwriting, and images, and convert them into structured digital data.',
+      institutionalMemory: 'Maintaining long-term context of user preferences, historical decisions, and process states across different sessions and departments.',
+      decisionTraceability: 'Providing cryptographic or highly detailed logs for every action taken by the AI, ensuring complete explainability for internal risk teams or external auditors.',
+      guardrailEnforcement: 'Hard-coded safety boundaries that prevent the AI from performing unauthorized actions, leaking data, or diverging from corporate policy.',
+      iam: 'Granular permission controls defining exactly which data and systems each specific agent is allowed to access and modify.',
+      apiFabric: 'The breadth and depth of native, out-of-the-box connectors to standard enterprise systems like SAP, Salesforce, and Workday.',
+      crossAppOrchestration: 'The ability to execute actions and move data seamlessly across multiple different software applications within a single automated process.',
+      runtimeResilience: 'System stability and the ability to maintain operations during API timeouts, high traffic loads, or underlying infrastructure changes.'
+    },
+    brainStrength: 'Superior autonomous reasoning and task orchestration capabilities.',
+    brainWeakness: 'Reasoning capabilities require significant custom development effort.',
+    memoryStrength: 'Best-in-class knowledge retrieval and document understanding.',
+    memoryWeakness: 'Knowledge layer has gaps in multimodal processing or long-term memory.',
+    guardStrength: 'Enterprise-grade governance, audit trails, and compliance readiness.',
+    guardWeakness: 'Governance features are still maturing and may need manual supplementation.',
+    handsStrength: 'Fastest integration with existing enterprise systems and highest runtime stability.',
+    handsWeakness: 'Integration breadth is limited; custom connectors may be required.',
+    verdictIntro: (v, s) => `<strong>${v}</strong> leads this assessment with a weighted score of <strong>${s}%</strong>.`,
+    verdictStrength: 'Key Strength',
+    verdictRisk: 'Key Risk',
+    verdictChallenger: 'Closest Challenger',
+    verdictRec: (v1, v2) => `<strong>Recommendation:</strong> Initiate a Proof-of-Concept with <strong>${v1}</strong> and <strong>${v2}</strong> to validate fit for your specific enterprise environment.`,
+    pdfTitle: 'Agentic AI Platform Benchmark',
+    pdfPrepared: 'Prepared for',
+    pdfDate: 'Date',
+    pdfFormula: 'Scoring Formula',
+    buildAwarenessOff: 'Score% = 100 × Σ(Maturity × Weight) / Σ(3 × Weight)',
+    buildAwarenessOn: 'Score% = 100 × Σ(Maturity × Multiplier × Weight) / Σ(3 × Weight)'
+  },
+  DE: {
+    back: '← Zurück', exportPDF: 'PDF exportieren',
+    emailLabel: 'E-Mail-Adresse', emailPlaceholder: 'sie@unternehmen.de',
+    passwordLabel: 'Zugangscode', loginBtn: 'Benchmark öffnen →',
+        loginEyebrow: 'Enterprise AI Benchmark Tool',
+    loginTagline: "Bewerten und vergleichen Sie unternehmensweite Agentic-AI-Plattformen entlang von 12 Fähigkeitsdimensionen — zugeschnitten auf Ihren spezifischen Anwendungsfall.",
+    loginFormTitle: 'Benchmark Zugang',
+    loginFormSub: 'Zugangscode eingeben, um die Plattform zu öffnen.',
+    loginByline: 'Capgemini Invent · Agentic AI Practice · 2026',
+    betaTitle: 'Work in Progress',
+    betaSub: 'Scores & Berechnungen in Entwicklung',
+    betaBody: 'Dieses Benchmarking-Tool befindet sich aktuell im <strong>aktiven Aufbau</strong>. Es können sowohl <strong>inhaltliche Fehler</strong> (Scores, Gewichtungen, Vendor-Daten) als auch <strong>UI-Fehler</strong> auftreten. Alle Angaben werden laufend geprüft und angepasst.',
+    emailRequired: 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+    passwordWrong: 'Falsches Passwort. Bitte versuchen Sie es erneut.',
+    selectPlatforms: 'Plattformen zum Vergleich auswählen',
+    selectAll: 'Alle auswählen', clearAll: 'Alle löschen',
+    minHint: 'Wählen Sie mindestens 2 Plattformen aus.',
+    maxHint: 'Maximal 8 Plattformen für einen lesbaren Vergleich.',
+    selected: 'ausgewählt',
+    presetLabel: 'Use-Case-Preset:', customConfig: '— Benutzerdefinierte Konfiguration —',
+    buildAwareness: 'Build-Awareness-Modus',
+    cat1name: 'Reasoning & Orchestrierung', cat1sv: 'Strategischer Wert: Fördert operative Autonomie',
+    cat2name: 'Kontext- & Wissensschicht', cat2sv: 'Strategischer Wert: Fördert Entscheidungsgenauigkeit',
+    cat3name: 'Governance- & Sicherheitsschicht', cat3sv: 'Strategischer Wert: Fördert Vertrauen & Compliance',
+    cat4name: 'Integrations- & Ausführungsschicht', cat4sv: 'Strategischer Wert: Fördert Implementierungsgeschwindigkeit',
+    generateBtn: 'Strategische Analyse generieren', generateBtnDisabled: 'Mindestens 2 Plattformen auswählen',
+    analyzing: 'Anbieter-Fähigkeiten werden analysiert...',
+    loadingMsgs: [
+      'Anbieter-Fähigkeiten werden analysiert...',
+      'Gewichtete Reifegraddaten werden berechnet...',
+      'Radar-Profile werden generiert...',
+      'Plattform-Ranking wird ermittelt...',
+      'Impact-KPIs werden berechnet...',
+      'Strategisches Urteil wird formuliert...',
+      'Executive Report wird finalisiert...'
+    ],
+    resultsTitle: 'Strategische Analyseergebnisse',
+    preparedFor: 'Erstellt für', useCase: 'Use Case', custom: 'Benutzerdefiniert',
+    buildOn: 'AN', buildOff: 'AUS',
+    radarTitle: 'Fähigkeits-Radar',
+    rankingTitle: 'Plattform-Ranking',
+    kpiTitle: 'Impact-KPIs nach Anbieter',
+    verdictTitle: 'Berater-Urteil',
+    colRank: 'Rang', colVendor: 'Anbieter', colScore: 'Score',
+    layerBrain: 'Gehirn', layerMemory: 'Gedächtnis', layerGuard: 'Schutz', layerHands: 'Ausführung',
+    kpiReliability: 'Zuverlässigkeit', kpiScalability: 'Skalierbarkeit', kpiTTV: 'Time-to-Value',
+    moscow3: 'Muss haben', moscow2: 'Sollte haben', moscow1: 'Könnte haben', moscow0: 'Irrelevant',
+    tickLabels: ['0 – Irrelevant', '1 – Könnte haben', '2 – Sollte haben', '3 – Muss haben'],
+    subNames: {
+      dynamicTaskPlanning: 'Dynamische Aufgabenplanung',
+      multiAgentCollab: 'Multi-Agenten-Kollaboration',
+      selfCorrection: 'Selbstkorrektur & Reasoning',
+      semanticRAG: 'Semantische RAG-Reife',
+      multimodalExtraction: 'Multimodale Datenextraktion',
+      institutionalMemory: 'Institutionelles Gedächtnis & Statusmanagement',
+      decisionTraceability: 'Entscheidungstransparenz (Audit)',
+      guardrailEnforcement: 'Guardrail-Erzwingung',
+      iam: 'Identity & Access Management',
+      apiFabric: 'API Fabric & Konnektivität',
+      crossAppOrchestration: 'Anwendungsübergreifende Orchestrierung',
+      runtimeResilience: 'Runtime-Resilienz'
+    },
+    subDescs: {
+      dynamicTaskPlanning: 'Die Fähigkeit der KI, abstrakte Geschäftsziele autonom in ausführbare Teilaufgaben zu zerlegen, ohne vordefinierte Schritt-für-Schritt-Programmierung.',
+      multiAgentCollab: 'Die Sophistizierung des Multi-Agenten-Systems, in dem spezialisierte Agenten kommunizieren, Daten austauschen und Aufgaben weiterleiten, um End-to-End-Workflows abzuschließen.',
+      selfCorrection: 'Die Fähigkeit des Systems, eigene Fehler oder Halluzinationen während der Ausführung zu erkennen und den Logikpfad automatisch anzupassen.',
+      semanticRAG: 'Die Tiefe der Retrieval-Augmented Generation (RAG), um relevante Informationen aus unstrukturierten Unternehmensdaten mit hoher Präzision zu finden und zu nutzen.',
+      multimodalExtraction: 'Die Fähigkeit, komplexe Dokumente mit Tabellen, Handschrift und Bildern zu verstehen und in strukturierte digitale Daten umzuwandeln.',
+      institutionalMemory: 'Die langfristige Pflege von Nutzerpräferenzen, historischen Entscheidungen und Prozesszuständen über verschiedene Sitzungen und Abteilungen hinweg.',
+      decisionTraceability: 'Bereitstellung kryptografischer oder detaillierter Protokolle für jede KI-Aktion, um vollständige Erklärbarkeit für interne Risikoteams oder externe Prüfer zu gewährleisten.',
+      guardrailEnforcement: 'Fest codierte Sicherheitsgrenzen, die verhindern, dass die KI unautorisierte Aktionen ausführt, Daten leckt oder von der Unternehmensrichtlinie abweicht.',
+      iam: 'Granulare Berechtigungskontrollen, die genau definieren, auf welche Daten und Systeme jeder Agent zugreifen und welche er ändern darf.',
+      apiFabric: 'Die Breite und Tiefe nativer, sofort einsatzbereiter Konnektoren zu Standard-Unternehmenssystemen wie SAP, Salesforce und Workday.',
+      crossAppOrchestration: 'Die Fähigkeit, Aktionen auszuführen und Daten nahtlos über mehrere verschiedene Softwareanwendungen innerhalb eines einzigen automatisierten Prozesses zu bewegen.',
+      runtimeResilience: 'Systemstabilität und die Fähigkeit, den Betrieb bei API-Timeouts, hoher Last oder Infrastrukturänderungen aufrechtzuerhalten.'
+    },
+    brainStrength: 'Überlegene autonome Reasoning- und Aufgabenorchestrierungsfähigkeiten.',
+    brainWeakness: 'Reasoning-Fähigkeiten erfordern erheblichen benutzerdefinierten Entwicklungsaufwand.',
+    memoryStrength: 'Erstklassige Wissensabfrage und Dokumentenverständnis.',
+    memoryWeakness: 'Die Wissensschicht weist Lücken bei der multimodalen Verarbeitung oder im Langzeitgedächtnis auf.',
+    guardStrength: 'Enterprise-taugliche Governance, Audit-Trails und Compliance-Bereitschaft.',
+    guardWeakness: 'Governance-Funktionen sind noch im Reifeprozess und benötigen möglicherweise manuelle Ergänzung.',
+    handsStrength: 'Schnellste Integration mit bestehenden Unternehmenssystemen und höchste Runtime-Stabilität.',
+    handsWeakness: 'Die Integrationsbreite ist begrenzt; benutzerdefinierte Konnektoren können erforderlich sein.',
+    verdictIntro: (v, s) => `<strong>${v}</strong> führt diese Bewertung mit einem gewichteten Score von <strong>${s}%</strong>.`,
+    verdictStrength: 'Stärke', verdictRisk: 'Risiko', verdictChallenger: 'Nächster Herausforderer',
+    verdictRec: (v1, v2) => `<strong>Empfehlung:</strong> Starten Sie einen Proof-of-Concept mit <strong>${v1}</strong> und <strong>${v2}</strong>, um die Eignung für Ihre spezifische Unternehmensumgebung zu validieren.`,
+    pdfTitle: 'Agentic AI Plattform Benchmark',
+    pdfPrepared: 'Erstellt für', pdfDate: 'Datum', pdfFormula: 'Bewertungsformel',
+    buildAwarenessOff: 'Score% = 100 × Σ(Reife × Gewichtung) / Σ(3 × Gewichtung)',
+    buildAwarenessOn: 'Score% = 100 × Σ(Reife × Multiplikator × Gewichtung) / Σ(3 × Gewichtung)'
+  },
+  FR: {
+    back: '← Retour', exportPDF: 'Exporter PDF',
+    emailLabel: 'Adresse E-mail', emailPlaceholder: 'vous@entreprise.fr',
+    passwordLabel: 'Clé d\'accès', loginBtn: 'Accéder au Benchmark →',
+        loginEyebrow: 'Outil de Benchmark IA Entreprise',
+    loginTagline: "Évaluez et comparez les plateformes d'IA agentique de niveau entreprise selon 12 dimensions de capacité — adaptées à votre cas d'usage spécifique.",
+    loginFormTitle: 'Accès Benchmark',
+    betaTitle: 'En cours de développement',
+    betaSub: 'Scores & calculs en cours de développement',
+    betaBody: 'Cet outil de benchmarking est actuellement en <strong>développement actif</strong>. Des <strong>erreurs de contenu</strong> (scores, pondérations, données fournisseurs) et des <strong>problèmes d\'interface</strong> peuvent survenir. Toutes les informations sont en cours de révision.',
+    loginFormSub: 'Saisissez la clé d\'accès pour ouvrir la plateforme.',
+    loginByline: 'Capgemini Invent · Pratique IA Agentique · 2026',
+    emailRequired: 'Veuillez saisir une adresse e-mail valide.',
+    passwordWrong: 'Mot de passe incorrect. Veuillez réessayer.',
+    selectPlatforms: 'Sélectionner les plateformes à comparer',
+    selectAll: 'Tout sélectionner', clearAll: 'Tout effacer',
+    minHint: 'Sélectionnez au moins 2 plateformes pour continuer.',
+    maxHint: 'Maximum 8 plateformes pour une comparaison lisible.',
+    selected: 'sélectionnées',
+    presetLabel: 'Preset de cas d\'usage :', customConfig: '— Configuration personnalisée —',
+    buildAwareness: 'Mode Build-Awareness',
+    cat1name: 'Raisonnement & Orchestration', cat1sv: 'Valeur stratégique : Favorise l\'autonomie opérationnelle',
+    cat2name: 'Couche Contexte & Connaissance', cat2sv: 'Valeur stratégique : Favorise la précision décisionnelle',
+    cat3name: 'Couche Gouvernance & Sécurité', cat3sv: 'Valeur stratégique : Favorise la confiance et la conformité',
+    cat4name: 'Couche Intégration & Exécution', cat4sv: 'Valeur stratégique : Favorise la vitesse d\'implémentation',
+    generateBtn: 'Générer l\'analyse stratégique', generateBtnDisabled: 'Sélectionnez au moins 2 plateformes',
+    analyzing: 'Analyse des capacités fournisseurs...',
+    loadingMsgs: [
+      'Analyse des capacités fournisseurs...',
+      'Calcul des scores de maturité pondérés...',
+      'Génération des profils radar...',
+      'Détermination du classement des plateformes...',
+      'Calcul des KPIs d\'impact...',
+      'Rédaction du verdict stratégique...',
+      'Finalisation du rapport exécutif...'
+    ],
+    resultsTitle: 'Résultats de l\'analyse stratégique',
+    preparedFor: 'Préparé pour', useCase: 'Cas d\'usage', custom: 'Personnalisé',
+    buildOn: 'ACTIF', buildOff: 'INACTIF',
+    radarTitle: 'Radar de capacités',
+    rankingTitle: 'Classement des plateformes',
+    kpiTitle: 'KPIs d\'impact par fournisseur',
+    verdictTitle: 'Verdict du consultant',
+    colRank: 'Rang', colVendor: 'Fournisseur', colScore: 'Score',
+    layerBrain: 'Cerveau', layerMemory: 'Mémoire', layerGuard: 'Garde', layerHands: 'Mains',
+    kpiReliability: 'Fiabilité', kpiScalability: 'Évolutivité', kpiTTV: 'Délai de valeur',
+    moscow3: 'Indispensable', moscow2: 'Souhaitable', moscow1: 'Optionnel', moscow0: 'Irrelevant',
+    tickLabels: ['0 – Irrelevant', '1 – Optionnel', '2 – Souhaitable', '3 – Indispensable'],
+    subNames: {
+      dynamicTaskPlanning: 'Planification dynamique des tâches',
+      multiAgentCollab: 'Collaboration multi-agents',
+      selfCorrection: 'Auto-correction & Raisonnement',
+      semanticRAG: 'Maturité RAG sémantique',
+      multimodalExtraction: 'Extraction de données multimodale',
+      institutionalMemory: 'Mémoire institutionnelle & Gestion d\'état',
+      decisionTraceability: 'Traçabilité des décisions (Audit)',
+      guardrailEnforcement: 'Application des garde-fous',
+      iam: 'Gestion des identités et des accès',
+      apiFabric: 'Tissu API & Connectivité',
+      crossAppOrchestration: 'Orchestration inter-applications',
+      runtimeResilience: 'Résilience d\'exécution'
+    },
+    subDescs: {
+      dynamicTaskPlanning: 'La capacité de l\'IA à décomposer de manière autonome des objectifs métier de haut niveau en sous-tâches actionnables sans programmation étape par étape prédéfinie.',
+      multiAgentCollab: 'La sophistication du moteur multi-agents où des agents spécialisés communiquent, échangent des données et se transmettent des tâches pour compléter des flux de travail de bout en bout.',
+      selfCorrection: 'La capacité du système à détecter ses propres erreurs ou hallucinations pendant l\'exécution et à ajuster automatiquement son chemin logique.',
+      semanticRAG: 'La profondeur de la Retrieval-Augmented Generation (RAG) pour trouver et utiliser des informations pertinentes à partir de données d\'entreprise non structurées avec une haute précision.',
+      multimodalExtraction: 'La capacité à lire et comprendre des documents complexes incluant des tableaux, des écritures manuscrites et des images, et à les convertir en données numériques structurées.',
+      institutionalMemory: 'Le maintien d\'un contexte à long terme des préférences utilisateur, des décisions historiques et des états de processus entre différentes sessions et départements.',
+      decisionTraceability: 'Fournir des journaux cryptographiques ou très détaillés pour chaque action prise par l\'IA, assurant une explicabilité complète pour les équipes de risque internes ou les auditeurs externes.',
+      guardrailEnforcement: 'Des frontières de sécurité codées en dur qui empêchent l\'IA d\'effectuer des actions non autorisées, de divulguer des données ou de s\'écarter de la politique d\'entreprise.',
+      iam: 'Des contrôles de permission granulaires définissant exactement quelles données et quels systèmes chaque agent spécifique est autorisé à accéder et à modifier.',
+      apiFabric: 'L\'étendue et la profondeur des connecteurs natifs prêts à l\'emploi vers les systèmes d\'entreprise standards comme SAP, Salesforce et Workday.',
+      crossAppOrchestration: 'La capacité à exécuter des actions et déplacer des données de manière transparente entre plusieurs applications logicielles différentes dans un seul processus automatisé.',
+      runtimeResilience: 'La stabilité du système et la capacité à maintenir les opérations lors de délais d\'attente API, de charges élevées ou de changements d\'infrastructure.'
+    },
+    brainStrength: 'Capacités supérieures de raisonnement autonome et d\'orchestration des tâches.',
+    brainWeakness: 'Les capacités de raisonnement nécessitent un effort de développement personnalisé significatif.',
+    memoryStrength: 'Récupération des connaissances et compréhension des documents de premier plan.',
+    memoryWeakness: 'La couche de connaissance présente des lacunes dans le traitement multimodal ou la mémoire à long terme.',
+    guardStrength: 'Gouvernance de niveau entreprise, pistes d\'audit et préparation à la conformité.',
+    guardWeakness: 'Les fonctionnalités de gouvernance sont encore en cours de maturation et peuvent nécessiter une supplémentation manuelle.',
+    handsStrength: 'Intégration la plus rapide avec les systèmes d\'entreprise existants et la plus haute stabilité d\'exécution.',
+    handsWeakness: 'L\'étendue de l\'intégration est limitée; des connecteurs personnalisés peuvent être nécessaires.',
+    verdictIntro: (v, s) => `<strong>${v}</strong> mène cette évaluation avec un score pondéré de <strong>${s}%</strong>.`,
+    verdictStrength: 'Point fort', verdictRisk: 'Risque clé', verdictChallenger: 'Challenger le plus proche',
+    verdictRec: (v1, v2) => `<strong>Recommandation :</strong> Lancez un Proof-of-Concept avec <strong>${v1}</strong> et <strong>${v2}</strong> pour valider l\'adéquation à votre environnement d\'entreprise spécifique.`,
+    pdfTitle: 'Benchmark des plateformes IA agentiques',
+    pdfPrepared: 'Préparé pour', pdfDate: 'Date', pdfFormula: 'Formule de notation',
+    buildAwarenessOff: 'Score% = 100 × Σ(Maturité × Poids) / Σ(3 × Poids)',
+    buildAwarenessOn: 'Score% = 100 × Σ(Maturité × Multiplicateur × Poids) / Σ(3 × Poids)'
+  },
+  ES: {
+    back: '← Volver', exportPDF: 'Exportar PDF',
+    emailLabel: 'Correo electrónico', emailPlaceholder: 'usted@empresa.es',
+    passwordLabel: 'Clave de acceso', loginBtn: 'Acceder al Benchmark →',
+        loginEyebrow: 'Herramienta de Benchmark IA Empresarial',
+    loginTagline: "Evalúe y compare plataformas de IA agéntica de nivel empresarial en 12 dimensiones de capacidad — adaptadas a su caso de uso específico.",
+    loginFormTitle: 'Acceso Benchmark',
+    betaTitle: 'En desarrollo',
+    betaSub: 'Puntuaciones & cálculos en desarrollo',
+    betaBody: 'Esta herramienta de benchmarking se encuentra actualmente en <strong>desarrollo activo</strong>. Pueden producirse <strong>errores de contenido</strong> (puntuaciones, ponderaciones, datos de proveedores) y <strong>problemas de interfaz</strong>. Toda la información se revisa continuamente.',
+    loginFormSub: 'Introduzca la clave de acceso para abrir la plataforma.',
+    loginByline: 'Capgemini Invent · Práctica de IA Agéntica · 2026',
+    emailRequired: 'Por favor, introduzca una dirección de correo válida.',
+    passwordWrong: 'Contraseña incorrecta. Por favor, inténtelo de nuevo.',
+    selectPlatforms: 'Seleccionar plataformas para comparar',
+    selectAll: 'Seleccionar todo', clearAll: 'Borrar todo',
+    minHint: 'Seleccione al menos 2 plataformas para continuar.',
+    maxHint: 'Máximo 8 plataformas para una comparación legible.',
+    selected: 'seleccionadas',
+    presetLabel: 'Preset de caso de uso:', customConfig: '— Configuración personalizada —',
+    buildAwareness: 'Modo Build-Awareness',
+    cat1name: 'Razonamiento & Orquestación', cat1sv: 'Valor estratégico: Impulsa la autonomía operacional',
+    cat2name: 'Capa Contexto & Conocimiento', cat2sv: 'Valor estratégico: Impulsa la precisión en decisiones',
+    cat3name: 'Capa Gobernanza & Seguridad', cat3sv: 'Valor estratégico: Impulsa la confianza y el cumplimiento',
+    cat4name: 'Capa Integración & Ejecución', cat4sv: 'Valor estratégico: Impulsa la velocidad de implementación',
+    generateBtn: 'Generar análisis estratégico', generateBtnDisabled: 'Seleccione al menos 2 plataformas',
+    analyzing: 'Analizando capacidades de proveedores...',
+    loadingMsgs: [
+      'Analizando capacidades de proveedores...',
+      'Calculando puntuaciones de madurez ponderadas...',
+      'Generando perfiles de radar...',
+      'Determinando el ranking de plataformas...',
+      'Calculando KPIs de impacto...',
+      'Redactando el veredicto estratégico...',
+      'Finalizando el informe ejecutivo...'
+    ],
+    resultsTitle: 'Resultados del análisis estratégico',
+    preparedFor: 'Preparado para', useCase: 'Caso de uso', custom: 'Personalizado',
+    buildOn: 'ACTIVO', buildOff: 'INACTIVO',
+    radarTitle: 'Radar de capacidades',
+    rankingTitle: 'Ranking de plataformas',
+    kpiTitle: 'KPIs de impacto por proveedor',
+    verdictTitle: 'Veredicto del consultor',
+    colRank: 'Rango', colVendor: 'Proveedor', colScore: 'Puntuación',
+    layerBrain: 'Cerebro', layerMemory: 'Memoria', layerGuard: 'Guardia', layerHands: 'Ejecución',
+    kpiReliability: 'Fiabilidad', kpiScalability: 'Escalabilidad', kpiTTV: 'Tiempo hasta valor',
+    moscow3: 'Imprescindible', moscow2: 'Deseable', moscow1: 'Opcional', moscow0: 'Irrelevante',
+    tickLabels: ['0 – Irrelevante', '1 – Opcional', '2 – Deseable', '3 – Imprescindible'],
+    subNames: {
+      dynamicTaskPlanning: 'Planificación dinámica de tareas',
+      multiAgentCollab: 'Colaboración multi-agente',
+      selfCorrection: 'Auto-corrección y razonamiento',
+      semanticRAG: 'Madurez de RAG semántico',
+      multimodalExtraction: 'Extracción de datos multimodal',
+      institutionalMemory: 'Memoria institucional y gestión de estado',
+      decisionTraceability: 'Trazabilidad de decisiones (Auditoría)',
+      guardrailEnforcement: 'Aplicación de límites de seguridad',
+      iam: 'Gestión de identidad y acceso',
+      apiFabric: 'Tejido API y conectividad',
+      crossAppOrchestration: 'Orquestación entre aplicaciones',
+      runtimeResilience: 'Resiliencia en tiempo de ejecución'
+    },
+    subDescs: {
+      dynamicTaskPlanning: 'La capacidad de la IA para descomponer de forma autónoma objetivos empresariales de alto nivel en sub-tareas accionables sin programación paso a paso predefinida.',
+      multiAgentCollab: 'La sofisticación del motor multi-agente donde agentes especializados comunican, intercambian datos y transfieren tareas para completar flujos de trabajo de extremo a extremo.',
+      selfCorrection: 'La capacidad del sistema para detectar sus propios errores o alucinaciones durante la ejecución y ajustar automáticamente su ruta lógica.',
+      semanticRAG: 'La profundidad de la Retrieval-Augmented Generation (RAG) para encontrar y utilizar información relevante de datos empresariales no estructurados con alta precisión.',
+      multimodalExtraction: 'La capacidad de leer y comprender documentos complejos incluyendo tablas, escritura a mano e imágenes, y convertirlos en datos digitales estructurados.',
+      institutionalMemory: 'Mantener el contexto a largo plazo de las preferencias del usuario, decisiones históricas y estados de proceso en diferentes sesiones y departamentos.',
+      decisionTraceability: 'Proporcionar registros criptográficos o muy detallados para cada acción tomada por la IA, garantizando explicabilidad completa para equipos de riesgo internos o auditores externos.',
+      guardrailEnforcement: 'Límites de seguridad codificados que impiden que la IA realice acciones no autorizadas, filtre datos o se desvíe de la política corporativa.',
+      iam: 'Controles de permisos granulares que definen exactamente qué datos y sistemas puede acceder y modificar cada agente específico.',
+      apiFabric: 'La amplitud y profundidad de los conectores nativos listos para usar a sistemas empresariales estándar como SAP, Salesforce y Workday.',
+      crossAppOrchestration: 'La capacidad de ejecutar acciones y mover datos de forma transparente entre múltiples aplicaciones de software diferentes dentro de un único proceso automatizado.',
+      runtimeResilience: 'Estabilidad del sistema y capacidad para mantener operaciones durante tiempos de espera de API, cargas de tráfico elevadas o cambios en la infraestructura.'
+    },
+    brainStrength: 'Capacidades superiores de razonamiento autónomo y orquestación de tareas.',
+    brainWeakness: 'Las capacidades de razonamiento requieren un esfuerzo considerable de desarrollo personalizado.',
+    memoryStrength: 'Recuperación de conocimiento y comprensión de documentos de primera clase.',
+    memoryWeakness: 'La capa de conocimiento tiene brechas en procesamiento multimodal o memoria a largo plazo.',
+    guardStrength: 'Gobernanza de nivel empresarial, trazas de auditoría y preparación para el cumplimiento.',
+    guardWeakness: 'Las funciones de gobernanza aún están madurando y pueden necesitar suplementación manual.',
+    handsStrength: 'Integración más rápida con sistemas empresariales existentes y mayor estabilidad en tiempo de ejecución.',
+    handsWeakness: 'La amplitud de integración es limitada; pueden ser necesarios conectores personalizados.',
+    verdictIntro: (v, s) => `<strong>${v}</strong> lidera esta evaluación con una puntuación ponderada de <strong>${s}%</strong>.`,
+    verdictStrength: 'Fortaleza clave', verdictRisk: 'Riesgo clave', verdictChallenger: 'Competidor más cercano',
+    verdictRec: (v1, v2) => `<strong>Recomendación:</strong> Inicie una Prueba de Concepto con <strong>${v1}</strong> y <strong>${v2}</strong> para validar el ajuste a su entorno empresarial específico.`,
+    pdfTitle: 'Benchmark de Plataformas IA Agénticas',
+    pdfPrepared: 'Preparado para', pdfDate: 'Fecha', pdfFormula: 'Fórmula de puntuación',
+    buildAwarenessOff: 'Score% = 100 × Σ(Madurez × Peso) / Σ(3 × Peso)',
+    buildAwarenessOn: 'Score% = 100 × Σ(Madurez × Multiplicador × Peso) / Σ(3 × Peso)'
+  },
+  IT: {
+    back: '← Indietro', exportPDF: 'Esporta PDF',
+    emailLabel: 'Indirizzo E-mail', emailPlaceholder: 'tu@azienda.it',
+    passwordLabel: 'Chiave di accesso', loginBtn: 'Accedi al Benchmark →',
+        loginEyebrow: 'Strumento di Benchmark IA Aziendale',
+    loginTagline: "Valuta e confronta le piattaforme di IA agentiva di livello enterprise su 12 dimensioni di capacità — personalizzate per il tuo caso d'uso specifico.",
+    loginFormTitle: 'Accesso Benchmark',
+    betaTitle: 'In sviluppo',
+    betaSub: 'Punteggi & calcoli in sviluppo',
+    betaBody: 'Questo strumento di benchmarking è attualmente in <strong>sviluppo attivo</strong>. Possono verificarsi <strong>errori di contenuto</strong> (punteggi, ponderazioni, dati vendor) e <strong>problemi di interfaccia</strong>. Tutte le informazioni sono in continua revisione.',
+    loginFormSub: 'Inserisci la chiave di accesso per aprire la piattaforma.',
+    loginByline: 'Capgemini Invent · Agentic AI Practice · 2026',
+    emailRequired: 'Inserisci un indirizzo e-mail valido.',
+    passwordWrong: 'Password errata. Riprova.',
+    selectPlatforms: 'Seleziona piattaforme da confrontare',
+    selectAll: 'Seleziona tutto', clearAll: 'Cancella tutto',
+    minHint: 'Seleziona almeno 2 piattaforme per continuare.',
+    maxHint: 'Massimo 8 piattaforme per un confronto leggibile.',
+    selected: 'selezionate',
+    presetLabel: 'Preset caso d\'uso:', customConfig: '— Configurazione personalizzata —',
+    buildAwareness: 'Modalità Build-Awareness',
+    cat1name: 'Ragionamento & Orchestrazione', cat1sv: 'Valore strategico: Promuove l\'autonomia operativa',
+    cat2name: 'Livello Contesto & Conoscenza', cat2sv: 'Valore strategico: Promuove l\'accuratezza decisionale',
+    cat3name: 'Livello Governance & Sicurezza', cat3sv: 'Valore strategico: Promuove fiducia e conformità',
+    cat4name: 'Livello Integrazione & Esecuzione', cat4sv: 'Valore strategico: Promuove la velocità di implementazione',
+    generateBtn: 'Genera analisi strategica', generateBtnDisabled: 'Seleziona almeno 2 piattaforme',
+    analyzing: 'Analisi delle capacità dei vendor...',
+    loadingMsgs: [
+      'Analisi delle capacità dei vendor...',
+      'Calcolo dei punteggi di maturità ponderati...',
+      'Generazione dei profili radar...',
+      'Determinazione del ranking delle piattaforme...',
+      'Calcolo dei KPI di impatto...',
+      'Redazione del verdetto strategico...',
+      'Finalizzazione del report esecutivo...'
+    ],
+    resultsTitle: 'Risultati dell\'analisi strategica',
+    preparedFor: 'Preparato per', useCase: 'Caso d\'uso', custom: 'Personalizzato',
+    buildOn: 'ATTIVO', buildOff: 'INATTIVO',
+    radarTitle: 'Radar delle capacità',
+    rankingTitle: 'Ranking delle piattaforme',
+    kpiTitle: 'KPI di impatto per vendor',
+    verdictTitle: 'Verdetto del consulente',
+    colRank: 'Posizione', colVendor: 'Vendor', colScore: 'Punteggio',
+    layerBrain: 'Cervello', layerMemory: 'Memoria', layerGuard: 'Guardia', layerHands: 'Esecuzione',
+    kpiReliability: 'Affidabilità', kpiScalability: 'Scalabilità', kpiTTV: 'Tempo al valore',
+    moscow3: 'Indispensabile', moscow2: 'Desiderabile', moscow1: 'Opzionale', moscow0: 'Irrilevante',
+    tickLabels: ['0 – Irrilevante', '1 – Opzionale', '2 – Desiderabile', '3 – Indispensabile'],
+    subNames: {
+      dynamicTaskPlanning: 'Pianificazione dinamica dei task',
+      multiAgentCollab: 'Collaborazione multi-agente',
+      selfCorrection: 'Auto-correzione e ragionamento',
+      semanticRAG: 'Maturità RAG semantica',
+      multimodalExtraction: 'Estrazione dati multimodale',
+      institutionalMemory: 'Memoria istituzionale e gestione degli stati',
+      decisionTraceability: 'Tracciabilità delle decisioni (Audit)',
+      guardrailEnforcement: 'Applicazione dei guardrail',
+      iam: 'Gestione identità e accessi',
+      apiFabric: 'Fabric API e connettività',
+      crossAppOrchestration: 'Orchestrazione cross-applicazione',
+      runtimeResilience: 'Resilienza in runtime'
+    },
+    subDescs: {
+      dynamicTaskPlanning: 'La capacità dell\'IA di scomporre autonomamente obiettivi aziendali di alto livello in sotto-task attuabili senza programmazione step-by-step predefinita.',
+      multiAgentCollab: 'La sofisticatezza del motore multi-agente in cui agenti specializzati comunicano, scambiano dati e si passano i compiti per completare flussi di lavoro end-to-end.',
+      selfCorrection: 'La capacità del sistema di rilevare i propri errori o allucinazioni durante l\'esecuzione e di adattare automaticamente il percorso logico.',
+      semanticRAG: 'La profondità della Retrieval-Augmented Generation (RAG) per trovare e utilizzare informazioni rilevanti dai dati aziendali non strutturati con alta precisione.',
+      multimodalExtraction: 'La capacità di leggere e comprendere documenti complessi incluse tabelle, scrittura a mano e immagini, convertendoli in dati digitali strutturati.',
+      institutionalMemory: 'Mantenere il contesto a lungo termine delle preferenze utente, delle decisioni storiche e degli stati di processo tra sessioni e dipartimenti diversi.',
+      decisionTraceability: 'Fornire log crittografici o molto dettagliati per ogni azione intrapresa dall\'IA, garantendo completa spiegabilità per i team di rischio interni o gli auditor esterni.',
+      guardrailEnforcement: 'Confini di sicurezza hard-coded che impediscono all\'IA di eseguire azioni non autorizzate, di perdere dati o di deviare dalla policy aziendale.',
+      iam: 'Controlli di autorizzazione granulari che definiscono esattamente a quali dati e sistemi ogni agente specifico è autorizzato ad accedere e modificare.',
+      apiFabric: 'L\'ampiezza e la profondità dei connettori nativi out-of-the-box per i sistemi aziendali standard come SAP, Salesforce e Workday.',
+      crossAppOrchestration: 'La capacità di eseguire azioni e spostare dati in modo trasparente tra più applicazioni software diverse in un singolo processo automatizzato.',
+      runtimeResilience: 'Stabilità del sistema e capacità di mantenere le operazioni durante timeout API, carichi di traffico elevati o modifiche all\'infrastruttura.'
+    },
+    brainStrength: 'Capacità superiori di ragionamento autonomo e orchestrazione dei task.',
+    brainWeakness: 'Le capacità di ragionamento richiedono uno sforzo di sviluppo personalizzato significativo.',
+    memoryStrength: 'Recupero della conoscenza e comprensione dei documenti di prima classe.',
+    memoryWeakness: 'Il livello di conoscenza presenta lacune nell\'elaborazione multimodale o nella memoria a lungo termine.',
+    guardStrength: 'Governance di livello enterprise, audit trail e preparazione alla conformità.',
+    guardWeakness: 'Le funzionalità di governance sono ancora in maturazione e potrebbero richiedere un\'integrazione manuale.',
+    handsStrength: 'Integrazione più rapida con i sistemi aziendali esistenti e maggiore stabilità in runtime.',
+    handsWeakness: 'L\'ampiezza dell\'integrazione è limitata; potrebbero essere necessari connettori personalizzati.',
+    verdictIntro: (v, s) => `<strong>${v}</strong> guida questa valutazione con un punteggio ponderato di <strong>${s}%</strong>.`,
+    verdictStrength: 'Punto di forza', verdictRisk: 'Rischio chiave', verdictChallenger: 'Sfidante più vicino',
+    verdictRec: (v1, v2) => `<strong>Raccomandazione:</strong> Avvia un Proof-of-Concept con <strong>${v1}</strong> e <strong>${v2}</strong> per validare l\'idoneità al tuo specifico ambiente aziendale.`,
+    pdfTitle: 'Benchmark Piattaforme IA Agentiche',
+    pdfPrepared: 'Preparato per', pdfDate: 'Data', pdfFormula: 'Formula di punteggio',
+    buildAwarenessOff: 'Score% = 100 × Σ(Maturità × Peso) / Σ(3 × Peso)',
+    buildAwarenessOn: 'Score% = 100 × Σ(Maturità × Moltiplicatore × Peso) / Σ(3 × Peso)'
   }
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentLang = 'EN';
+let currentView = 1;
+let selectedVendors = [];
+let sliderValues = {};
+let buildAwareness = false;
+let currentPreset = 'custom';
+
+function t(key) { return T[currentLang][key] || T['EN'][key] || key; }
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  SUB_IDS.forEach(id => { sliderValues[id] = 1; });
+  const vendorKeys = Object.keys(VENDORS);
+  selectedVendors = vendorKeys.slice(0, 5);
+  renderVendorChips();
+  renderSliders();
   renderPresets();
-  renderWeightTable();
-  recalculate();
-}
-
-function renderWeightTable() {
-  const table = document.getElementById('weightTable');
-  const moscowLabels = ['Irrelevant (0)','Could-have (1)','Should-have (2)','Must-have (3)'];
-  let html = '<thead><tr><th>Subcategory</th><th>MoSCoW Weight</th></tr></thead><tbody>';
-  LAYERS.forEach(layer => {
-    html += `<tr class="layer-header"><td colspan="2">${layer.emoji} ${layer.name} <span style="color:var(--text-muted);font-weight:400;font-size:11px;">· ${layer.sub}</span></td></tr>`;
-    layer.subs.forEach(sub => {
-      html += `<tr><td>${sub.name}</td><td>
-        <select class="moscow-select" onchange="setWeight('${sub.id}',parseInt(this.value))">`;
-      for(let i=0;i<=3;i++) {
-        html += `<option value="${i}" ${weights[sub.id]===i?'selected':''}>${moscowLabels[i]}</option>`;
-      }
-      html += `</select></td></tr>`;
-    });
-  });
-  html += '</tbody>';
-  table.innerHTML = html;
-}
-
-function setWeight(subId, val) {
-  weights[subId] = val;
-  activePreset = 'Custom';
-  renderPresets();
-  recalculate();
-}
-
-function resetWeights() {
-  allSubs().forEach(s=>weights[s.id]=2);
-  activePreset = 'Custom';
-  renderPresets();
-  renderWeightTable();
-  recalculate();
-}
-
-function renderScoreMatrix() {
-  const table = document.getElementById('scoreMatrix');
-  const buildOn = document.getElementById('buildToggle').checked;
-  let html = '<thead><tr><th>Criteria</th>';
-  VO.forEach(vid => {
-    html += `<th>${VENDORS[vid].name}<br><span style="font-size:9px;color:var(--text-muted);">${buildOn?VENDORS[vid].multiplier+'×':'raw'}</span></th>`;
-  });
-  html += '</tr></thead><tbody>';
-  LAYERS.forEach(layer => {
-    html += `<tr class="layer-header"><td colspan="${VO.length+1}">${layer.emoji} ${layer.name}</td></tr>`;
-    layer.subs.forEach(sub => {
-      html += `<tr><td>${sub.name}</td>`;
-      VO.forEach(vid => {
-        const raw = sub.scores[vid];
-        const eff = (raw * getMultiplier(vid)).toFixed(1);
-        html += `<td>
-          <span class="score-badge s${raw}" onclick="showEvidence('${vid}','${sub.id}')" title="Click for evidence">${raw}</span>
-          ${buildOn && VENDORS[vid].multiplier<1 ? `<span class="effective-score">→${eff}</span>` : ''}
-        </td>`;
-      });
-      html += '</tr>';
-    });
-  });
-  html += '</tbody>';
-  table.innerHTML = html;
-}
-
-function renderVendorCards() {
-  const container = document.getElementById('vendorCards');
-  // Calculate scores and rank
-  const scored = VO.map(vid => ({ vid, score: calcVendorScore(vid) }));
-  scored.sort((a,b) => b.score - a.score);
-  const rankMap = {};
-  scored.forEach((s,i) => rankMap[s.vid] = i+1);
-
-  container.innerHTML = '';
-  VO.forEach(vid => {
-    const v = VENDORS[vid];
-    const score = calcVendorScore(vid);
-    const rank = rankMap[vid];
-    const rel = calcReliability(vid);
-    const sca = calcScalability(vid);
-    const ttv = calcTTV(vid);
-
-    const rankClass = rank<=3 ? ` r${rank}` : '';
-    const scoreColor = score>=70?'var(--green)':score>=50?'var(--orange)':'var(--red)';
-
-    let html = `<div class="vendor-card ${vid} fade-in">
-      <div class="vendor-rank${rankClass}">#${rank}</div>
-      <div class="vendor-name" style="color:${v.color}">${v.name}</div>
-      <div class="vendor-product">${v.product} · ${v.implMode} ${v.multiplier}×</div>
-      <div class="vendor-score" style="color:${scoreColor}">${score.toFixed(0)}%</div>
-      <div class="vendor-score-label">Weighted Score</div>
-      <div class="impact-badges">
-        <div class="impact-badge">
-          ${miniGaugeSVG(rel, 'var(--green)')}
-          <div class="impact-badge-label">Reliability</div>
-        </div>
-        <div class="impact-badge">
-          ${miniGaugeSVG(sca, 'var(--blue-light)')}
-          <div class="impact-badge-label">Scalability</div>
-        </div>
-        <div class="impact-badge">
-          ${miniGaugeSVG(ttv, 'var(--turquoise)')}
-          <div class="impact-badge-label">TTV</div>
-        </div>
-      </div>
-    </div>`;
-    container.innerHTML += html;
-  });
-}
-
-function miniGaugeSVG(pct, color) {
-  const r=16, circ=2*Math.PI*r, offset=circ*(1-Math.min(pct,100)/100);
-  return `<div class="gauge-mini">
-    <svg width="40" height="40" viewBox="0 0 40 40">
-      <circle cx="20" cy="20" r="${r}" fill="none" stroke="var(--border-color)" stroke-width="3"/>
-      <circle cx="20" cy="20" r="${r}" fill="none" stroke="${color}" stroke-width="3"
-        stroke-dasharray="${circ}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
-    </svg>
-    <div class="gauge-mini-value" style="color:${color}">${Math.round(pct)}</div>
-  </div>`;
+  updateCounter();
+  updateGenerateBtn();
+  applyI18n();
+  updateBetaTooltip();
+  populateCatTooltips();
+  // Set login mode on start
+  document.getElementById('header').classList.add('login-mode');
+  document.getElementById('header-logo').classList.add('hidden');
+  document.addEventListener('keydown', e => { if(e.key==='Enter' && currentView===1) doLogin(); });
 }
 
 // ============================================================
-// RADAR CHART
+// LANGUAGE
 // ============================================================
-let radarChart = null;
-function updateRadar() {
-  const ctx = document.getElementById('radarChart').getContext('2d');
-  const showPotential = document.getElementById('potentialToggle').checked;
-  const labels = LAYERS.map(l => l.emoji + ' ' + l.name);
+function setLang(lang) {
+  currentLang = lang;
+  applyI18n();
+  updateBetaTooltip();
+  populateCatTooltips();
+  if(currentView === 2) { renderSliders(); renderPresets(); renderVendorChips(); updateCounter(); }
+  if(currentView === 3) renderResults();
+}
 
-  const datasets = [];
-  VO.forEach(vid => {
-    const v = VENDORS[vid];
-    const data = LAYERS.map(l => calcLayerScore(vid, l.id));
-    datasets.push({
-      label: v.name,
-      data,
-      borderColor: v.color,
-      backgroundColor: `rgba(${v.colorRGB},0.08)`,
-      borderWidth: 2,
-      pointRadius: 4,
-      pointBackgroundColor: v.color,
-      fill: true
-    });
-    if(showPotential) {
-      const rawData = LAYERS.map(l => calcLayerScoreRaw(vid, l.id));
-      datasets.push({
-        label: v.name + ' (potential)',
-        data: rawData,
-        borderColor: v.color,
-        backgroundColor: 'transparent',
-        borderWidth: 1,
-        borderDash: [5,5],
-        pointRadius: 2,
-        pointBackgroundColor: v.color,
-        fill: false
-      });
+function updateBetaTooltip() {
+  const title = document.getElementById('beta-tooltip-title');
+  const body  = document.getElementById('beta-tooltip-body');
+  const sub   = document.getElementById('beta-badge-sub');
+  if(title) title.textContent = t('betaTitle');
+  if(body)  body.innerHTML    = t('betaBody');
+  if(sub)   sub.textContent   = t('betaSub');
+}
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if(val) el.textContent = val;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = t(key);
+  });
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+const PASS_HASH = '50a01713770e6cb87868010dadc5d7b8563cedc3c7b7e0764d2a47bd10b5eb4e';
+
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function doLogin() {
+  const pass = document.getElementById('login-password').value;
+  document.getElementById('password-error').textContent = '';
+  document.getElementById('login-password').classList.remove('error');
+  hashStr(pass).then(hash => {
+    if(hash !== PASS_HASH) {
+      document.getElementById('password-error').textContent = t('passwordWrong');
+      document.getElementById('login-password').classList.add('error');
+      document.querySelector('.login-split').classList.add('shake');
+      setTimeout(()=>document.querySelector('.login-split').classList.remove('shake'),400);
+    } else {
+      showView(2);
     }
   });
+}
 
-  if(radarChart) radarChart.destroy();
-  radarChart = new Chart(ctx, {
-    type: 'radar',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        r: {
-          min: 0, max: 3,
-          ticks: { stepSize:1, color:'#6B7A99', backdropColor:'transparent', font:{size:10} },
-          grid: { color:'rgba(42,53
+// ============================================================
+// VIEWS
+// ============================================================
+function showView(n) {
+  currentView = n;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view'+n).classList.add('active');
+  document.getElementById('btn-back').style.display = n===3 ? 'inline-flex' : 'none';
+  document.getElementById('btn-pdf').style.display = n===3 ? 'inline-flex' : 'none';
+  // Header: hide logo on login, show on other views
+  const hdr = document.getElementById('header');
+  const logo = document.getElementById('header-logo');
+  document.body.classList.toggle('login-mode', n===1);
+  if(n === 1) { hdr.classList.add('login-mode'); logo.classList.add('hidden'); }
+  else { hdr.classList.remove('login-mode'); logo.classList.remove('hidden'); }
+  window.scrollTo(0, 0);
+}
+
+function goBack() { showView(2); }
+
+// ============================================================
+// VENDOR CHIPS
+// ============================================================
+function renderVendorChips() {
+  const c = document.getElementById('vendor-chips-container');
+  c.innerHTML = '';
+  Object.entries(VENDORS).forEach(([id, v]) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    const isSel = selectedVendors.includes(id);
+    chip.className = 'vendor-chip' + (isSel ? ' selected' : '');
+    chip.style.borderColor = isSel ? v.color : '';
+    const tip = isSel ? 'Remove ' + v.name : 'Add ' + v.name;
+    chip.innerHTML =
+      '<span class="chip-tooltip">' + tip + '</span>' +
+      '<span class="chip-dot" style="background:' + v.color + '"></span>' +
+      '<span class="chip-name">' + v.name + '</span>' +
+      '<span class="chip-check" style="color:' + v.color + '">&#10003;</span>';
+    chip.onclick = () => toggleVendor(id);
+    c.appendChild(chip);
+  });
+}
+
+function toggleVendor(id) {
+  if(selectedVendors.includes(id)) {
+    selectedVendors = selectedVendors.filter(v => v !== id);
+  } else {
+    if(selectedVendors.length >= 8) {
+      const h = document.getElementById('chip-hint');
+      h.textContent = t('maxHint');
+      h.classList.add('shake');
+      setTimeout(()=>h.classList.remove('shake'),400);
+      return;
+    }
+    selectedVendors.push(id);
+  }
+  document.getElementById('chip-hint').textContent = selectedVendors.length < 2 ? t('minHint') : '';
+  renderVendorChips();
+  updateCounter();
+  updateGenerateBtn();
+}
+
+function selectAll() {
+  selectedVendors = Object.keys(VENDORS).slice(0,8);
+  document.getElementById('chip-hint').textContent = '';
+  renderVendorChips(); updateCounter(); updateGenerateBtn();
+}
+
+function clearAll() {
+  selectedVendors = [];
+  document.getElementById('chip-hint').textContent = t('minHint');
+  renderVendorChips(); updateCounter(); updateGenerateBtn();
+}
+
+function updateCounter() {
+  document.getElementById('chip-counter').textContent = selectedVendors.length + ' / 8 ' + t('selected');
+  const subLabel = document.getElementById('vendor-sub-label');
+  if(subLabel) subLabel.textContent = 'Showing ' + selectedVendors.length + ' of ' + Object.keys(VENDORS).length + ' vendors. Max 8 vendors.';
+}
+
+function updateGenerateBtn() {
+  const btn = document.getElementById('generate-btn');
+  btn.disabled = selectedVendors.length < 2;
+  btn.innerHTML = selectedVendors.length < 2 ? t('generateBtnDisabled') : t('generateBtn') + ' →';
+}
+
+// ============================================================
+// PRESETS
+// ============================================================
+function renderPresets() {
+  // Keep hidden select in sync
+  const sel = document.getElementById('preset-select');
+  if(sel) {
+    sel.innerHTML = '<option value="custom">' + t('customConfig') + '</option>';
+    Object.entries(PRESETS).forEach(([id, p]) => {
+      const opt = document.createElement('option');
+      opt.value = id;
+      const n = p.name;
+      opt.textContent = (typeof n==='object') ? (n[currentLang]||n['EN']) : n;
+      sel.appendChild(opt);
+    });
+  }
+  // View 2 preset pills
+  const v2Pills = document.getElementById('v2-preset-pills');
+  if(v2Pills) {
+    v2Pills.innerHTML = '';
+    // Custom pill
+    const custom = document.createElement('button');
+    custom.type = 'button';
+    custom.className = 'v2-preset-pill' + (currentPreset==='custom' ? ' active' : '');
+    custom.dataset.preset = 'custom';
+    custom.innerHTML = '<span class="v2-preset-pill-dot"></span>Custom';
+    custom.onclick = () => selectPreset('custom');
+    v2Pills.appendChild(custom);
+    Object.entries(PRESETS).forEach(([id, p]) => {
+      const n = p.name;
+      const label = (typeof n==='object') ? (n[currentLang]||n['EN']) : n;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'v2-preset-pill' + (currentPreset===id ? ' active' : '');
+      btn.dataset.preset = id;
+      btn.innerHTML = '<span class="v2-preset-pill-dot"></span>' + label;
+      btn.onclick = () => selectPreset(id);
+      v2Pills.appendChild(btn);
+    });
+  }
+  // View 3 preset bar
+  renderV3PresetBar();
+  renderV3BaBox();
+}
+
+function renderV3PresetBar() {
+  const bar = document.getElementById('v3-preset-bar');
+  if(!bar) return;
+  bar.innerHTML = '<span class="v3-preset-label">Use Case</span>';
+  const custom = document.createElement('button');
+  custom.type = 'button';
+  custom.className = 'v3-preset-pill' + (currentPreset==='custom'?' active':'');
+  custom.textContent = 'Custom';
+  custom.onclick = () => { selectPreset('custom'); if(currentView===3) renderResults(); };
+  bar.appendChild(custom);
+  Object.entries(PRESETS).forEach(([id, p]) => {
+    const n = p.name;
+    const label = (typeof n==='object') ? (n[currentLang]||n['EN']) : n;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'v3-preset-pill' + (currentPreset===id?' active':'');
+    btn.textContent = label;
+    btn.onclick = () => { selectPreset(id); if(currentView===3) renderResults(); };
+    bar.appendChild(btn);
+  });
+}
+
+function renderV3BaBox() {
+  const box = document.getElementById('v3-ba-box');
+  if(!box) return;
+  const isOn = buildAwareness;
+  box.innerHTML =
+    '<div class="v3-ba-left">'+
+      '<div class="v3-ba-title">'+
+        '<span class="v3-ba-title-dot '+(isOn?'on':'')+'"></span>'+
+        'Build-Awareness Mode'+
+      '</div>'+
+      '<div class="v3-ba-desc">'+(BA_DESCS[currentLang]||BA_DESCS['EN'])+'</div>'+
+    '</div>'+
+    '<div class="v3-ba-right">'+
+      '<span class="v3-ba-status '+(isOn?'on':'off')+'">'+(isOn?'ON':'OFF')+'</span>'+
+      '<label class="toggle-switch">'+
+        '<input type="checkbox" id="v3-build-toggle" '+(isOn?'checked':'')+'>'+
+        '<span class="toggle-slider"></span>'+
+      '</label>'+
+    '</div>';
+  setTimeout(() => {
+    const tog = document.getElementById('v3-build-toggle');
+    if(tog) tog.onchange = () => {
+      buildAwareness = tog.checked;
+      const v2tog = document.getElementById('build-toggle');
+      if(v2tog) v2tog.checked = tog.checked;
+      // Update badge immediately without waiting for full re-render
+      const badge = document.querySelector('.v3-ba-status');
+      if(badge) { badge.textContent = buildAwareness?'ON':'OFF'; badge.className='v3-ba-status '+(buildAwareness?'on':'off'); }
+      const dot = document.querySelector('.v3-ba-title-dot');
+      if(dot) dot.className='v3-ba-title-dot '+(buildAwareness?'on':'');
+      renderResults();
+    };
+  }, 0);
+}
+
+function selectPreset(id) {
+  currentPreset = id;
+  if(id !== 'custom') applyPreset(id);
+  // Update pill active states
+  document.querySelectorAll('.v2-preset-pill, .v3-preset-pill').forEach(el => {
+    el.classList.toggle('active', el.dataset.preset === id || el.textContent.trim() === (id==='custom'?'Custom':'') && id==='custom');
+  });
+  document.querySelectorAll('[data-preset]').forEach(el => {
+    el.classList.toggle('active', el.dataset.preset === id);
+  });
+}
+
+function applyPreset(id) {
+  if(id === 'custom') return;
+  const p = PRESETS[id];
+  if(!p) return;
+  SUB_IDS.forEach((sub, i) => {
+    sliderValues[sub] = p.vals[i];
+    const el = document.getElementById('slider-'+sub);
+    if(el) { el.value = p.vals[i]; updateBadge(sub, p.vals[i]); }
+  });
+}
+
+// ============================================================
+// SLIDERS
+// ============================================================
+const CAT_SUBS = [
+  ['brain', ['dynamicTaskPlanning','multiAgentCollab','selfCorrection']],
+  ['memory', ['semanticRAG','multimodalExtraction','institutionalMemory']],
+  ['guard', ['decisionTraceability','guardrailEnforcement','iam']],
+  ['hands', ['apiFabric','crossAppOrchestration','runtimeResilience']]
+];
+const CAT_BODY_IDS = ['cat1-body','cat2-body','cat3-body','cat4-body'];
+
+
+// Populate category tooltips
+function populateCatTooltips() {
+  const d = CAT_DESCS[currentLang] || CAT_DESCS['EN'];
+  ['brain','memory','guard','hands'].forEach(k => {
+    const el = document.getElementById('cat-tooltip-' + k);
+    if(el) el.textContent = d[k] || '';
+    const btn = document.querySelector('[data-catkey="'+k+'"]');
+    if(btn && el) {
+      btn.onmouseenter = () => el.classList.add('visible');
+      btn.onmouseleave = () => el.classList.remove('visible');
+      // Also trigger on header hover
+      const card = btn.closest('.v2-cat-card');
+      if(card) {
+        const hdr = card.querySelector('.v2-cat-header');
+        if(hdr) {
+          hdr.onmouseenter = () => el.classList.add('visible');
+          hdr.onmouseleave = () => el.classList.remove('visible');
+        }
+      }
+    }
+  });
+}
+
+function renderSliders() {
+  CAT_SUBS.forEach(([cat, subs], ci) => {
+    const body = document.getElementById(CAT_BODY_IDS[ci]);
+    body.innerHTML = '';
+    subs.forEach((sub, si) => {
+      const val = sliderValues[sub] !== undefined ? sliderValues[sub] : 1;
+      const group = document.createElement('div');
+      group.className = 'v2-slider-group';
+      const names = t('subNames');
+      const descs = t('subDescs');
+      const ticks = t('tickLabels');
+      group.innerHTML =
+        '<div class="v2-slider-top">' +
+          '<span class="v2-slider-name">' + (names[sub]||sub) + '</span>' +
+          '<span class="v2-moscow-badge" id="badge-' + sub + '">' + getMoscowText(val) + '</span>' +
+        '</div>' +
+        '<div class="v2-slider-desc">' + (descs[sub]||'') + '</div>' +
+        '<input type="range" id="slider-' + sub + '" min="0" max="3" step="1" value="' + val + '" oninput="onSlider(\'' + sub + '\',this.value)">' +
+        '<div class="v2-slider-ticks">' +
+          '<span>' + ticks[0] + '</span><span>' + ticks[1] + '</span><span>' + ticks[2] + '</span><span>' + ticks[3] + '</span>' +
+        '</div>';
+      body.appendChild(group);
+      setTimeout(()=>{ updateBadge(sub, val); }, 10);
+    });
+  });
+}
+
+function getMoscowText(v) {
+  const map = {3:'moscow3',2:'moscow2',1:'moscow1',0:'moscow0'};
+  return t(map[parseInt(v)]||'moscow0');
+}
+
+function getMoscowStyle(v) {
+  const styles = {
+    3: 'background:rgba(52,211,153,0.15);color:#34D399',
+    2: 'background:rgba(40,180,237,0.15);color:#28B4ED',
+    1: 'background:rgba(251,191,36,0.15);color:#FBBF24',
+    0: 'background:rgba(107,122,153,0.15);color:#6B7A99'
+  };
+  return styles[parseInt(v)] || styles[0];
+}
+
+function onSlider(sub, val) {
+  sliderValues[sub] = parseInt(val);
+  updateBadge(sub, val);
+}
+
+function updateBadge(sub, val) {
+  const badge = document.getElementById('badge-'+sub);
+  if(badge) { badge.textContent = getMoscowText(val); badge.style.cssText = getMoscowStyle(val); }
+}
+
+// ============================================================
+// SCORING ENGINE
+// ============================================================
+function calcScore(vendorId, useMultiplier) {
+  const v = VENDORS[vendorId];
+  let num = 0, den = 0;
+  SUB_IDS.forEach(sub => {
+    const w = sliderValues[sub] || 0;
+    if(w === 0) return;
+    const mat = v.scores[sub].maturity;
+    const mult = useMultiplier ? v.scores[sub].multiplier : 1;
+    num += mat * mult * w;
+    den += 3 * w;
+  });
+  if(den === 0) return 0;
+  return Math.round((num/den)*1000)/10;
+}
+
+function calcLayerScore(vendorId, layerSubs) {
+  const v = VENDORS[vendorId];
+  let num = 0, den = 0;
+  layerSubs.forEach(sub => {
+    const w = sliderValues[sub] || 0;
+    if(w === 0) return;
+    const mat = v.scores[sub].maturity;
+    const mult = buildAwareness ? v.scores[sub].multiplier : 1;
+    num += mat * mult * w;
+    den += 3 * w;
+  });
+  if(den === 0) return 0;
+  return Math.round((num/den)*30)/10;
+}
+
+function calcKPIs(vendorId) {
+  const v = VENDORS[vendorId];
+  const rel = ['decisionTraceability','guardrailEnforcement','iam','selfCorrection','semanticRAG'];
+  const scal = ['apiFabric','crossAppOrchestration','runtimeResilience','multiAgentCollab','iam'];
+  const relScore = rel.reduce((s,sub)=>s+v.scores[sub].maturity,0)/(5*3)*100;
+  const scalScore = scal.reduce((s,sub)=>s+v.scores[sub].maturity,0)/(5*3)*100;
+  const ttvScore = SUB_IDS.reduce((s,sub)=>s+v.scores[sub].multiplier,0)/SUB_IDS.length*100;
+  return {
+    reliability: Math.round(relScore),
+    scalability: Math.round(scalScore),
+    ttv: Math.round(ttvScore)
+  };
+}
+
+// ============================================================
+// GENERATE & LOADING
+// ============================================================
+function generate() {
+  buildAwareness = document.getElementById('build-toggle').checked;
+  const overlay = document.getElementById('loading-overlay');
+  overlay.classList.add('active');
+  document.getElementById('generate-btn').disabled = true;
+
+  const DURATION = 2200; // 1.4s: deliberate, not frustrating
+  const barEl = document.getElementById('ci-bar-fill');
+  const pctEl = document.getElementById('loading-pct');
+  const textEl = document.getElementById('loading-text');
+  const msgs = T[currentLang].loadingMsgs || [];
+
+  if(barEl) { barEl.style.transition = 'none'; barEl.style.width = '0%'; }
+  if(pctEl) pctEl.textContent = '0%';
+  if(textEl) { textEl.style.opacity = '1'; textEl.textContent = msgs[0] || ''; }
+
+  // Animate bar: quick to 80%, hold, then complete
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if(barEl) { barEl.style.transition = 'width 1.6s cubic-bezier(0.4,0,0.2,1)'; barEl.style.width = '80%'; }
+  }));
+
+  // Fade message through a couple of steps
+  let mi = 0;
+  const msgInterval = setInterval(() => {
+    mi = (mi + 1) % msgs.length;
+    if(textEl) {
+      textEl.style.opacity = '0';
+      setTimeout(() => { if(textEl) { textEl.textContent = msgs[mi]; textEl.style.opacity = '1'; } }, 200);
+    }
+  }, 500);
+
+  // Pct counter 0→82
+  let pct = 0;
+  const pctInterval = setInterval(() => {
+    pct = Math.min(82, pct + 3);
+    if(pctEl) pctEl.textContent = pct + '%';
+  }, DURATION / 28);
+
+  setTimeout(() => {
+    clearInterval(msgInterval);
+    clearInterval(pctInterval);
+    if(barEl) { barEl.style.transition = 'width 0.28s ease'; barEl.style.width = '100%'; }
+    if(pctEl) pctEl.textContent = '100%';
+    if(textEl) textEl.style.opacity = '0';
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      document.getElementById('generate-btn').disabled = selectedVendors.length < 2;
+      renderResults();
+      showView(3);
+      setTimeout(() => { if(barEl) { barEl.style.transition = 'none'; barEl.style.width = '0%'; } }, 400);
+    }, 280);
+  }, DURATION);
+}
+
+// ============================================================
+// RENDER RESULTS
+// ============================================================
+
+function renderResults() {
+  window._hiddenVendors = new Set();
+  const presetSel = document.getElementById('preset-select');
+  const presetId = presetSel ? presetSel.value : 'custom';
+  let presetName = t('custom');
+  if(presetId !== 'custom' && PRESETS[presetId]) {
+    const n = PRESETS[presetId].name;
+    presetName = (typeof n === 'object') ? (n[currentLang] || n['EN']) : n;
+  }
+  const baStatus = buildAwareness ? t('buildOn') : t('buildOff');
+  document.getElementById('results-subtitle').textContent = t('useCase') + ': ' + presetName + '  ·  Build-Awareness: ' + baStatus;
+  renderV3PresetBar();
+  renderV3BaBox();
+
+  const ranked = selectedVendors.map(id => ({
+    id, name: VENDORS[id].name, platform: VENDORS[id].platform, color: VENDORS[id].color,
+    total: calcScore(id, buildAwareness),
+    brain: calcLayerScore(id, LAYERS.brain),
+    memory: calcLayerScore(id, LAYERS.memory),
+    guard: calcLayerScore(id, LAYERS.guard),
+    hands: calcLayerScore(id, LAYERS.hands)
+  })).sort((a,b) => b.total - a.total);
+
+  renderRankCards(ranked);
+  renderRadar(ranked);
+  renderVerdict(ranked);
+  renderSubScores(ranked);
+}
+
+// ── RANKING CARDS ────────────────────────────────────────────
+function renderRankCards(ranked) {
+  const grid = document.getElementById('rank-cards-row');
+  grid.innerHTML = '';
+
+  ranked.forEach((r, i) => {
+    const kpis = calcKPIs(r.id);
+    const rankClass = ['r3-rank-1','r3-rank-2','r3-rank-3'][i] || 'r3-rank-n';
+    const layerData = [
+      { label: t('layerBrain'),  val: r.brain,  color: '#28B4ED' },
+      { label: t('layerMemory'), val: r.memory, color: '#00CCCD' },
+      { label: t('layerGuard'),  val: r.guard,  color: '#FFAB00' },
+      { label: t('layerHands'),  val: r.hands,  color: '#FF8A71' }
+    ];
+
+    const layerBars = layerData.map(l =>
+      '<div class="r3-layer-row">' +
+        '<div class="r3-layer-label">' + l.label + '</div>' +
+        '<div class="r3-layer-bar-track">' +
+          '<div class="r3-layer-bar-fill" style="background:' + l.color + '" data-w="' + (l.val/3*100).toFixed(0) + '"></div>' +
+        '</div>' +
+        '<div class="r3-layer-val">' + l.val.toFixed(1) + ' / 3</div>' +
+      '</div>'
+    ).join('');
+
+    const kpiColor = p => p>80?'#34D399':p>=50?'#28B4ED':'#F87171';
+    const kpiItems = [
+      { val: kpis.reliability, label: t('kpiReliability') },
+      { val: kpis.scalability, label: t('kpiScalability') },
+      { val: kpis.ttv,         label: t('kpiTTV')         }
+    ].map(k =>
+      '<div class="r3-kpi">' +
+        '<div class="r3-kpi-val" style="color:' + kpiColor(k.val) + '">' + k.val + '</div>' +
+        '<div class="r3-kpi-lbl">' + k.label + '</div>' +
+      '</div>'
+    ).join('');
+
+    const card = document.createElement('div');
+    card.className = 'r3-vcard';
+    card.style.setProperty('--vcard-color', r.color);
+    card.innerHTML =
+      '<div class="r3-vcard-top">' +
+        '<div>' +
+          '<div class="r3-vcard-name">' + r.name + '</div>' +
+          '<div class="r3-vcard-platform">' + r.platform + '</div>' +
+        '</div>' +
+        '<div class="r3-vcard-rank ' + rankClass + '">' + (i+1) + '</div>' +
+      '</div>' +
+      '<div class="r3-vcard-score" style="color:' + r.color + '">' + r.total + '%</div>' +
+      '<div class="r3-vcard-score-label">Weighted Score</div>' +
+      '<div class="r3-vcard-bar"><div class="r3-vcard-bar-fill" style="background:' + r.color + '" data-w="' + r.total + '"></div></div>' +
+      '<div class="r3-vcard-divider"></div>' +
+      '<div class="r3-vcard-layers">' + layerBars + '</div>' +
+      '<div class="r3-vcard-divider"></div>' +
+      '<div class="r3-vcard-kpis">' + kpiItems + '</div>';
+
+    grid.appendChild(card);
+  });
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    grid.querySelectorAll('[data-w]').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }));
+}
+
+// ── RADAR ────────────────────────────────────────────────────
+function renderRadar(ranked) {
+  const svgWrap = document.getElementById('radarChart');
+  const legendCol = document.getElementById('radarLegend');
+  if(!svgWrap) return;
+
+  // Hidden state: Set of vendor IDs
+  if(!window._hiddenVendors) window._hiddenVendors = new Set();
+
+  const visible = ranked.filter(r => !window._hiddenVendors.has(r.id));
+
+  const axes = [
+    { label: t('layerBrain'),  color:'#28B4ED' },
+    { label: t('layerMemory'), color:'#00CCCD' },
+    { label: t('layerGuard'),  color:'#FFAB00' },
+    { label: t('layerHands'),  color:'#FF8A71' }
+  ];
+  const N = 4;
+  const MIN = 1, MAX = 3, RANGE = MAX - MIN;
+  const cx = 130, cy = 130, R = 100;
+
+  function angle(i) { return (Math.PI*2*i/N) - Math.PI/2; }
+  function pt(i, r) { const a=angle(i); return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  function polyStr(r) { return Array.from({length:N},(_,i)=>pt(i,r)).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '); }
+  function valToR(v) { return R * Math.max(0.01, (Math.max(MIN,v)-MIN)/RANGE); }
+
+  let s = '<svg class="radar-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">';
+
+  // Background
+  s += '<polygon points="'+polyStr(R)+'" fill="rgba(255,255,255,0.015)" stroke="none"/>';
+
+  // Grid rings at 2 and 3
+  [[2,false],[3,true]].forEach(([lv,outer]) => {
+    const r = valToR(lv);
+    s += '<polygon points="'+polyStr(r)+'" fill="none" stroke="rgba(255,255,255,'+(outer?0.13:0.06)+')" stroke-width="'+(outer?0.8:0.5)+'"'+(outer?'':' stroke-dasharray="3,3"')+'/>';
+    const [lx,ly] = pt(0,r);
+    s += '<text x="'+(lx+4).toFixed(1)+'" y="'+ly.toFixed(1)+'" fill="rgba(255,255,255,0.22)" font-size="6.5" font-family="Ubuntu,sans-serif" dominant-baseline="middle">'+lv+'</text>';
+  });
+
+  // Axis lines
+  for(let i=0;i<N;i++){
+    const [ox,oy]=pt(i,R);
+    s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+ox.toFixed(1)+'" y2="'+oy.toFixed(1)+'" stroke="rgba(255,255,255,0.07)" stroke-width="0.6"/>';
+  }
+
+  // Axis labels
+  axes.forEach((ax,i)=>{
+    const [lx,ly]=pt(i,R+16);
+    const anchor=Math.abs(lx-cx)<4?'middle':lx<cx?'end':'start';
+    s+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle" fill="'+ax.color+'" font-size="7.5" font-weight="600" font-family="Ubuntu,sans-serif" letter-spacing="0.05em">'+ax.label.toUpperCase()+'</text>';
+  });
+
+  // Data polygons (visible only)
+  visible.forEach(r=>{
+    const vals=[r.brain,r.memory,r.guard,r.hands];
+    const pts=vals.map((v,i)=>pt(i,valToR(v)));
+    const pStr=pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    s+='<polygon points="'+pStr+'" fill="'+r.color+'16" stroke="'+r.color+'" stroke-width="1.5" stroke-linejoin="round"/>';
+    pts.forEach(([px,py])=>{
+      s+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="2.8" fill="'+r.color+'" stroke="rgba(13,22,45,0.95)" stroke-width="1.2"/>';
+    });
+  });
+
+  s += '<text x="5" y="255" fill="rgba(255,255,255,0.18)" font-size="6" font-family="Ubuntu,sans-serif">Scale 1–3</text>';
+  s += '</svg>';
+  svgWrap.innerHTML = s;
+
+  // Legend column with clickable buttons
+  if(legendCol) {
+    legendCol.innerHTML = '<div class="radar-legend-title">Vendors</div>';
+    ranked.forEach(r => {
+      const btn = document.createElement('div');
+      btn.className = 'radar-legend-btn' + (window._hiddenVendors.has(r.id)?' hidden':'');
+      btn.innerHTML = '<span class="radar-legend-dot" style="background:'+r.color+'"></span><span class="radar-legend-name">'+r.name+'</span>';
+      btn.onclick = () => {
+        if(window._hiddenVendors.has(r.id)) window._hiddenVendors.delete(r.id);
+        else if(window._hiddenVendors.size < ranked.length-1) window._hiddenVendors.add(r.id);
+        renderRadar(ranked);
+      };
+      legendCol.appendChild(btn);
+    });
+    // Small hint
+    const hint = document.createElement('div');
+    hint.style.cssText = 'font-size:10px;color:var(--text-tertiary);margin-top:8px;line-height:1.4';
+    hint.textContent = 'Click to toggle';
+    legendCol.appendChild(hint);
+  }
+}
+
+// ── VERDICT ──────────────────────────────────────────────────
+function renderVerdict(ranked) {
+  const top = ranked[0], second = ranked[1];
+  const layers = { brain: top.brain, memory: top.memory, guard: top.guard, hands: top.hands };
+  const maxL = Object.entries(layers).sort((a,b) => b[1]-a[1])[0][0];
+  const minL = Object.entries(layers).sort((a,b) => a[1]-b[1])[0][0];
+
+  document.getElementById('verdict-box').innerHTML =
+    '<p class="r3-verdict-intro">' + T[currentLang].verdictIntro(top.name, top.total) + '</p>' +
+    '<div class="r3-verdict-items">' +
+      '<div class="r3-verdict-item r3-verdict-strength">' +
+        '<div class="r3-verdict-item-label">Key Strength</div>' +
+        '<div class="r3-verdict-item-text">' + t(maxL + 'Strength') + '</div>' +
+      '</div>' +
+      '<div class="r3-verdict-item r3-verdict-risk">' +
+        '<div class="r3-verdict-item-label">Key Risk</div>' +
+        '<div class="r3-verdict-item-text">' + t(minL + 'Weakness') + '</div>' +
+      '</div>' +
+      '<div class="r3-verdict-item r3-verdict-challenger">' +
+        '<div class="r3-verdict-item-label">Closest Challenger</div>' +
+        '<div class="r3-verdict-item-text">' + second.name + ' — ' + second.total + '%</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="r3-verdict-rec">' + T[currentLang].verdictRec(top.name, second.name) + '</div>';
+}
+
+// ── SUB-CATEGORY MATRIX ──────────────────────────────────────
+function renderSubScores(ranked) {
+  const wrap = document.getElementById('scores-matrix-wrap');
+  if(!wrap) return;
+  const names = t('subNames');
+  const matColors = { 3:'#34D399', 2:'#28B4ED', 1:'#FBBF24', 0:'#F87171' };
+  const layerMeta = [
+    { key:'brain',  label:t('cat1name'), color:'#28B4ED', bg:'rgba(40,180,237,0.1)',   subs:LAYERS.brain  },
+    { key:'memory', label:t('cat2name'), color:'#00CCCD', bg:'rgba(0,204,205,0.1)',    subs:LAYERS.memory },
+    { key:'guard',  label:t('cat3name'), color:'#FFAB00', bg:'rgba(255,171,0,0.1)',    subs:LAYERS.guard  },
+    { key:'hands',  label:t('cat4name'), color:'#FF8A71', bg:'rgba(255,138,113,0.1)',  subs:LAYERS.hands  }
+  ];
+  const vendorHeaders = ranked.map(r =>
+    '<th><span style="display:inline-flex;align-items:center;gap:5px">' +
+      '<span style="width:7px;height:7px;border-radius:50%;background:' + r.color + ';display:inline-block"></span>' +
+      r.name + '</span></th>'
+  ).join('');
+
+  let rows = '';
+  layerMeta.forEach(layer => {
+    rows += '<tr class="layer-section-hdr"><td colspan="' + (ranked.length+1) + '" style="color:' + layer.color + '">' + layer.label + '</td></tr>';
+    layer.subs.forEach(sub => {
+      const w = sliderValues[sub]||0;
+      const wc = w===3?'#34D399':w===2?'#28B4ED':w===1?'#FBBF24':'#4A5568';
+      const cells = ranked.map(r => {
+        const mat = VENDORS[r.id].scores[sub].maturity;
+        const mult = VENDORS[r.id].scores[sub].multiplier;
+        const col = matColors[mat];
+        const dots = [1,2,3].map(d => '<div class="mat-dot" style="background:' + (d<=mat?col:'rgba(255,255,255,0.07)') + '"></div>').join('');
+        return '<td style="text-align:center"><div class="mat-cell"><div class="mat-dots">' + dots + '</div>' +
+          '<span class="mat-val" style="color:' + col + '">' + mat + '/3</span>' +
+          (buildAwareness ? '<span class="mat-mult">×' + mult + '</span>' : '') + '</div></td>';
+      }).join('');
+      rows += '<tr><td class="sub-name-cell">' +
+        '<span class="cat-tag" style="background:' + layer.bg + ';color:' + layer.color + '">' + layer.key.toUpperCase() + '</span>' +
+        (names[sub]||sub) + '<span style="margin-left:6px;font-size:10px;font-weight:600;color:' + wc + '">W:' + w + '</span>' +
+        '</td>' + cells + '</tr>';
+    });
+  });
+
+  wrap.innerHTML =
+    '<div class="matrix-scroll"><table class="matrix-table">' +
+      '<thead><tr><th class="sub-header">Sub-Category</th>' + vendorHeaders + '</tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>' +
+    '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:14px">' +
+      [3,2,1,0].map(v => '<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:' + matColors[v] + '">' +
+        '<span style="width:7px;height:7px;border-radius:50%;background:' + matColors[v] + ';display:inline-block"></span>' +
+        v + ' – ' + getMoscowText(v) + '</span>').join('') +
+    '</div>';
+}
+
+
+
+function exportPDF() {
+  const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+  if(!jsPDF){ alert('PDF library not loaded. Please refresh.'); return; }
+
+  const now = new Date(), dateStr = now.toLocaleDateString('de-DE');
+  const presetSel = document.getElementById('preset-select');
+  const presetId = presetSel ? presetSel.value : 'custom';
+  let presetName = t('custom');
+  if(presetId !== 'custom' && PRESETS[presetId]) {
+    const n = PRESETS[presetId].name;
+    presetName = (typeof n==='object') ? (n[currentLang]||n['EN']) : n;
+  }
+  const baLabel = buildAwareness ? t('buildOn') : t('buildOff');
+  const ranked = selectedVendors.map(id=>({
+    id, name:VENDORS[id].name, platform:VENDORS[id].platform, color:VENDORS[id].color,
+    total:calcScore(id,buildAwareness),
+    brain:calcLayerScore(id,LAYERS.brain), memory:calcLayerScore(id,LAYERS.memory),
+    guard:calcLayerScore(id,LAYERS.guard), hands:calcLayerScore(id,LAYERS.hands)
+  })).sort((a,b)=>b.total-a.total);
+  const top=ranked[0], second=ranked.length>1?ranked[1]:ranked[0];
+  const lrs={brain:top.brain,memory:top.memory,guard:top.guard,hands:top.hands};
+  const maxL=Object.entries(lrs).sort((a,b)=>b[1]-a[1])[0][0];
+  const minL=Object.entries(lrs).sort((a,b)=>a[1]-b[1])[0][0];
+  const snames=T[currentLang].subNames||T['EN'].subNames;
+
+  try {
+  // 16:9 slide  297 × 167 mm
+  const W=297, H=167, doc=new jsPDF({unit:'mm',format:[W,H],orientation:'landscape'});
+
+  // ── Palette ────────────────────────────────────────────────
+  const BG=[10,18,34], CARD=[16,26,46], BD=[26,42,66], TX=[232,236,244];
+  const MU=[100,120,155], DM=[38,56,84];
+  const CI=[29,182,243], GR=[52,211,153], RE=[248,113,113], BL=[0,102,204];
+  const lc={brain:[40,180,237],memory:[0,213,208],guard:[255,171,0],hands:[255,138,113]};
+  const mc={3:GR, 2:[40,180,237], 1:[255,171,0], 0:[50,70,100]};
+  const vendorColors=Object.fromEntries(ranked.map(r=>[r.id, hexRgb(r.color)]));
+
+  function hexRgb(h){return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];}
+  function f(c){doc.setFillColor(...c);}
+  function s(c,w){doc.setDrawColor(...c);doc.setLineWidth(w||0.15);}
+  function tc(c){doc.setTextColor(...c);}
+  function R(x,y,w,h,col,r2){f(col);r2?doc.roundedRect(x,y,w,h,r2,r2,'F'):doc.rect(x,y,w,h,'F');}
+  function L(x1,y1,x2,y2,col,lw){s(col,lw||0.15);doc.line(x1,y1,x2,y2);}
+  function C(x,y,r2,col){f(col);doc.circle(x,y,r2,'F');}
+  function T2(str,x,y,sz,col,align,bold){
+    doc.setFontSize(sz);tc(col||TX);
+    doc.setFont('helvetica',bold?'bold':'normal');
+    doc.text(String(str),x,y,{align:align||'left',maxWidth:undefined});
+  }
+  function T3(str,x,y,sz,col,mw,bold){
+    doc.setFontSize(sz);tc(col||TX);
+    doc.setFont('helvetica',bold?'bold':'normal');
+    const lines=doc.splitTextToSize(String(str),mw||100);
+    doc.text(lines,x,y);
+    return lines.length;
+  }
+  function BAR(x,y,w,h,pct,col){
+    R(x,y,w,h,BD);
+    if(pct>0) R(x,y,w*Math.min(pct/100,1),h,col);
+  }
+  function CILINE(x,y,w,h2){
+    const n=40;
+    for(let i=0;i<n;i++){
+      const t=i/(n-1);
+      doc.setFillColor(
+        Math.round((1-t)*0+t*0),
+        Math.round((1-t)*102+t*213),
+        Math.round((1-t)*204+t*208)
+      );
+      doc.rect(x+i*(w/n),y,w/n+0.2,h2||0.7,'F');
+    }
+  }
+  // Load logo async then draw slides
+  function drawSlides(logoData) {
+    function LOGO(x,y,h2){
+      if(logoData){
+        try{doc.addImage(logoData,'SVG',x,y,h2*4.2,h2);}catch(e){
+          T2('CAPGEMINI INVENT',x,y+h2*0.7,7,CI,'left',true);
+        }
+      } else {
+        T2('CAPGEMINI INVENT',x,y+h2*0.7,7,CI,'left',true);
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // COMMON HEADER/FOOTER
+    // ─────────────────────────────────────────────────────────
+    function slideBase(pg,title){
+      R(0,0,W,H,BG);
+      // top bar
+      R(0,0,W,9,[16,26,46]);
+      CILINE(0,9,W,0.6);
+      LOGO(4,1.8,5);
+      T2(title,W/2,5.5,6.5,TX,'center',true);
+      T2('Capgemini Invent · Agentic AI Platform Benchmark',W-4,5.5,5,MU,'right');
+      // footer
+      L(4,H-7,W-4,H-7,BD,0.2);
+      T2('Capgemini Invent · Agentic AI Practice · 2026',4,H-3,4.5,DM,'left');
+      T2('Page '+pg+' / 3',W/2,H-3,4.5,DM,'center');
+      T2('Confidential · For Internal Use Only',W-4,H-3,4.5,DM,'right');
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // SLIDE 1: COVER
+    // ─────────────────────────────────────────────────────────
+    slideBase(1,'Strategic Analysis');
+    // Left hero text (x=10, starting y=20)
+    T2('ENTERPRISE AI BENCHMARK',10,23,6,CI,'left',true);
+    T2('Agentic AI',10,37,28,TX,'left',true);
+    T2('Platform',10,51,24,[40,180,237],'left',true);
+    T2('Assessment 2026',10,62,16,TX,'left');
+    CILINE(10,66,55,1);
+    T3('Evaluates enterprise-grade agentic AI platforms across 12 capability dimensions, weighted to use case and implementation context.',10,73,6.5,MU,62);
+    // Right: meta cards (x=82)
+    const metas=[{l:'Use Case',v:presetName},{l:'Build-Awareness',v:baLabel},{l:'Platforms',v:ranked.length},{l:'Date',v:dateStr}];
+    metas.forEach((m,i)=>{
+      const bx=82+i*52, by=18, bw=48, bh=17;
+      R(bx,by,bw,bh,CARD,2); L(bx,by,bx+bw,by,CI,0.6);
+      T2(m.l.toUpperCase(),bx+3,by+5.5,4.5,MU,'left',true);
+      T2(String(m.v).slice(0,18),bx+3,by+12,7.5,TX,'left',true);
+    });
+    // Platform overview box
+    R(82,40,212,55,CARD,2); CILINE(82,40,212,0.5);
+    T2('PLATFORMS UNDER REVIEW',84,46.5,5,MU,'left',true);
+    L(84,48,292,48,BD,0.2);
+    let px=84, py=54;
+    ranked.forEach(r=>{
+      const vc=hexRgb(r.color);
+      const nameW=doc.getTextWidth(r.name)*1.1+18;
+      if(px+nameW>288){px=84;py+=10;}
+      R(px,py-5.5,nameW,7.5,BD,1);
+      C(px+3.5,py-1.5,1.5,vc);
+      T2(r.name,px+7,py,6,TX,'left');
+      T2(r.total+'%',px+nameW-3,py,6,vc,'right',true);
+      px+=nameW+4;
+    });
+    // Verdict teaser
+    const vt=T['EN'].verdictIntro(top.name,top.total).replace(/<[^>]+>/g,'');
+    T3(vt,82,H-22,6,TX,210);
+
+    // ─────────────────────────────────────────────────────────
+    // SLIDE 2: PLATFORM RANKING
+    // ─────────────────────────────────────────────────────────
+    doc.addPage([W,H],'landscape');
+    slideBase(2,'Platform Ranking');
+    const nc=Math.min(ranked.length,5);
+    const cw=(W-20-(nc-1)*4)/nc;
+    ranked.slice(0,5).forEach((r,i)=>{
+      const cx=10+i*(cw+4), cy=13, ch=H-24;
+      const vc=hexRgb(r.color);
+      R(cx,cy,cw,ch,CARD,2);
+      // Top accent
+      R(cx,cy,cw,1.8,vc);
+      // Rank label
+      const rl=['#1 LEADER','#2 CHALLENGER','#3 CONTENDER','#4','#5'][i];
+      T2(rl,cx+cw/2,cy+7.5,4.5,vc,'center',true);
+      // Name & platform
+      T2(r.name,cx+cw/2,cy+14,i===0?9:8,vc,'center',true);
+      const shortPlat=r.platform.split(' ').slice(0,3).join(' ');
+      T2(shortPlat,cx+cw/2,cy+19,4,MU,'center');
+      L(cx+4,cy+21,cx+cw-4,cy+21,BD,0.2);
+      // Score
+      T2(r.total+'%',cx+cw/2,cy+33,i===0?20:18,vc,'center',true);
+      T2('WEIGHTED SCORE',cx+cw/2,cy+37.5,4,MU,'center',true);
+      BAR(cx+4,cy+39.5,cw-8,1.8,r.total,vc);
+      // Layer bars
+      const lk=['brain','memory','guard','hands'],ln=['Brain','Memory','Guard','Hands'];
+      lk.forEach((k,ki)=>{
+        const by2=cy+43+ki*10;
+        T2(ln[ki],cx+4,by2+3.5,4.5,MU,'left');
+        T2(r[k].toFixed(1),cx+cw-4,by2+3.5,4.5,lc[k],'right',true);
+        BAR(cx+4,by2+4.5,cw-8,1.2,r[k]/3*100,lc[k]);
+      });
+      L(cx+4,cy+86,cx+cw-4,cy+86,BD,0.25);
+      // KPIs
+      const kpis=calcKPIs(r.id);
+      const kc=p=>p>80?GR:p>=50?BL:RE;
+      [{l:'REL',v:kpis.reliability},{l:'SCA',v:kpis.scalability},{l:'TTV',v:kpis.ttv}].forEach((k,ki)=>{
+        const kx=cx+cw/6+ki*cw/3;
+        T2(k.v,kx,cy+95,11,kc(k.v),'center',true);
+        T2(k.l,kx,cy+100,4,MU,'center');
+      });
+    });
+
+    // ─────────────────────────────────────────────────────────
+    // SLIDE 3: VERDICT + MATRIX
+    // ─────────────────────────────────────────────────────────
+    doc.addPage([W,H],'landscape');
+    slideBase(3,"Verdict & Score Matrix");
+    // LEFT verdict (10-85mm)
+    T2('CONSULTANT\'S VERDICT',10,18,5,MU,'left',true);
+    CILINE(10,19.5,73,0.4);
+    const vblocks=[
+      {col:GR,lbl:'KEY STRENGTH',txt:T['EN'][maxL+'Strength']},
+      {col:RE,lbl:'KEY RISK',txt:T['EN'][minL+'Weakness']},
+      {col:[40,180,237],lbl:'CLOSEST CHALLENGER',txt:second.name+' — '+second.total+'%'}
+    ];
+    let vy=23;
+    vblocks.forEach(v=>{
+      const vlines=doc.splitTextToSize(v.txt,62);
+      const vh=5+vlines.length*4.2+3;
+      R(10,vy,73,vh,CARD,1.5);
+      f(v.col);doc.rect(10,vy,1.2,vh,'F');
+      T2(v.lbl,13,vy+5,4.5,v.col,'left',true);
+      vlines.forEach((ln2,li)=>T2(ln2,13,vy+10+li*4.2,5.5,TX,'left'));
+      vy+=vh+3;
+    });
+    const recLines=doc.splitTextToSize(T['EN'].verdictRec(top.name,second.name),62);
+    const rh=5+recLines.length*4.2+3;
+    R(10,vy,73,rh,[9,25,50],1.5);
+    f(BL);doc.rect(10,vy,1.2,rh,'F');
+    T2('RECOMMENDATION',13,vy+5,4.5,BL,'left',true);
+    recLines.forEach((ln2,li)=>T2(ln2,13,vy+10+li*4.2,5.5,TX,'left'));
+
+    // RIGHT matrix (x=88)
+    const mx=88, mw=W-mx-6;
+    T2('SUB-CATEGORY SCORE MATRIX',mx,18,5,MU,'left',true);
+    CILINE(mx,19.5,mw,0.4);
+    // Vendor header
+    const colW2=Math.min(28,(mw-50)/ranked.length);
+    let hx=mx+50;
+    ranked.forEach(r=>{
+      const vc=hexRgb(r.color);
+      C(hx+3,21.5,1.5,vc);
+      T2(r.name.split(' ')[0],hx+6,22,5,TX,'left',true);
+      hx+=colW2;
+    });
+    L(mx,23.5,W-6,23.5,BD,0.3);
+    let my=28;
+    const layerMeta2=[
+      {label:t('cat1name'),color:[40,180,237],subs:LAYERS.brain},
+      {label:t('cat2name'),color:[0,213,208],subs:LAYERS.memory},
+      {label:t('cat3name'),color:[255,171,0],subs:LAYERS.guard},
+      {label:t('cat4name'),color:[255,138,113],subs:LAYERS.hands}
+    ];
+    layerMeta2.forEach(lyr=>{
+      if(my>H-12) return;
+      R(mx,my-1,mw,4.5,BD);
+      T2(lyr.label.toUpperCase(),mx+1.5,my+2.5,4.5,lyr.color,'left',true);
+      my+=5.5;
+      lyr.subs.forEach(sub=>{
+        if(my>H-12) return;
+        const w2=sliderValues[sub]||0;
+        T2((snames[sub]||sub).slice(0,24),mx,my+2.5,4.5,TX,'left');
+        T2('W:'+w2,mx+46,my+2.5,4,MU,'left');
+        let vx2=mx+50;
+        ranked.forEach(r=>{
+          const mat=VENDORS[r.id].scores[sub].maturity;
+          const col2=mc[mat];
+          [0,1,2].forEach(d=>{C(vx2+d*3,my+1.5,1.2,d<mat?col2:BD);});
+          T2(mat+'/3',vx2+11,my+2.5,4.5,col2,'left',true);
+          vx2+=colW2;
+        });
+        L(mx,my+4,W-6,my+4,BD,0.15);
+        my+=5.5;
+      });
+    });
+    doc.save('Capgemini_Invent_Agentic_AI_Benchmark_'+dateStr+'.pdf');
+  } // end drawSlides
+
+  // Load logo then draw
+  const img=new Image();
+  img.crossOrigin='anonymous';
+  img.onload=()=>{
+    const cv=document.createElement('canvas');
+    cv.width=200;cv.height=48;
+    const ctx=cv.getContext('2d');
+    ctx.drawImage(img,0,0,200,48);
+    drawSlides(cv.toDataURL('image/png'));
+  };
+  img.onerror=()=>drawSlides(null);
+  img.src='https://www.capgemini.com/de-de/wp-content/themes/capgemini2025/assets/images/logo-invent-white.svg';
+
+  } catch(err){console.error('PDF error:',err);alert('PDF error: '+err.message);}
+}
+
+// ============================================================
+// START
+// ============================================================
+init();
+</script>
+</body>
+</html>
